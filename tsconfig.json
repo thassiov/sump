@@ -7,9 +7,10 @@
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
     "outDir": "./dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "."
   },
-  "excludes": [
+  "exclude": [
     "./eslint.config.mjs"
   ]
 }

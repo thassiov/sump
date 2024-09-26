@@ -21,5 +21,11 @@ export default tseslint.config(
   {
     files: ['**/*/*.spec.ts', '**/*/*.spec.ts'],
     plugins: { eslintJest },
+  },
+  {
+    files: ['**/*/*.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': 'off',
+    },
   }
 );
