@@ -1,7 +1,7 @@
 {
-  "name": "ais-node",
+  "name": "aps-node",
   "version": "0.1.0",
-  "description": "accounts and identities service - node version",
+  "description": "accounts and profiles service - node version",
   "main": "index.js",
   "scripts": {
     "start": "ts-node ./src/index.ts",
