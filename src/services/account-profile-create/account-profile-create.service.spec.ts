@@ -1,8 +1,8 @@
-import { IAccountProfileCreateRepository } from 'src/repositories/account-profile-create/types';
+import { ServiceOperationError } from '../../lib/errors/service-operation.error';
+import { logger } from '../../lib/logger';
+import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
 import { AccountProfileCreateService } from './account-profile-create.service';
 import { IAccountProfileDto } from './types';
-import { AccountProfileCreateError } from '../../lib/errors';
-import { logger } from '../../lib/logger';
 
 describe('[SERVICE] account-profile-create', () => {
   let accountProfileCreateRepository: IAccountProfileCreateRepository;
@@ -35,7 +35,7 @@ describe('[SERVICE] account-profile-create', () => {
 
       await expect(
         apcs.create(mockAccountInfo as IAccountProfileDto)
-      ).rejects.toThrow(AccountProfileCreateError);
+      ).rejects.toThrow(ServiceOperationError);
 
       expect(logger.info).toHaveBeenCalled();
     }

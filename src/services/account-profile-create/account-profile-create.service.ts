@@ -1,12 +1,13 @@
+import { contexts } from '../../lib/contexts';
+import { ServiceOperationError } from '../../lib/errors/service-operation.error';
+import { logger } from '../../lib/logger';
+import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
 import {
   accountProfileDtoSchema,
   IAccountProfileCreateResult,
   IAccountProfileCreateService,
   IAccountProfileDto,
 } from './types';
-import { IAccountProfileCreateRepository } from 'src/repositories/account-profile-create/types';
-import { logger } from '../../lib/logger';
-import { AccountProfileCreateError } from '../../lib/errors';
 
 export class AccountProfileCreateService
   implements IAccountProfileCreateService
@@ -21,12 +22,13 @@ export class AccountProfileCreateService
     const validationResult = accountProfileDtoSchema.safeParse(newAccount);
 
     if (!validationResult.success) {
-      const errorInstance = new AccountProfileCreateError({
+      const errorInstance = new ServiceOperationError({
         details: {
           input: newAccount,
           type: 'validation',
           errors: validationResult.error.issues,
         },
+        context: contexts.ACCOUNT_PROFILE_CREATE,
       });
 
       logger.info(errorInstance);
@@ -42,14 +44,15 @@ export class AccountProfileCreateService
         profileInfo
       );
 
-      return result;
+      return result as IAccountProfileCreateResult;
     } catch (error) {
-      const errorInstance = new AccountProfileCreateError({
+      const errorInstance = new ServiceOperationError({
         details: {
           input: newAccount,
           type: 'technical',
         },
         cause: error as Error,
+        context: contexts.ACCOUNT_PROFILE_CREATE,
       });
 
       logger.info(errorInstance);
