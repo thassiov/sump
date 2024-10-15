@@ -12,7 +12,7 @@ ProfileModel.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-    name: {
+    fullName: {
       type: DataTypes.STRING,
       allowNull: false,
     },

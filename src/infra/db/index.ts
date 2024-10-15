@@ -1,8 +1,8 @@
-import { DatabaseInstanceError } from 'src/lib/errors';
+import { DatabaseInstanceError } from '../../lib/errors';
+import { logger } from '../../lib/logger';
 import { db } from './db';
 import { AccountModel } from './models/account';
 import { ProfileModel } from './models/profile';
-import { logger } from 'src/lib/logger';
 
 AccountModel.hasOne(ProfileModel, {
   onDelete: 'CASCADE',

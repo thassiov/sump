@@ -1,17 +1,25 @@
+import { contexts } from '../contexts';
+
 export type ErrorOpts = {
   details?: Record<string, unknown>;
   cause?: Error;
+  context?: keyof typeof contexts;
 };
 
 export class BaseCustomError extends Error {
   details?: Record<string, unknown>;
   override cause?: Error;
+  context?: keyof typeof contexts;
 
   constructor(message: string, opts?: ErrorOpts) {
     super(message);
     this.name = 'BaseCustomError';
 
     if (opts) {
+      if (opts.context) {
+        this.context = opts.context;
+      }
+
       if (opts.details) {
         this.details = opts.details;
       }

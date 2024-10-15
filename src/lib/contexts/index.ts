@@ -1,0 +1,4 @@
+export const contexts = {
+  ACCOUNT_PROFILE_CREATE: 'ACCOUNT_PROFILE_CREATE',
+  DATABASE_INSTANCE: 'DATABASE_INSTANCE',
+} as const;

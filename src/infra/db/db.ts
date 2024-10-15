@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
-import { configs } from 'src/lib/config';
-import { DatabaseInstanceError } from 'src/lib/errors';
-import { logger } from 'src/lib/logger';
+import { configs } from '../../lib/config';
+import { DatabaseInstanceError } from '../../lib/errors';
+import { logger } from '../../lib/logger';
 
 let db: Sequelize;
 
