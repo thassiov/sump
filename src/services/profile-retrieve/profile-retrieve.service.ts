@@ -3,8 +3,9 @@ import { ServiceOperationError } from '../../lib/errors/service-operation.error'
 import { logger } from '../../lib/logger';
 import { IProfileRetrieveRepository } from '../../repositories/profile-retrieve/types';
 import { IProfile } from '../../types/account.type';
+import { IProfileRetrieveService } from './types';
 
-export class ProfileRetrieveService {
+export class ProfileRetrieveService implements IProfileRetrieveService {
   constructor(
     private readonly profileRetrieveRepository: IProfileRetrieveRepository
   ) {}
