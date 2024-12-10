@@ -16,4 +16,8 @@ export const errors = {
     name: 'service-operation-error',
     message: 'Failure to perform service operation',
   },
+  ENTITY_CUSTOMIZATION_ERROR: {
+    name: 'entity-customization-error',
+    message: 'Failure when loading customized entity data',
+  },
 };
