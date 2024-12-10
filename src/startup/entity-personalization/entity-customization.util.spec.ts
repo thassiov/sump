@@ -1,6 +1,6 @@
 import { EntityCustomizationError } from '../../lib/errors';
 import { logger } from '../../lib/logger';
-import { EntityCustomizationUtil } from './entity-personalization.util';
+import { EntityCustomizationUtil } from './entity-customization.util';
 
 jest.mock('../../lib/logger');
 
