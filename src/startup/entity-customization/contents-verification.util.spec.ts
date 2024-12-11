@@ -1,6 +1,6 @@
 import { EntityCustomizationError } from '../../lib/errors';
 import { logger } from '../../lib/logger';
-import { EntityCustomizationUtil } from './entity-customization.util';
+import { ContentsVerificationUtil } from './contents-verification.util';
 
 jest.mock('../../lib/logger');
 
@@ -22,26 +22,28 @@ account:
   defaultValue: "+535323423423"
 `;
 
-  describe('creates EntityCustomizationUtil instance', () => {
+  describe('creates ContentsVerificationUtil instance', () => {
     it('creates an instance by not passing an argument', () => {
       let instance;
-      expect(() => (instance = new EntityCustomizationUtil())).not.toThrow();
-      expect(instance).toBeInstanceOf(EntityCustomizationUtil);
+      expect(() => (instance = new ContentsVerificationUtil())).not.toThrow();
+      expect(instance).toBeInstanceOf(ContentsVerificationUtil);
     });
 
     it('creates an instance by passing a string as argument', () => {
       let instance;
       expect(
         () =>
-          (instance = new EntityCustomizationUtil(validCustomisableEntityYaml))
+          (instance = new ContentsVerificationUtil(validCustomisableEntityYaml))
       ).not.toThrow();
-      expect(instance).toBeInstanceOf(EntityCustomizationUtil);
+      expect(instance).toBeInstanceOf(ContentsVerificationUtil);
     });
   });
 
   describe('load customizable entity yaml', () => {
     it('loads a yaml successfully', () => {
-      const instance = new EntityCustomizationUtil(validCustomisableEntityYaml);
+      const instance = new ContentsVerificationUtil(
+        validCustomisableEntityYaml
+      );
 
       let loadResult;
       expect(
@@ -53,7 +55,7 @@ account:
     it.each([['just a string'], [2], [[]], [true]])(
       'fails to load entity content (%p)',
       (testInput) => {
-        const instance = new EntityCustomizationUtil(testInput as string);
+        const instance = new ContentsVerificationUtil(testInput as string);
 
         let resultingError;
         try {
@@ -72,7 +74,7 @@ account:
 
     it('does not load empty string (ignores input)', () => {
       jest.spyOn(logger, 'info');
-      const instance = new EntityCustomizationUtil('');
+      const instance = new ContentsVerificationUtil('');
 
       const result = instance.loadCustomizableEntityYaml();
       expect(result).toBe(false);
@@ -93,7 +95,7 @@ a:
   defaultValue: "this is secure"
 `;
 
-      const instance = new EntityCustomizationUtil(malformedYaml);
+      const instance = new ContentsVerificationUtil(malformedYaml);
 
       expect(() => instance.loadCustomizableEntityYaml()).toThrow(
         'Failure when loading customized entity data'
@@ -103,7 +105,9 @@ a:
 
   describe('validates customizable entity', () => {
     it('successfully validates an entity', () => {
-      const instance = new EntityCustomizationUtil(validCustomisableEntityYaml);
+      const instance = new ContentsVerificationUtil(
+        validCustomisableEntityYaml
+      );
       instance.loadCustomizableEntityYaml();
       let thrown;
       try {
@@ -124,7 +128,7 @@ user:
   defaultValue: "this is secure"
 `;
 
-      const instance = new EntityCustomizationUtil(invalidEntityYaml);
+      const instance = new ContentsVerificationUtil(invalidEntityYaml);
       instance.loadCustomizableEntityYaml();
       let thrown;
       try {
@@ -155,7 +159,7 @@ account:
   defaultValue: "this is secure"
 `;
 
-      const instance = new EntityCustomizationUtil(invalidEntityYaml);
+      const instance = new ContentsVerificationUtil(invalidEntityYaml);
       instance.loadCustomizableEntityYaml();
       let thrown;
       try {
@@ -184,7 +188,9 @@ account:
 
   describe('get customizable entities', () => {
     it('should retrieve the entities stored in the utility class', () => {
-      const instance = new EntityCustomizationUtil(validCustomisableEntityYaml);
+      const instance = new ContentsVerificationUtil(
+        validCustomisableEntityYaml
+      );
       instance.loadCustomizableEntityYaml();
       instance.validateCustomizableEntity();
       const result = instance.getCustomizableEntities();

@@ -16,7 +16,7 @@ type CustomizableEntityRecord = Record<
   CustomizableEntityProperty[]
 >;
 
-export class EntityCustomizationUtil {
+export class ContentsVerificationUtil {
   private loadedCustomizableEntityData: unknown;
 
   constructor(private readonly rawYamlConfig?: string) {}
