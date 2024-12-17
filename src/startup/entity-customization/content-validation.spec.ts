@@ -1,6 +1,5 @@
-import { EntityCustomizationError } from '../../lib/errors';
 import { logger } from '../../lib/logger';
-import { ContentsVerificationUtil } from './contents-verification.util';
+import { contentValidation } from './content-validation';
 
 jest.mock('../../lib/logger');
 
@@ -9,205 +8,89 @@ describe('[UTIL] entity personalization', () => {
     jest.resetAllMocks();
   });
 
-  const validCustomisableEntityYaml = `
----
-account: 
-- name: "password"
-  type: "string"
-  sensitive: true
-  defaultValue: "this is secure"
-- name: "phone"
-  type: "string"
-  sensitive: true
-  defaultValue: "+535323423423"
-`;
-
-  describe('creates ContentsVerificationUtil instance', () => {
-    it('creates an instance by not passing an argument', () => {
-      let instance;
-      expect(() => (instance = new ContentsVerificationUtil())).not.toThrow();
-      expect(instance).toBeInstanceOf(ContentsVerificationUtil);
-    });
-
-    it('creates an instance by passing a string as argument', () => {
-      let instance;
-      expect(
-        () =>
-          (instance = new ContentsVerificationUtil(validCustomisableEntityYaml))
-      ).not.toThrow();
-      expect(instance).toBeInstanceOf(ContentsVerificationUtil);
-    });
-  });
-
-  describe('load customizable entity yaml', () => {
-    it('loads a yaml successfully', () => {
-      const instance = new ContentsVerificationUtil(
-        validCustomisableEntityYaml
-      );
-
-      let loadResult;
-      expect(
-        () => (loadResult = instance.loadCustomizableEntityYaml())
-      ).not.toThrow();
-      expect(loadResult).toBe(true);
-    });
-
-    it.each([['just a string'], [2], [[]], [true]])(
-      'fails to load entity content (%p)',
-      (testInput) => {
-        const instance = new ContentsVerificationUtil(testInput as string);
-
-        let resultingError;
-        try {
-          instance.loadCustomizableEntityYaml();
-        } catch (error) {
-          resultingError = error as EntityCustomizationError;
-        }
-
-        expect(resultingError?.message).toMatch(
-          'Customizable entity yaml contents does not have a valid format. An object is needed.'
-        );
-        expect(resultingError?.details?.['op']).toEqual('Loading raw yaml');
-        expect(resultingError?.details?.['input']).toEqual(testInput);
-      }
-    );
-
-    it('does not load empty string (ignores input)', () => {
-      jest.spyOn(logger, 'info');
-      const instance = new ContentsVerificationUtil('');
-
-      const result = instance.loadCustomizableEntityYaml();
-      expect(result).toBe(false);
-
-      expect(logger.info).toHaveBeenCalledTimes(1);
-      expect(logger.info).toHaveBeenCalledWith(
-        'No customizable entity provided'
-      );
-    });
-
-    it('fails to load a malformed yaml', () => {
-      const malformedYaml = `
--
-a:
-- name: "password"
-  type: "string"
-  sensitive: "true"
-  defaultValue: "this is secure"
-`;
-
-      const instance = new ContentsVerificationUtil(malformedYaml);
-
-      expect(() => instance.loadCustomizableEntityYaml()).toThrow(
-        'Failure when loading customized entity data'
-      );
-    });
-  });
-
-  describe('validates customizable entity', () => {
-    it('successfully validates an entity', () => {
-      const instance = new ContentsVerificationUtil(
-        validCustomisableEntityYaml
-      );
-      instance.loadCustomizableEntityYaml();
-      let thrown;
-      try {
-        instance.validateCustomizableEntity();
-      } catch (error) {
-        thrown = error;
-      }
-      expect(thrown).not.toBeDefined();
-    });
-
-    it('fails to validate due to invalid entity name', () => {
-      const invalidEntityYaml = `
----
-user:
-- name: "password"
-  type: "string"
-  sentitive: true
-  defaultValue: "this is secure"
-`;
-
-      const instance = new ContentsVerificationUtil(invalidEntityYaml);
-      instance.loadCustomizableEntityYaml();
-      let thrown;
-      try {
-        instance.validateCustomizableEntity();
-      } catch (error) {
-        thrown = error as EntityCustomizationError;
-      }
-      expect(thrown).toBeDefined();
-      expect(thrown?.message).toEqual(
-        'Failure when loading customized entity data'
-      );
-      expect(thrown?.details?.['op']).toEqual(
-        'Validating customizable entity name'
-      );
-      expect(thrown?.details?.['input']).toEqual('user');
-      expect(thrown?.details?.['info']).toEqual(
-        'user is not a valid customizable entity name'
-      );
-    });
-
-    it('fails to validate due to invalid property values', () => {
-      const invalidEntityYaml = `
----
-account:
-- names: "password"
-  type: "string"
-  sensitive: true
-  defaultValue: "this is secure"
-`;
-
-      const instance = new ContentsVerificationUtil(invalidEntityYaml);
-      instance.loadCustomizableEntityYaml();
-      let thrown;
-      try {
-        instance.validateCustomizableEntity();
-      } catch (error) {
-        thrown = error as EntityCustomizationError;
-      }
-      expect(thrown).toBeDefined();
-      expect(thrown?.message).toEqual(
-        'Failure when loading customized entity data'
-      );
-      expect(thrown?.details?.['op']).toEqual(
-        'Validating customizable entity property'
-      );
-      expect(thrown?.details?.['input']).toEqual({
-        names: 'password',
-        type: 'string',
-        sensitive: true,
-        defaultValue: 'this is secure',
-      });
-      expect(thrown?.details?.['info']).toEqual(
-        'account has an invalid property'
-      );
-    });
-  });
-
-  describe('get customizable entities', () => {
-    it('should retrieve the entities stored in the utility class', () => {
-      const instance = new ContentsVerificationUtil(
-        validCustomisableEntityYaml
-      );
-      instance.loadCustomizableEntityYaml();
-      instance.validateCustomizableEntity();
-      const result = instance.getCustomizableEntities();
-
-      expect(result).toHaveProperty('account[0]', {
+  const validLoadedCustomizableEntityJson = {
+    account: [
+      {
         name: 'password',
         type: 'string',
         sensitive: true,
         defaultValue: 'this is secure',
-      });
-
-      expect(result).toHaveProperty('account[1]', {
+      },
+      {
         name: 'phone',
         type: 'string',
         sensitive: true,
         defaultValue: '+535323423423',
-      });
-    });
+      },
+    ],
+  };
+
+  it('successfully validates an entity', () => {
+    expect(contentValidation(validLoadedCustomizableEntityJson)).toBe(true);
+  });
+
+  it('fails to validate due to invalid entity name', () => {
+    jest.spyOn(logger, 'error');
+
+    const invalidLoadedCustomizableEntityJson = {
+      user: [
+        {
+          name: 'password',
+          type: 'string',
+          sensitive: true,
+          defaultValue: 'this is secure',
+        },
+      ],
+    };
+
+    contentValidation(invalidLoadedCustomizableEntityJson);
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      'user is not a valid customizable entity name',
+      {
+        details: {
+          op: 'Validating customizable entity name',
+          input: 'user',
+        },
+      }
+    );
+  });
+
+  it('fails to validate due to invalid property values', () => {
+    jest.spyOn(logger, 'error');
+
+    const invalidLoadedCustomizableEntityJson = {
+      account: [
+        {
+          name: 'phone',
+          type: 'string',
+          sensitive: true,
+          defaultValue: '+55231498723',
+        },
+        {
+          names: 'password',
+          type: 'string',
+          sensitive: true,
+          defaultValue: 'this is secure',
+        },
+      ],
+    };
+
+    contentValidation(invalidLoadedCustomizableEntityJson);
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      'account has an invalid property',
+      {
+        details: {
+          op: 'Validating customizable entity property',
+          input: {
+            names: 'password',
+            type: 'string',
+            sensitive: true,
+            defaultValue: 'this is secure',
+          },
+        },
+      }
+    );
   });
 });
