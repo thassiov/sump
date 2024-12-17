@@ -1,20 +1,12 @@
 import yaml from 'js-yaml';
 import { EntityCustomizationError } from '../../lib/errors/entity-customization.error';
 import { logger } from '../../lib/logger';
-
-type CustomizableEntityProperty = {
-  name: string;
-  type: 'string' | 'number';
-  sensitive?: boolean;
-  defaultValue?: string | number;
-};
-
-const CustomizableEntityList = ['account', 'profile'] as const;
-type CustomizableEntity = (typeof CustomizableEntityList)[number];
-type CustomizableEntityRecord = Record<
+import {
   CustomizableEntity,
-  CustomizableEntityProperty[]
->;
+  CustomizableEntityList,
+  CustomizableEntityProperty,
+  CustomizableEntityRecord,
+} from './types';
 
 export class ContentsVerificationUtil {
   private loadedCustomizableEntityData: unknown;
