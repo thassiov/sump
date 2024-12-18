@@ -1,11 +1,11 @@
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
 import { logger } from '../../lib/logger';
-import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
+import { ICreateAccountAndProfileRepository } from '../../repositories/create-account-and-profile/types';
 import { CreateAccountAndProfileService } from './create-account-and-profile.service';
 import { ICreateAccountAndProfileDto } from './types';
 
 describe('[SERVICE] account-profile-create', () => {
-  let accountProfileCreateRepository: IAccountProfileCreateRepository;
+  let accountProfileCreateRepository: ICreateAccountAndProfileRepository;
 
   beforeAll(() => {
     jest.restoreAllMocks();

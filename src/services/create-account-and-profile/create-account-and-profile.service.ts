@@ -1,7 +1,7 @@
 import { contexts } from '../../lib/contexts';
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
 import { logger } from '../../lib/logger';
-import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
+import { ICreateAccountAndProfileRepository } from '../../repositories/create-account-and-profile/types';
 import {
   accountProfileDtoSchema,
   ICreateAccountAndProfileDto,
@@ -13,7 +13,7 @@ export class CreateAccountAndProfileService
   implements ICreateAccountAndProfileService
 {
   constructor(
-    private readonly accountProfileCreateRepository: IAccountProfileCreateRepository
+    private readonly accountProfileCreateRepository: ICreateAccountAndProfileRepository
   ) {}
 
   async create(
@@ -44,7 +44,7 @@ export class CreateAccountAndProfileService
         profileInfo
       );
 
-      return result as ICreateAccountAndProfileResult;
+      return result;
     } catch (error) {
       const errorInstance = new ServiceOperationError({
         details: {
