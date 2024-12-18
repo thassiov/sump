@@ -4,21 +4,21 @@ import { logger } from '../../lib/logger';
 import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
 import {
   accountProfileDtoSchema,
-  IAccountProfileCreateResult,
-  IAccountProfileCreateService,
-  IAccountProfileDto,
+  ICreateAccountAndProfileDto,
+  ICreateAccountAndProfileResult,
+  ICreateAccountAndProfileService,
 } from './types';
 
-export class AccountProfileCreateService
-  implements IAccountProfileCreateService
+export class CreateAccountAndProfileService
+  implements ICreateAccountAndProfileService
 {
   constructor(
     private readonly accountProfileCreateRepository: IAccountProfileCreateRepository
   ) {}
 
   async create(
-    newAccount: IAccountProfileDto
-  ): Promise<IAccountProfileCreateResult> {
+    newAccount: ICreateAccountAndProfileDto
+  ): Promise<ICreateAccountAndProfileResult> {
     const validationResult = accountProfileDtoSchema.safeParse(newAccount);
 
     if (!validationResult.success) {
@@ -44,7 +44,7 @@ export class AccountProfileCreateService
         profileInfo
       );
 
-      return result as IAccountProfileCreateResult;
+      return result as ICreateAccountAndProfileResult;
     } catch (error) {
       const errorInstance = new ServiceOperationError({
         details: {

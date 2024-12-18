@@ -1,8 +1,8 @@
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
 import { logger } from '../../lib/logger';
 import { IAccountProfileCreateRepository } from '../../repositories/account-profile-create/types';
-import { AccountProfileCreateService } from './account-profile-create.service';
-import { IAccountProfileDto } from './types';
+import { CreateAccountAndProfileService } from './create-account-and-profile.service';
+import { ICreateAccountAndProfileDto } from './types';
 
 describe('[SERVICE] account-profile-create', () => {
   let accountProfileCreateRepository: IAccountProfileCreateRepository;
@@ -29,12 +29,12 @@ describe('[SERVICE] account-profile-create', () => {
   ])(
     'should fail to create a new account due to validation error (%p)',
     async (mockAccountInfo) => {
-      const apcs = new AccountProfileCreateService(
+      const apcs = new CreateAccountAndProfileService(
         accountProfileCreateRepository
       );
 
       await expect(
-        apcs.create(mockAccountInfo as IAccountProfileDto)
+        apcs.create(mockAccountInfo as ICreateAccountAndProfileDto)
       ).rejects.toThrow(ServiceOperationError);
 
       expect(logger.info).toHaveBeenCalled();
@@ -51,7 +51,7 @@ describe('[SERVICE] account-profile-create', () => {
       fullName: 'fake name',
     };
 
-    const apcs = new AccountProfileCreateService(
+    const apcs = new CreateAccountAndProfileService(
       accountProfileCreateRepository
     );
 
@@ -71,7 +71,7 @@ describe('[SERVICE] account-profile-create', () => {
       id: 'id',
     });
 
-    const apcs = new AccountProfileCreateService(
+    const apcs = new CreateAccountAndProfileService(
       accountProfileCreateRepository
     );
 

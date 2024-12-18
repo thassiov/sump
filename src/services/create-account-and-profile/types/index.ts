@@ -5,21 +5,21 @@ const accountProfileDtoSchema = z.object({
   fullName: z.string().min(1),
 });
 
-type IAccountProfileDto = z.infer<typeof accountProfileDtoSchema>;
+type ICreateAccountAndProfileDto = z.infer<typeof accountProfileDtoSchema>;
 
-type IAccountProfileCreateResult = {
+type ICreateAccountAndProfileResult = {
   accountId: string;
 };
 
-type IAccountProfileCreateService = {
+type ICreateAccountAndProfileService = {
   create: (
-    newAcccount: IAccountProfileDto
-  ) => Promise<IAccountProfileCreateResult>;
+    newAcccount: ICreateAccountAndProfileDto
+  ) => Promise<ICreateAccountAndProfileResult>;
 };
 
 export { accountProfileDtoSchema };
 export type {
-  IAccountProfileDto,
-  IAccountProfileCreateResult,
-  IAccountProfileCreateService,
+  ICreateAccountAndProfileDto,
+  ICreateAccountAndProfileResult,
+  ICreateAccountAndProfileService,
 };
