@@ -3,8 +3,8 @@ import { AccountModel, ProfileModel } from '../../infra/db';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { logger } from '../../lib/logger';
-import { AccountProfileCreateRepository } from './account-profile-create.repository';
-import { IAccountCreateDto, IProfileCreateDto } from './types';
+import { CreateAccountAndProfileRepository } from './create-account-and-profile.repository';
+import { ICreateAccountDto, ICreateProfileDto } from './types';
 
 jest.mock('sequelize');
 jest.mock('../../lib/errors');
@@ -22,14 +22,14 @@ describe('[REPOSITORY] account-profile-create', () => {
   it('should create account and profile', async () => {
     const mockAccountInfo = {
       handle: 'userhandle',
-    } as IAccountCreateDto;
+    } as ICreateAccountDto;
 
     const mockAccountId = 'mockaccountid';
     const mockProfileId = 'mockprofileid';
 
     const mockProfileInfo = {
       fullName: 'user name',
-    } as IProfileCreateDto;
+    } as ICreateProfileDto;
 
     const sequelize = new Sequelize();
     const mockTransaction = new Transaction(sequelize, {});
@@ -54,9 +54,8 @@ describe('[REPOSITORY] account-profile-create', () => {
     jest.spyOn(sequelize, 'model').mockReturnValueOnce(AccountModel);
     jest.spyOn(sequelize, 'model').mockReturnValueOnce(ProfileModel);
 
-    const accountProfileCreateRepository = new AccountProfileCreateRepository(
-      sequelize
-    );
+    const accountProfileCreateRepository =
+      new CreateAccountAndProfileRepository(sequelize);
 
     const result = await accountProfileCreateRepository.create(
       mockAccountInfo,
@@ -71,13 +70,13 @@ describe('[REPOSITORY] account-profile-create', () => {
   it('should fail to create by throwing at createAccount method', async () => {
     const mockAccountInfo = {
       handle: 'userhandle',
-    } as IAccountCreateDto;
+    } as ICreateAccountDto;
 
     const mockProfileId = 'mockprofileid';
 
     const mockProfileInfo = {
       fullName: 'user name',
-    } as IProfileCreateDto;
+    } as ICreateProfileDto;
 
     const sequelize = new Sequelize();
     const mockTransaction = new Transaction(sequelize, {});
@@ -109,9 +108,8 @@ describe('[REPOSITORY] account-profile-create', () => {
         mockProfileModel as unknown as ModelStatic<ProfileModel>
       );
 
-    const accountProfileCreateRepository = new AccountProfileCreateRepository(
-      sequelize
-    );
+    const accountProfileCreateRepository =
+      new CreateAccountAndProfileRepository(sequelize);
 
     await expect(
       accountProfileCreateRepository.create(mockAccountInfo, mockProfileInfo)
@@ -140,13 +138,13 @@ describe('[REPOSITORY] account-profile-create', () => {
   it('should fail to create by throwing at createProfile method', async () => {
     const mockAccountInfo = {
       handle: 'userhandle',
-    } as IAccountCreateDto;
+    } as ICreateAccountDto;
 
     const mockAccountId = 'mockaccountid';
 
     const mockProfileInfo = {
       fullName: 'user name',
-    } as IProfileCreateDto;
+    } as ICreateProfileDto;
 
     const sequelize = new Sequelize();
     const mockTransaction = new Transaction(sequelize, {});
@@ -178,9 +176,8 @@ describe('[REPOSITORY] account-profile-create', () => {
         mockProfileModel as unknown as ModelStatic<ProfileModel>
       );
 
-    const accountProfileCreateRepository = new AccountProfileCreateRepository(
-      sequelize
-    );
+    const accountProfileCreateRepository =
+      new CreateAccountAndProfileRepository(sequelize);
 
     await expect(
       accountProfileCreateRepository.create(mockAccountInfo, mockProfileInfo)

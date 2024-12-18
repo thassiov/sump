@@ -3,15 +3,15 @@ import { AccountModel, ProfileModel } from '../../infra/db';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { logger } from '../../lib/logger';
-import { IAccountProfileCreateResult } from '../../services/account-profile-create/types';
+import { ICreateAccountAndProfileResult } from '../../services/create-account-and-profile/types';
 import {
-  IAccountCreateDto,
-  IAccountProfileCreateRepository,
-  IProfileCreateDto,
+  ICreateAccountAndProfileRepository,
+  ICreateAccountDto,
+  ICreateProfileDto,
 } from './types';
 
-export class AccountProfileCreateRepository
-  implements IAccountProfileCreateRepository
+export class CreateAccountAndProfileRepository
+  implements ICreateAccountAndProfileRepository
 {
   private accountModel: ModelStatic<AccountModel>;
   private profileModel: ModelStatic<ProfileModel>;
@@ -22,9 +22,9 @@ export class AccountProfileCreateRepository
   }
 
   async create(
-    accountInfo: IAccountCreateDto,
-    profileInfo: IProfileCreateDto
-  ): Promise<IAccountProfileCreateResult> {
+    accountInfo: ICreateAccountDto,
+    profileInfo: ICreateProfileDto
+  ): Promise<ICreateAccountAndProfileResult> {
     const transaction = await this.createTransation();
 
     try {
@@ -53,7 +53,7 @@ export class AccountProfileCreateRepository
   }
 
   private async createAccount(
-    accountInfo: IAccountCreateDto,
+    accountInfo: ICreateAccountDto,
     tx: Transaction
   ): Promise<AccountModel> {
     logger.info('creating account');
@@ -61,7 +61,7 @@ export class AccountProfileCreateRepository
   }
 
   private async createProfile(
-    profileInfo: IProfileCreateDto,
+    profileInfo: ICreateProfileDto,
     tx: Transaction
   ): Promise<ProfileModel> {
     logger.info('creating profile');
