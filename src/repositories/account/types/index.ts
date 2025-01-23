@@ -1,7 +1,9 @@
-import { IAccount } from 'src/services/account/types';
+import { Knex } from 'knex';
+import { ICreateAccountDto } from '../../../types/dto.type';
 
 export type IAccountRepository = {
-  create: () => Promise<IAccount>;
-  retrieve: (accountId: string) => Promise<IAccount | undefined>;
-  remove: (accountId: string) => Promise<boolean>;
+  create: (
+    createAccountDto: ICreateAccountDto,
+    transaction?: Knex.Transaction
+  ) => Promise<string>;
 };

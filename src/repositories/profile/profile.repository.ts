@@ -2,22 +2,22 @@ import { Knex } from 'knex';
 import { configs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
-import { ICreateAccountDto } from '../../types/dto.type';
-import { IAccountRepository } from './types';
+import { ICreateProfileDto } from '../../types/dto.type';
+import { IProfileRepository } from './types';
 
-class AccountRepository implements IAccountRepository {
+class ProfileRepository implements IProfileRepository {
   private tableName: string;
   constructor(private readonly dbClient: Knex) {
-    this.tableName = configs.repository.account.tableName;
+    this.tableName = configs.repository.profile.tableName;
   }
 
   async create(
-    accountDto: ICreateAccountDto,
+    profileDto: ICreateProfileDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
       const query = this.dbClient
-        .insert({ ...accountDto })
+        .insert({ ...profileDto })
         .into(this.tableName)
         .returning<{ id: string }[]>('id');
 
@@ -34,7 +34,7 @@ class AccountRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.ACCOUNT_PROFILE_CREATE,
         details: {
-          input: { accountDto },
+          input: { profileDto },
         },
       });
 
@@ -43,4 +43,4 @@ class AccountRepository implements IAccountRepository {
   }
 }
 
-export { AccountRepository };
+export { ProfileRepository };

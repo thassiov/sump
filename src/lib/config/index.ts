@@ -2,26 +2,38 @@ import { config } from 'dotenv';
 
 config();
 
-const envConfigs = {
+const env = {
   appEnvironment: process.env['NODE_ENV'] ?? 'development',
 };
 
-const dbConfigs = {
-  dbType: process.env['DB_TYPE'] ?? 'sqlite',
-  dbLocation:
-    process.env['DB_LOCATION'] || process.env['NODE_ENV'] === 'test'
-      ? ':memory:'
-      : '/tmp/aps_bd.sqlite',
-  dbUser: process.env['DB_USER'] ?? 'localuser',
-  dbPassword: process.env['DB_PASSWORD'] ?? 'password',
-  dbHost: process.env['DB_HOST'] ?? 'localhost',
-  dbPort: process.env['DB_PORT'] ?? '5432',
-  dbName: process.env['DB_NAME'] ?? 'aps',
+const database = {
+  client: process.env['DB_TYPE'] ?? 'sqlite3',
+  connection: {
+    filename:
+      process.env['DB_LOCATION'] || process.env['NODE_ENV'] === 'test'
+        ? ':memory:'
+        : '/tmp/aps.sqlite',
+    user: process.env['DB_USER'] ?? 'localuser',
+    password: process.env['DB_PASSWORD'] ?? 'password',
+    host: process.env['DB_HOST'] ?? 'localhost',
+    port: process.env['DB_PORT'] ?? '5432',
+    database: process.env['DB_NAME'] ?? 'aps',
+  },
+};
+
+const repository = {
+  account: {
+    tableName: 'account',
+  },
+  profile: {
+    tableName: 'profile',
+  },
 };
 
 const configs = {
-  ...dbConfigs,
-  ...envConfigs,
+  repository,
+  database,
+  env,
 };
 
 export { configs };

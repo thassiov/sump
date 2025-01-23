@@ -2,20 +2,13 @@ import z from 'zod';
 
 const accountSchema = z.object({
   id: z.string().uuid(),
-  handle: z.string(),
-  profileId: z.string().uuid(),
   createdAt: z.string().date(),
-});
-
-const profileSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.string().date(),
-  fullName: z.string().max(100),
+  updatedAt: z.string().date(),
+  username: z.string().min(3).max(20),
+  email: z.string().email(),
 });
 
 type IAccount = z.infer<typeof accountSchema>;
 
-type IProfile = z.infer<typeof profileSchema>;
-
-export { accountSchema, profileSchema };
-export type { IAccount, IProfile };
+export { accountSchema };
+export type { IAccount };

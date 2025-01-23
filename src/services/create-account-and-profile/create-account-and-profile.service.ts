@@ -3,11 +3,12 @@ import { ServiceOperationError } from '../../lib/errors/service-operation.error'
 import { logger } from '../../lib/logger';
 import { ICreateAccountAndProfileRepository } from '../../repositories/create-account-and-profile/types';
 import {
-  accountProfileDtoSchema,
+  createAccountAndProfileDtoSchema,
   ICreateAccountAndProfileDto,
-  ICreateAccountAndProfileResult,
-  ICreateAccountAndProfileService,
-} from './types';
+  ICreateAccountAndProfileOperationResult,
+} from '../../types/dto.type';
+import { splitCreateAccountAndProfileDto } from './lib/utils';
+import { ICreateAccountAndProfileService } from './types';
 
 export class CreateAccountAndProfileService
   implements ICreateAccountAndProfileService
@@ -16,16 +17,17 @@ export class CreateAccountAndProfileService
     private readonly accountProfileCreateRepository: ICreateAccountAndProfileRepository
   ) {}
 
-  async create(
+  async createNewAccountAndProfile(
     newAccount: ICreateAccountAndProfileDto
-  ): Promise<ICreateAccountAndProfileResult> {
-    const validationResult = accountProfileDtoSchema.safeParse(newAccount);
+  ): Promise<ICreateAccountAndProfileOperationResult> {
+    // @TODO: move this validation to a api middleware. this service is suposed to receive the correct data
+    const validationResult =
+      createAccountAndProfileDtoSchema.safeParse(newAccount);
 
     if (!validationResult.success) {
       const errorInstance = new ServiceOperationError({
         details: {
           input: newAccount,
-          type: 'validation',
           errors: validationResult.error.issues,
         },
         context: contexts.ACCOUNT_PROFILE_CREATE,
@@ -35,8 +37,8 @@ export class CreateAccountAndProfileService
       throw errorInstance;
     }
 
-    const accountInfo = { handle: newAccount.handle };
-    const profileInfo = { fullName: newAccount.fullName };
+    const { accountInfo, profileInfo } =
+      splitCreateAccountAndProfileDto(newAccount);
 
     try {
       const result = await this.accountProfileCreateRepository.create(
@@ -49,13 +51,12 @@ export class CreateAccountAndProfileService
       const errorInstance = new ServiceOperationError({
         details: {
           input: newAccount,
-          type: 'technical',
         },
         cause: error as Error,
         context: contexts.ACCOUNT_PROFILE_CREATE,
       });
 
-      logger.info(errorInstance);
+      logger.error(errorInstance);
 
       throw errorInstance;
     }

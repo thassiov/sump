@@ -1,25 +1,12 @@
-import z from 'zod';
-
-const accountProfileDtoSchema = z.object({
-  handle: z.string().min(1),
-  fullName: z.string().min(1),
-});
-
-type ICreateAccountAndProfileDto = z.infer<typeof accountProfileDtoSchema>;
-
-type ICreateAccountAndProfileResult = {
-  accountId: string;
-};
+import {
+  ICreateAccountAndProfileDto,
+  ICreateAccountAndProfileOperationResult,
+} from '../../../types/dto.type';
 
 type ICreateAccountAndProfileService = {
-  create: (
-    newAcccount: ICreateAccountAndProfileDto
-  ) => Promise<ICreateAccountAndProfileResult>;
+  createNewAccountAndProfile: (
+    payload: ICreateAccountAndProfileDto
+  ) => Promise<ICreateAccountAndProfileOperationResult>;
 };
 
-export { accountProfileDtoSchema };
-export type {
-  ICreateAccountAndProfileDto,
-  ICreateAccountAndProfileResult,
-  ICreateAccountAndProfileService,
-};
+export type { ICreateAccountAndProfileService };

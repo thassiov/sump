@@ -17,6 +17,11 @@ describe('[SERVICE] account-profile-create', () => {
     logger.info = jest.fn();
   });
 
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
   it.each([
     [{}],
     [true],

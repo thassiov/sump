@@ -1,74 +1,49 @@
-import { ModelStatic, Sequelize, Transaction } from 'sequelize';
-import { AccountModel, ProfileModel } from '../../infra/db';
-import { contexts } from '../../lib/contexts';
-import { RepositoryOperationError } from '../../lib/errors';
-import { logger } from '../../lib/logger';
-import { ICreateAccountAndProfileResult } from '../../services/create-account-and-profile/types';
+import { Knex } from 'knex';
 import {
-  ICreateAccountAndProfileRepository,
+  ICreateAccountAndProfileOperationResult,
   ICreateAccountDto,
   ICreateProfileDto,
-} from './types';
+} from '../../types/dto.type';
+import { IAccountRepository } from '../account/types';
+import { IProfileRepository } from '../profile/types';
+import { ICreateAccountAndProfileRepository } from './types';
 
 export class CreateAccountAndProfileRepository
   implements ICreateAccountAndProfileRepository
 {
-  private accountModel: ModelStatic<AccountModel>;
-  private profileModel: ModelStatic<ProfileModel>;
+  constructor(
+    private readonly dbClient: Knex,
+    private readonly accountRepository: IAccountRepository,
+    private readonly profileRepository: IProfileRepository
+  ) {}
 
-  constructor(private readonly db: Sequelize) {
-    this.accountModel = this.db.model('account');
-    this.profileModel = this.db.model('profile');
-  }
-
-  async create(
-    accountInfo: ICreateAccountDto,
-    profileInfo: ICreateProfileDto
-  ): Promise<ICreateAccountAndProfileResult> {
+  async createNewAccountAndProfile(
+    accountDto: ICreateAccountDto,
+    profileDto: ICreateProfileDto
+  ): Promise<ICreateAccountAndProfileOperationResult> {
     const transaction = await this.createTransation();
 
     try {
-      const accountCreateResult = await this.createAccount(
-        accountInfo,
+      const accountId = await this.accountRepository.create(
+        accountDto,
         transaction
       );
-      await this.createProfile(profileInfo, transaction);
+
+      await this.profileRepository.create(
+        { ...profileDto, accountId },
+        transaction
+      );
+
       await transaction.commit();
 
-      return { accountId: accountCreateResult.get('id') as string };
+      return { accountId };
     } catch (error) {
       await transaction.rollback();
-
-      const repositoryError = new RepositoryOperationError({
-        cause: error as Error,
-        context: contexts.ACCOUNT_PROFILE_CREATE,
-        details: {
-          input: { accountInfo, profileInfo },
-        },
-      });
-
-      logger.error(repositoryError);
-      throw repositoryError;
+      throw error;
     }
   }
 
-  private async createAccount(
-    accountInfo: ICreateAccountDto,
-    tx: Transaction
-  ): Promise<AccountModel> {
-    logger.info('creating account');
-    return await this.accountModel.create(accountInfo, { transaction: tx });
-  }
-
-  private async createProfile(
-    profileInfo: ICreateProfileDto,
-    tx: Transaction
-  ): Promise<ProfileModel> {
-    logger.info('creating profile');
-    return this.profileModel.create(profileInfo, { transaction: tx });
-  }
-
-  private async createTransation(): Promise<Transaction> {
-    return this.db.transaction();
+  private async createTransation(): Promise<Knex.Transaction> {
+    return this.dbClient.transaction();
   }
 }

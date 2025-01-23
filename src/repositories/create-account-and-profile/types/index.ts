@@ -1,16 +1,12 @@
-import { ICreateAccountAndProfileResult } from '../../../services/create-account-and-profile/types';
-
-export type ICreateAccountDto = {
-  handle: string;
-};
-
-export type ICreateProfileDto = {
-  fullName: string;
-};
+import {
+  ICreateAccountAndProfileOperationResult,
+  ICreateAccountDto,
+  ICreateProfileDto,
+} from '../../../types/dto.type';
 
 export type ICreateAccountAndProfileRepository = {
-  create: (
+  createNewAccountAndProfile: (
     accountInfo: ICreateAccountDto,
     profileInfo: ICreateProfileDto
-  ) => Promise<ICreateAccountAndProfileResult>;
+  ) => Promise<ICreateAccountAndProfileOperationResult>;
 };
