@@ -1,24 +1,26 @@
-import { IAccountRepository } from 'src/repositories/account/types';
-import { IAccount, IAccountService } from './types';
+import { IAccountRepository } from '../../repositories/account/types';
+import { IAccount } from '../../types/account.type';
+import { IUpdateAccountDto } from '../../types/dto.type';
+import { IAccountService } from './types';
 
 export class AccountService implements IAccountService {
   constructor(private readonly accountRepository: IAccountRepository) {}
 
-  async create(): Promise<string> {
-    const newUser = await this.accountRepository.create();
-
-    return newUser.id;
+  async getAccountById(accountId: string): Promise<IAccount | undefined> {
+    return this.accountRepository.getAccountById(accountId);
   }
 
-  async retrieve(accountId: string): Promise<IAccount | undefined> {
-    const account = await this.accountRepository.retrieve(accountId);
-
-    return account;
+  async removeAccountById(accountId: string): Promise<boolean> {
+    return this.accountRepository.removeAccountById(accountId);
   }
 
-  async remove(accountId: string): Promise<boolean> {
-    const removed = await this.accountRepository.remove(accountId);
-
-    return removed;
+  async updateAccountById(
+    accountId: string,
+    updateAccountDto: IUpdateAccountDto
+  ): Promise<boolean> {
+    return this.accountRepository.updateAccountById(
+      accountId,
+      updateAccountDto
+    );
   }
 }

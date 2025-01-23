@@ -6,11 +6,16 @@ const createAccountDtoSchema = accountSchema.pick({
   username: true,
   email: true,
 });
-
 type ICreateAccountDto = z.infer<typeof createAccountDtoSchema>;
+
+const updateAccountDtoSchema = createAccountDtoSchema.partial();
+type IUpdateAccountDto = z.infer<typeof updateAccountDtoSchema>;
 
 const createProfileDtoSchema = profileSchema.pick({ fullName: true });
 type ICreateProfileDto = z.infer<typeof createProfileDtoSchema>;
+
+const updateProfileDtoSchema = createProfileDtoSchema.partial();
+type IUpdateProfileDto = z.infer<typeof updateProfileDtoSchema>;
 
 const createAccountAndProfileDtoSchema = createAccountDtoSchema.merge(
   createProfileDtoSchema
@@ -29,10 +34,14 @@ export type {
   ICreateAccountAndProfileOperationResult,
   ICreateAccountDto,
   ICreateProfileDto,
+  IUpdateAccountDto,
+  IUpdateProfileDto,
 };
 
 export {
   createAccountAndProfileDtoSchema,
   createAccountDtoSchema,
   createProfileDtoSchema,
+  updateAccountDtoSchema,
+  updateProfileDtoSchema,
 };

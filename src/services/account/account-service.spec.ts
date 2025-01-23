@@ -1,66 +1,82 @@
-import { IAccountRepository } from 'src/repositories/account/types';
+import { IAccountRepository } from '../../repositories/account/types';
+import { IAccount } from '../../types/account.type';
+import { IUpdateAccountDto } from '../../types/dto.type';
 import { AccountService } from './account-service';
-import { IAccount } from './types';
 
 describe('Account Service', () => {
-  let mockAccountRepository: IAccountRepository;
-
-  beforeAll(() => {
+  beforeEach(() => {
     jest.restoreAllMocks();
-
-    mockAccountRepository = {
-      create: jest.fn(),
-      retrieve: jest.fn(),
-      remove: jest.fn(),
-    };
+    jest.resetAllMocks();
   });
 
-  describe('create', () => {
-    it('should create a new account', async () => {
-      const mockAccount = { id: 'id' };
-      (mockAccountRepository.create as jest.Mock).mockResolvedValueOnce(
-        mockAccount
-      );
+  const mockAccountRepository = {
+    getAccountById: jest.fn(),
+    removeAccountById: jest.fn(),
+    updateAccountById: jest.fn(),
+  };
 
-      const accountService = new AccountService(mockAccountRepository);
-
-      const result = await accountService.create();
-
-      expect(result).toBe(mockAccount.id);
-    });
-  });
-
-  describe('retrieve', () => {
+  describe('getAccountById', () => {
     it('should retrieve a account', async () => {
       const mockAccount: IAccount = {
         id: 'id',
+        username: 'username',
+        email: 'email',
         createdAt: 'date',
+        updatedAt: 'date',
       };
 
-      (mockAccountRepository.retrieve as jest.Mock).mockResolvedValue(
-        mockAccount
+      mockAccountRepository.getAccountById.mockResolvedValue(mockAccount);
+
+      const instance = new AccountService(
+        mockAccountRepository as unknown as IAccountRepository
       );
 
-      const accountService = new AccountService(mockAccountRepository);
-
-      const result = await accountService.retrieve(mockAccount.id);
+      const result = await instance.getAccountById(mockAccount.id);
 
       expect(result).toEqual(mockAccount);
     });
   });
 
-  describe('remove', () => {
-    it('should delete a account', async () => {
+  describe('removeAccountbyId', () => {
+    it('should delete an account', async () => {
       const mockAccountId = 'id';
-      const mockResult = false;
+      const mockResult = true;
 
-      (mockAccountRepository.remove as jest.Mock).mockResolvedValue(mockResult);
+      mockAccountRepository.removeAccountById.mockResolvedValue(mockResult);
 
-      const accountService = new AccountService(mockAccountRepository);
+      const instance = new AccountService(
+        mockAccountRepository as unknown as IAccountRepository
+      );
 
-      const result = await accountService.remove(mockAccountId);
+      const result = await instance.removeAccountById(mockAccountId);
 
       expect(result).toBe(mockResult);
+    });
+  });
+
+  describe('updateAccountById', () => {
+    it('should update an account', async () => {
+      const mockAccountId = 'id';
+      const mockUpdateAccountDto: IUpdateAccountDto = {
+        username: 'username',
+        email: 'email',
+      };
+      const mockUpdateAccountResult = true;
+
+      mockAccountRepository.updateAccountById.mockResolvedValue(
+        mockUpdateAccountResult
+      );
+
+      const instance = new AccountService(
+        mockAccountRepository as unknown as IAccountRepository
+      );
+
+      const result = await instance.updateAccountById(
+        mockAccountId,
+        mockUpdateAccountDto
+      );
+
+      expect(result).toEqual(mockUpdateAccountResult);
     });
   });
 });

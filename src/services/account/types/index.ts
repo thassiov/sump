@@ -1,10 +1,11 @@
-export type IAccountService = {
-  create: () => Promise<string>;
-  retrieve: (accountId: string) => Promise<IAccount | undefined>;
-  remove: (accountId: string) => Promise<boolean>;
-};
+import { IAccount } from '../../../types/account.type';
+import { IUpdateAccountDto } from '../../../types/dto.type';
 
-export type IAccount = {
-  id: string;
-  createdAt: string;
+export type IAccountService = {
+  getAccountById: (accountId: string) => Promise<IAccount | undefined>;
+  removeAccountById: (accountId: string) => Promise<boolean>;
+  updateAccountById: (
+    accountId: string,
+    updateAccountDto: IUpdateAccountDto
+  ) => Promise<boolean>;
 };

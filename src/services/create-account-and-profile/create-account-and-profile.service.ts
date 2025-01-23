@@ -41,10 +41,11 @@ export class CreateAccountAndProfileService
       splitCreateAccountAndProfileDto(newAccount);
 
     try {
-      const result = await this.accountProfileCreateRepository.create(
-        accountInfo,
-        profileInfo
-      );
+      const result =
+        await this.accountProfileCreateRepository.createNewAccountAndProfile(
+          accountInfo,
+          profileInfo
+        );
 
       return result;
     } catch (error) {
