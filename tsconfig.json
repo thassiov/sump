@@ -5,11 +5,14 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "resolveJsonModule": true
   },
   "exclude": [
-    "./eslint.config.mjs"
+    "eslint.config.mjs",
+    "esbuild.config.mjs",
+    "jest.config.js",
+    "coverage/"
   ]
 }

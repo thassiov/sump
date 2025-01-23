@@ -8,7 +8,7 @@ import { IAccountRepository } from '../account/types';
 import { IProfileRepository } from '../profile/types';
 import { ICreateAccountAndProfileRepository } from './types';
 
-export class CreateAccountAndProfileRepository
+class CreateAccountAndProfileRepository
   implements ICreateAccountAndProfileRepository
 {
   constructor(
@@ -47,3 +47,5 @@ export class CreateAccountAndProfileRepository
     return this.dbClient.transaction();
   }
 }
+
+export { CreateAccountAndProfileRepository };

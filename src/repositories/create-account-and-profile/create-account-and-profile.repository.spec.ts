@@ -1,207 +1,195 @@
-import { ModelStatic, Sequelize, Transaction } from 'sequelize';
-import { AccountModel, ProfileModel } from '../../infra/db';
+import { Knex } from 'knex';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
-import { logger } from '../../lib/logger';
+import { ICreateAccountDto, ICreateProfileDto } from '../../types/dto.type';
+import { IAccountRepository } from '../account/types';
+import { IProfileRepository } from '../profile/types';
 import { CreateAccountAndProfileRepository } from './create-account-and-profile.repository';
-import { ICreateAccountDto, ICreateProfileDto } from './types';
 
-jest.mock('sequelize');
-jest.mock('../../lib/errors');
-jest.mock('../../infra/db');
-
-describe('[REPOSITORY] account-profile-create', () => {
-  beforeAll(() => {
+describe('[REPOSITORY] create-account-profile', () => {
+  beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
-
-    logger.info = jest.fn();
-    logger.error = jest.fn();
   });
 
+  const mockTransactionObject = {
+    commit: jest.fn(),
+    rollback: jest.fn(),
+  };
+
+  const mockDbClient = {
+    transaction: async () => Promise.resolve(mockTransactionObject),
+  };
+
+  const mockAccountRepository = {
+    create: jest.fn(),
+  };
+
+  const mockProfileRepository = {
+    create: jest.fn(),
+  };
+
   it('should create account and profile', async () => {
-    const mockAccountInfo = {
-      handle: 'userhandle',
+    const mockCreateAccountDto = {
+      username: 'username',
     } as ICreateAccountDto;
+
+    const mockCreateProfileDto = {
+      fullName: 'full name',
+    } as ICreateProfileDto;
 
     const mockAccountId = 'mockaccountid';
     const mockProfileId = 'mockprofileid';
 
-    const mockProfileInfo = {
-      fullName: 'user name',
-    } as ICreateProfileDto;
+    mockAccountRepository.create.mockResolvedValueOnce(mockAccountId);
+    mockProfileRepository.create.mockResolvedValueOnce(mockProfileId);
 
-    const sequelize = new Sequelize();
-    const mockTransaction = new Transaction(sequelize, {});
-    jest.spyOn(sequelize, 'transaction').mockResolvedValueOnce(mockTransaction);
+    const instance = new CreateAccountAndProfileRepository(
+      mockDbClient as unknown as Knex,
+      mockAccountRepository as unknown as IAccountRepository,
+      mockProfileRepository as unknown as IProfileRepository
+    );
 
-    const mockCreateAccountResult = {
-      get: jest.fn().mockReturnValueOnce(mockAccountId),
-    };
-
-    jest
-      .spyOn(AccountModel, 'create')
-      .mockResolvedValueOnce(mockCreateAccountResult);
-
-    const mockCreateProfileResult = {
-      get: jest.fn().mockReturnValueOnce(mockProfileId),
-    };
-
-    jest
-      .spyOn(ProfileModel, 'create')
-      .mockResolvedValueOnce(mockCreateProfileResult);
-
-    jest.spyOn(sequelize, 'model').mockReturnValueOnce(AccountModel);
-    jest.spyOn(sequelize, 'model').mockReturnValueOnce(ProfileModel);
-
-    const accountProfileCreateRepository =
-      new CreateAccountAndProfileRepository(sequelize);
-
-    const result = await accountProfileCreateRepository.create(
-      mockAccountInfo,
-      mockProfileInfo
+    const result = await instance.createNewAccountAndProfile(
+      mockCreateAccountDto,
+      mockCreateProfileDto
     );
 
     expect(result).toEqual({ accountId: mockAccountId });
-    expect(logger.info).toHaveBeenCalledWith('creating account');
-    expect(logger.info).toHaveBeenCalledWith('creating profile');
+    expect(mockAccountRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockAccountRepository.create).toHaveBeenCalledWith(
+      mockCreateAccountDto,
+      mockTransactionObject
+    );
+    expect(mockProfileRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockProfileRepository.create).toHaveBeenCalledWith(
+      {
+        ...mockCreateProfileDto,
+        accountId: mockAccountId,
+      },
+      mockTransactionObject
+    );
+    expect(mockTransactionObject.commit).toHaveBeenCalledTimes(1);
+    expect(mockTransactionObject.rollback).not.toHaveBeenCalled();
   });
 
-  it('should fail to create by throwing at createAccount method', async () => {
-    const mockAccountInfo = {
-      handle: 'userhandle',
+  it('should fail by having the account creating process to throw an error', async () => {
+    const mockCreateAccountDto = {
+      username: 'username',
     } as ICreateAccountDto;
 
-    const mockProfileId = 'mockprofileid';
-
-    const mockProfileInfo = {
-      fullName: 'user name',
+    const mockCreateProfileDto = {
+      fullName: 'full name',
     } as ICreateProfileDto;
 
-    const sequelize = new Sequelize();
-    const mockTransaction = new Transaction(sequelize, {});
-    jest.spyOn(sequelize, 'transaction').mockResolvedValueOnce(mockTransaction);
-
-    const mockAccountCreateError = new Error('error');
-
-    const mockAccountModel = {
-      create: jest.fn().mockRejectedValueOnce(mockAccountCreateError),
-    };
-
-    const mockCreateProfileResult = {
-      get: jest.fn().mockReturnValueOnce(mockProfileId),
-    };
-
-    const mockProfileModel = {
-      create: jest.fn().mockResolvedValueOnce(mockCreateProfileResult),
-    };
-
-    jest
-      .spyOn(sequelize, 'model')
-      .mockReturnValueOnce(
-        mockAccountModel as unknown as ModelStatic<AccountModel>
-      );
-
-    jest
-      .spyOn(sequelize, 'model')
-      .mockReturnValueOnce(
-        mockProfileModel as unknown as ModelStatic<ProfileModel>
-      );
-
-    const accountProfileCreateRepository =
-      new CreateAccountAndProfileRepository(sequelize);
-
-    await expect(
-      accountProfileCreateRepository.create(mockAccountInfo, mockProfileInfo)
-    ).rejects.toBeInstanceOf(RepositoryOperationError);
-
-    expect(logger.error).toHaveBeenCalled();
-
-    expect(RepositoryOperationError).toHaveBeenCalledWith({
-      cause: mockAccountCreateError,
-      details: {
-        input: {
-          accountInfo: mockAccountInfo,
-          profileInfo: mockProfileInfo,
-        },
-      },
+    const mockError = new Error('some-error');
+    const mockOperationError = new RepositoryOperationError({
+      cause: mockError,
       context: contexts.ACCOUNT_PROFILE_CREATE,
+      details: {
+        input: { accountDto: mockCreateAccountDto },
+      },
     });
 
-    expect(mockAccountModel.create).toHaveBeenCalledWith(mockAccountInfo, {
-      transaction: mockTransaction,
-    });
+    mockAccountRepository.create.mockRejectedValueOnce(mockOperationError);
 
-    expect(mockProfileModel.create).not.toHaveBeenCalled();
+    const instance = new CreateAccountAndProfileRepository(
+      mockDbClient as unknown as Knex,
+      mockAccountRepository as unknown as IAccountRepository,
+      mockProfileRepository as unknown as IProfileRepository
+    );
+
+    let thrown;
+    try {
+      await instance.createNewAccountAndProfile(
+        mockCreateAccountDto,
+        mockCreateProfileDto
+      );
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(RepositoryOperationError);
+    expect((thrown as RepositoryOperationError).cause).toEqual(mockError);
+    expect((thrown as RepositoryOperationError).context).toEqual(
+      mockOperationError.context
+    );
+    expect((thrown as RepositoryOperationError).details).toStrictEqual(
+      mockOperationError.details
+    );
+    expect(mockAccountRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockAccountRepository.create).toHaveBeenCalledWith(
+      mockCreateAccountDto,
+      mockTransactionObject
+    );
+    expect(mockProfileRepository.create).not.toHaveBeenCalled();
+    expect(mockTransactionObject.commit).not.toHaveBeenCalled();
+    expect(mockTransactionObject.rollback).toHaveBeenCalledTimes(1);
   });
 
-  it('should fail to create by throwing at createProfile method', async () => {
-    const mockAccountInfo = {
-      handle: 'userhandle',
+  it('should fail by having the profile creating process to throw an error', async () => {
+    const mockCreateAccountDto = {
+      username: 'username',
     } as ICreateAccountDto;
+
+    const mockCreateProfileDto = {
+      fullName: 'full name',
+    } as ICreateProfileDto;
 
     const mockAccountId = 'mockaccountid';
+    mockAccountRepository.create.mockResolvedValueOnce(mockAccountId);
 
-    const mockProfileInfo = {
-      fullName: 'user name',
-    } as ICreateProfileDto;
-
-    const sequelize = new Sequelize();
-    const mockTransaction = new Transaction(sequelize, {});
-    jest.spyOn(sequelize, 'transaction').mockResolvedValueOnce(mockTransaction);
-
-    const mockCreateAccountResult = {
-      get: jest.fn().mockReturnValueOnce(mockAccountId),
-    };
-
-    const mockAccountModel = {
-      create: jest.fn().mockResolvedValueOnce(mockCreateAccountResult),
-    };
-
-    const mockProfileCreateError = new Error('error');
-
-    const mockProfileModel = {
-      create: jest.fn().mockRejectedValueOnce(mockProfileCreateError),
-    };
-
-    jest
-      .spyOn(sequelize, 'model')
-      .mockReturnValueOnce(
-        mockAccountModel as unknown as ModelStatic<AccountModel>
-      );
-
-    jest
-      .spyOn(sequelize, 'model')
-      .mockReturnValueOnce(
-        mockProfileModel as unknown as ModelStatic<ProfileModel>
-      );
-
-    const accountProfileCreateRepository =
-      new CreateAccountAndProfileRepository(sequelize);
-
-    await expect(
-      accountProfileCreateRepository.create(mockAccountInfo, mockProfileInfo)
-    ).rejects.toBeInstanceOf(RepositoryOperationError);
-
-    expect(logger.error).toHaveBeenCalled();
-
-    expect(RepositoryOperationError).toHaveBeenCalledWith({
-      cause: mockProfileCreateError,
+    const mockError = new Error('some-error');
+    const mockOperationError = new RepositoryOperationError({
+      cause: mockError,
+      context: contexts.ACCOUNT_PROFILE_CREATE,
       details: {
         input: {
-          accountInfo: mockAccountInfo,
-          profileInfo: mockProfileInfo,
+          profileDto: { ...mockCreateProfileDto, accountId: mockAccountId },
         },
       },
-      context: contexts.ACCOUNT_PROFILE_CREATE,
     });
 
-    expect(mockAccountModel.create).toHaveBeenCalledWith(mockAccountInfo, {
-      transaction: mockTransaction,
-    });
+    mockProfileRepository.create.mockRejectedValueOnce(mockOperationError);
 
-    expect(mockProfileModel.create).toHaveBeenCalledWith(mockProfileInfo, {
-      transaction: mockTransaction,
-    });
+    const instance = new CreateAccountAndProfileRepository(
+      mockDbClient as unknown as Knex,
+      mockAccountRepository as unknown as IAccountRepository,
+      mockProfileRepository as unknown as IProfileRepository
+    );
+
+    let thrown;
+    try {
+      await instance.createNewAccountAndProfile(
+        mockCreateAccountDto,
+        mockCreateProfileDto
+      );
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(RepositoryOperationError);
+    expect((thrown as RepositoryOperationError).cause).toEqual(mockError);
+    expect((thrown as RepositoryOperationError).context).toEqual(
+      mockOperationError.context
+    );
+    expect((thrown as RepositoryOperationError).details).toStrictEqual(
+      mockOperationError.details
+    );
+    expect(mockAccountRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockAccountRepository.create).toHaveBeenCalledWith(
+      mockCreateAccountDto,
+      mockTransactionObject
+    );
+    expect(mockProfileRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockProfileRepository.create).toHaveBeenCalledWith(
+      {
+        ...mockCreateProfileDto,
+        accountId: mockAccountId,
+      },
+      mockTransactionObject
+    );
+    expect(mockTransactionObject.commit).not.toHaveBeenCalled();
+    expect(mockTransactionObject.rollback).toHaveBeenCalledTimes(1);
   });
 });
