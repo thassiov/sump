@@ -1,8 +1,10 @@
 import { Knex } from 'knex';
+import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { configs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
-import { ICreateProfileDto } from '../../types/dto.type';
+import { ICreateProfileDto, IUpdateProfileDto } from '../../types/dto.type';
+import { IProfile } from '../../types/profile.type';
 import { IProfileRepository } from './types';
 
 class ProfileRepository implements IProfileRepository {
@@ -16,30 +18,106 @@ class ProfileRepository implements IProfileRepository {
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
-      const query = this.dbClient
-        .insert({ ...profileDto })
-        .into(this.tableName)
-        .returning<{ id: string }[]>('id');
+      const [result] = await this.sendInsertReturningIdQuery(
+        profileDto,
+        transaction
+      );
 
-      if (transaction) {
-        query.transacting(transaction);
+      if (!result) {
+        throw new Error('could-not-create-profile');
       }
 
-      const [result] = await query;
-
-      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-      return result?.id as string;
+      return result.id;
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
         context: contexts.ACCOUNT_PROFILE_CREATE,
         details: {
-          input: { profileDto },
+          input: { payload: profileDto },
         },
       });
 
       throw repositoryError;
     }
+  }
+
+  async getProfileByAccountId(
+    accountId: string
+  ): Promise<IProfile | undefined> {
+    try {
+      return await this.sendFindByAccountIdQuery(accountId);
+    } catch (error) {
+      const repositoryError = new RepositoryOperationError({
+        cause: error as Error,
+        context: contexts.GET_PROFILE_BY_ACCOUNT_ID,
+        details: {
+          input: { accountId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
+  async updateProfileByAccountId(
+    accountId: string,
+    updateProfileDto: IUpdateProfileDto
+  ): Promise<boolean> {
+    try {
+      const result = await this.sendUpdateByAccountIdQuery(
+        accountId,
+        updateProfileDto
+      );
+
+      if (result === 0) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      const repositoryError = new RepositoryOperationError({
+        cause: error as Error,
+        context: contexts.UPDATE_PROFILE_BY_ACCOUNT_ID,
+        details: {
+          input: { accountId, payload: updateProfileDto },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
+  private async sendFindByAccountIdQuery(
+    accountId: string
+  ): Promise<IProfile | undefined> {
+    return await this.dbClient<IProfile>(this.tableName)
+      .where('accountId', accountId)
+      .first();
+  }
+
+  private async sendInsertReturningIdQuery(
+    payload: object,
+    transaction?: Knex.Transaction
+  ): Promise<IInsertReturningId> {
+    const query = this.dbClient
+      .insert(payload)
+      .into(this.tableName)
+      .returning<IInsertReturningId>('id');
+
+    if (transaction) {
+      query.transacting(transaction);
+    }
+
+    return await query;
+  }
+
+  private async sendUpdateByAccountIdQuery(
+    accountId: string,
+    updateProfileDto: IUpdateProfileDto
+  ): Promise<number> {
+    return await this.dbClient(this.tableName)
+      .where('accountId', accountId)
+      .update(updateProfileDto);
   }
 }
 

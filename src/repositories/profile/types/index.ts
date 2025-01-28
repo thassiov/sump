@@ -7,7 +7,7 @@ type IProfileRepository = {
     createProfileDto: ICreateProfileDto & { accountId: string },
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getProfileByAccountId: (accountId: string) => Promise<IProfile>;
+  getProfileByAccountId: (accountId: string) => Promise<IProfile | undefined>;
   updateProfileByAccountId: (
     accountId: string,
     updateProfileDto: IUpdateProfileDto
