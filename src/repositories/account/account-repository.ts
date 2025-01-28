@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { configs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
@@ -17,16 +18,10 @@ class AccountRepository implements IAccountRepository {
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
-      const query = this.dbClient
-        .insert({ ...accountDto })
-        .into(this.tableName)
-        .returning<{ id: string }[]>('id');
-
-      if (transaction) {
-        query.transacting(transaction);
-      }
-
-      const [result] = await query;
+      const [result] = await this.sendInsertReturningIdQuery(
+        accountDto,
+        transaction
+      );
 
       if (!result) {
         throw new Error('could-not-create-account');
@@ -48,9 +43,7 @@ class AccountRepository implements IAccountRepository {
 
   async getAccountById(accountId: string): Promise<IAccount | undefined> {
     try {
-      return await this.dbClient<IAccount>(this.tableName)
-        .where('id', accountId)
-        .first();
+      return await this.sendFindByIdQuery(accountId);
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
@@ -69,9 +62,10 @@ class AccountRepository implements IAccountRepository {
     updateAccountDto: IUpdateAccountDto
   ): Promise<boolean> {
     try {
-      const result = await this.dbClient<IUpdateAccountDto>(this.tableName)
-        .where('id', accountId)
-        .update(updateAccountDto);
+      const result = await this.sendUpdateByIdQuery(
+        accountId,
+        updateAccountDto
+      );
 
       if (result === 0) {
         return false;
@@ -93,9 +87,7 @@ class AccountRepository implements IAccountRepository {
 
   async removeAccountById(accountId: string): Promise<boolean> {
     try {
-      const result = await this.dbClient<IAccount>(this.tableName)
-        .where('id', accountId)
-        .del();
+      const result = await this.sendDeleteByIdQuery(accountId);
 
       if (result === 0) {
         return false;
@@ -113,6 +105,43 @@ class AccountRepository implements IAccountRepository {
 
       throw repositoryError;
     }
+  }
+
+  private async sendInsertReturningIdQuery(
+    payload: object,
+    transaction?: Knex.Transaction
+  ): Promise<IInsertReturningId> {
+    const query = this.dbClient
+      .insert(payload)
+      .into(this.tableName)
+      .returning<IInsertReturningId>('id');
+
+    if (transaction) {
+      query.transacting(transaction);
+    }
+
+    return await query;
+  }
+
+  private async sendFindByIdQuery(
+    accountId: string
+  ): Promise<IAccount | undefined> {
+    return await this.dbClient<IAccount>(this.tableName)
+      .where('id', accountId)
+      .first();
+  }
+
+  private async sendUpdateByIdQuery(
+    accountId: string,
+    updateAccountDto: IUpdateAccountDto
+  ): Promise<number> {
+    return await this.dbClient(this.tableName)
+      .where('id', accountId)
+      .update(updateAccountDto);
+  }
+
+  private async sendDeleteByIdQuery(accountId: string): Promise<number> {
+    return await this.dbClient(this.tableName).where('id', accountId).del();
   }
 }
 
