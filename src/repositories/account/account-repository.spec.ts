@@ -56,7 +56,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_PROFILE_CREATE,
         details: {
           input: {
-            accountDto: mockCreateAccountDto,
+            payload: mockCreateAccountDto,
           },
         },
       });
@@ -108,7 +108,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_PROFILE_CREATE,
         details: {
           input: {
-            accountDto: mockCreateAccountDto,
+            payload: mockCreateAccountDto,
           },
         },
       });
@@ -326,6 +326,7 @@ describe('[repository] account', () => {
         details: {
           input: {
             accountId: mockAccountId,
+            payload: mockUpdateAccountDto,
           },
         },
       });

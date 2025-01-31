@@ -33,7 +33,7 @@ class AccountRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.ACCOUNT_PROFILE_CREATE,
         details: {
-          input: { accountDto },
+          input: { payload: accountDto },
         },
       });
 
@@ -77,7 +77,7 @@ class AccountRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.UPDATE_ACCOUNT_BY_ID,
         details: {
-          input: { accountId },
+          input: { accountId, payload: updateAccountDto },
         },
       });
 
