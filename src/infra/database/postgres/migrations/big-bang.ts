@@ -27,7 +27,8 @@ async function up(knex: Knex) {
       table
         .foreign('accountId')
         .references('id')
-        .inTable(configs.repository.account.tableName);
+        .inTable(configs.repository.account.tableName)
+        .onDelete('CASCADE');
       table.string('fullName').notNullable();
       table
         .dateTime('createdAt')
