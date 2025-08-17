@@ -1,2 +1,15 @@
-console.log('this is my accounts and identities service');
-console.log('lets go');
+import { configLoader } from './lib/config';
+import { setupLogger } from './lib/logger/logger';
+
+const logger = setupLogger('sump-bootstrap');
+
+async function bootstrap(sumpConfig?: object) {
+  logger.info('Starting bootstrap process');
+  const config = await configLoader(sumpConfig);
+
+  console.log(config);
+}
+
+(async () => {
+  await bootstrap();
+})().catch(logger.error);

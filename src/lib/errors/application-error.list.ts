@@ -16,4 +16,8 @@ export const errors = {
     name: 'service-operation-error',
     message: 'Failure to perform service operation',
   },
+  UTILS_OPERATION_ERROR: {
+    name: 'utils-operation-error',
+    message: 'Failure to perform utility operation',
+  },
 };

@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
-import { configs } from '../../../../lib/config';
+import { internalConfigs } from '../../../../lib/config';
 
 async function up(knex: Knex) {
   await knex.schema.createTable(
-    configs.repository.account.tableName,
+    internalConfigs.repository.account.tableName,
     function (table) {
       table.uuid('id').defaultTo(knex.fn.uuid()).primary().unique();
       table.string('email').notNullable().unique();
@@ -22,7 +22,7 @@ async function up(knex: Knex) {
 }
 
 async function down(knex: Knex) {
-  await knex.schema.dropTable(configs.repository.account.tableName);
+  await knex.schema.dropTable(internalConfigs.repository.account.tableName);
 }
 
 const config = { transaction: false };

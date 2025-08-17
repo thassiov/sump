@@ -1,10 +1,10 @@
 import knex, { Knex } from 'knex';
 import knexStringcase from 'knex-stringcase';
-import { configs } from '../../../../lib/config';
+import { DatabaseConfig } from '../../../../lib/types';
 
-function getDatabaseClient(): Knex {
+function getDatabaseClient(databaseConfig: DatabaseConfig): Knex {
   const opts = {
-    ...configs.database,
+    ...databaseConfig,
     ...knexStringcase(),
     migrations: {
       directory: '../migrations',
