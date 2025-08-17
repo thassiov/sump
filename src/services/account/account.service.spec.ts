@@ -1,7 +1,7 @@
-import { IAccountRepository } from '../../repositories/account/types';
 import { IAccount } from '../../types/account.type';
 import { IUpdateAccountDto } from '../../types/dto.type';
-import { AccountService } from './account-service';
+import { AccountService } from './account.service';
+import { IAccountRepository } from './types/repository.type';
 
 describe('Account Service', () => {
   beforeEach(() => {

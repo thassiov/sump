@@ -1,7 +1,7 @@
-import { IProfileRepository } from '../../repositories/profile/types';
 import { IUpdateProfileDto } from '../../types/dto.type';
 import { IProfile } from '../../types/profile.type';
-import { IProfileService } from './types';
+import { IProfileRepository } from './types/repository.type';
+import { IProfileService } from './types/service.type';
 
 class ProfileService implements IProfileService {
   constructor(private readonly profileRepository: IProfileRepository) {}

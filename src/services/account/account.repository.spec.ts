@@ -4,7 +4,7 @@ import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { IAccount } from '../../types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from '../../types/dto.type';
-import { AccountRepository } from './account-repository';
+import { AccountRepository } from './account.repository';
 
 describe('[repository] account', () => {
   beforeEach(() => {

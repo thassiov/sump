@@ -1,7 +1,7 @@
-import { IProfileRepository } from '../../repositories/profile/types';
 import { IUpdateProfileDto } from '../../types/dto.type';
 import { IProfile } from '../../types/profile.type';
 import { ProfileService } from './profile.service';
+import { IProfileRepository } from './types/repository.type';
 
 describe('Profile Service', () => {
   beforeEach(() => {

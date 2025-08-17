@@ -5,7 +5,7 @@ import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { ICreateProfileDto, IUpdateProfileDto } from '../../types/dto.type';
 import { IProfile } from '../../types/profile.type';
-import { IProfileRepository } from './types';
+import { IProfileRepository } from './types/repository.type';
 
 class ProfileRepository implements IProfileRepository {
   private tableName: string;

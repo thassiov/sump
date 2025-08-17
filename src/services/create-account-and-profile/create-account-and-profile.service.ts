@@ -1,14 +1,14 @@
 import { contexts } from '../../lib/contexts';
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
 import { logger } from '../../lib/logger';
-import { ICreateAccountAndProfileRepository } from '../../repositories/create-account-and-profile/types';
 import {
   createAccountAndProfileDtoSchema,
   ICreateAccountAndProfileDto,
   ICreateAccountAndProfileOperationResult,
 } from '../../types/dto.type';
 import { splitCreateAccountAndProfileDto } from './lib/utils';
-import { ICreateAccountAndProfileService } from './types';
+import { ICreateAccountAndProfileRepository } from './types/repository.type';
+import { ICreateAccountAndProfileService } from './types/service.type';
 
 export class CreateAccountAndProfileService
   implements ICreateAccountAndProfileService

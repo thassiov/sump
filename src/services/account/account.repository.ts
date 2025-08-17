@@ -5,7 +5,7 @@ import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { IAccount } from '../../types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from '../../types/dto.type';
-import { IAccountRepository } from './types';
+import { IAccountRepository } from './types/repository.type';
 
 class AccountRepository implements IAccountRepository {
   private tableName: string;

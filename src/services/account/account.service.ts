@@ -1,7 +1,7 @@
-import { IAccountRepository } from '../../repositories/account/types';
 import { IAccount } from '../../types/account.type';
 import { IUpdateAccountDto } from '../../types/dto.type';
-import { IAccountService } from './types';
+import { IAccountRepository } from './types/repository.type';
+import { IAccountService } from './types/service.type';
 
 export class AccountService implements IAccountService {
   constructor(private readonly accountRepository: IAccountRepository) {}
