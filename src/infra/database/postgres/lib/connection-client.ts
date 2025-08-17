@@ -6,6 +6,7 @@ function getDatabaseClient(databaseConfig: DatabaseConfig): Knex {
   const opts = {
     ...databaseConfig,
     ...knexStringcase(),
+    client: 'pg',
     migrations: {
       directory: '../migrations',
       tableName: 'migrations',
