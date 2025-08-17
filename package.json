@@ -1,7 +1,7 @@
 {
-  "name": "aps-node",
+  "name": "sump",
   "version": "0.1.0",
-  "description": "accounts and profiles service - node version",
+  "description": "sump - solin user management platform",
   "main": "index.js",
   "scripts": {
     "start": "ts-node ./src/index.ts",
@@ -10,8 +10,8 @@
     "test:watch": "jest --watchAll",
     "build": "rimraf ./build && tsc"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Thassio Victor <tvmcarvalho@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@tsconfig/strictest": "^2.0.5",
