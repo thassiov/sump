@@ -31,7 +31,7 @@ class AccountRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
-        context: contexts.ACCOUNT_PROFILE_CREATE,
+        context: contexts.ACCOUNT_CREATE,
         details: {
           input: { payload: accountDto },
         },
@@ -47,7 +47,7 @@ class AccountRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
-        context: contexts.GET_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_GET_BY_ID,
         details: {
           input: { accountId },
         },
@@ -75,7 +75,7 @@ class AccountRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
-        context: contexts.UPDATE_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
           input: { accountId, payload: updateAccountDto },
         },
@@ -97,7 +97,7 @@ class AccountRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new RepositoryOperationError({
         cause: error as Error,
-        context: contexts.REMOVE_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
           input: { accountId },
         },

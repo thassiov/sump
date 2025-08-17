@@ -25,9 +25,6 @@ const repository = {
   account: {
     tableName: 'account',
   },
-  profile: {
-    tableName: 'profile',
-  },
 };
 
 const configs = {

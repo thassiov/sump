@@ -53,7 +53,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('could-not-create-account');
       const repositoryError = new RepositoryOperationError({
         cause: mockThrownError,
-        context: contexts.ACCOUNT_PROFILE_CREATE,
+        context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
             payload: mockCreateAccountDto,
@@ -105,7 +105,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('some-other-error');
       const repositoryError = new RepositoryOperationError({
         cause: mockThrownError,
-        context: contexts.ACCOUNT_PROFILE_CREATE,
+        context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
             payload: mockCreateAccountDto,
@@ -204,7 +204,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('some-error');
       const repositoryError = new RepositoryOperationError({
         cause: mockThrownError,
-        context: contexts.GET_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_GET_BY_ID,
         details: {
           input: {
             accountId: mockAccountId,
@@ -319,7 +319,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('some-error');
       const repositoryError = new RepositoryOperationError({
         cause: mockThrownError,
-        context: contexts.UPDATE_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
           input: {
             accountId: mockAccountId,
@@ -415,7 +415,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('some-error');
       const repositoryError = new RepositoryOperationError({
         cause: mockThrownError,
-        context: contexts.REMOVE_ACCOUNT_BY_ID,
+        context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
           input: {
             accountId: mockAccountId,

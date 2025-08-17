@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
+import { BaseService } from '../../base-classes';
 import { contexts } from '../../lib/contexts';
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
-import { logger } from '../../lib/logger';
 import { IAccount } from './types/account.type';
 import {
   createAccountDtoSchema,
@@ -12,8 +12,10 @@ import {
 import { IAccountRepository } from './types/repository.type';
 import { IAccountService } from './types/service.type';
 
-export class AccountService implements IAccountService {
-  constructor(private readonly accountRepository: IAccountRepository) {}
+export class AccountService extends BaseService implements IAccountService {
+  constructor(private readonly accountRepository: IAccountRepository) {
+    super('account-service');
+  }
 
   // @NOTE: maybe the transaction argument must be called something else here
   async createAccount(
@@ -30,10 +32,10 @@ export class AccountService implements IAccountService {
           errors: validationResult.error.issues,
         },
         // @NOTE: add a new context, just for the account
-        context: contexts.ACCOUNT_PROFILE_CREATE,
+        context: contexts.ACCOUNT_CREATE,
       });
 
-      logger.error(errorInstance);
+      this.logger.error(errorInstance);
       throw errorInstance;
     }
 
@@ -43,7 +45,7 @@ export class AccountService implements IAccountService {
         transaction
       );
 
-      logger.info(`new account created: ${accountId}`);
+      this.logger.info(`new account created: ${accountId}`);
 
       return { accountId };
     } catch (error) {
@@ -53,10 +55,10 @@ export class AccountService implements IAccountService {
         },
         cause: error as Error,
         // @NOTE: add a new context, just for the account
-        context: contexts.ACCOUNT_PROFILE_CREATE,
+        context: contexts.ACCOUNT_CREATE,
       });
 
-      logger.error(errorInstance);
+      this.logger.error(errorInstance);
 
       throw errorInstance;
     }

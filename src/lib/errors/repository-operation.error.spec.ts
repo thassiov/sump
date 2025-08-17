@@ -11,7 +11,7 @@ describe('[ERROR] repository-operation', () => {
         someDetail: 'this is the detail',
       },
       cause: mockCauseError,
-      context: contexts.ACCOUNT_PROFILE_CREATE,
+      context: contexts.ACCOUNT_CREATE,
     };
 
     const error = new RepositoryOperationError(errorOpts);
@@ -23,7 +23,7 @@ describe('[ERROR] repository-operation', () => {
     expect(error.message).toBe(
       errors.REPOSITORY_OPERATION_ERROR.message + ': an error'
     );
-    expect(error.context).toBe(contexts.ACCOUNT_PROFILE_CREATE);
+    expect(error.context).toBe(contexts.ACCOUNT_CREATE);
     expect(error.cause).toBe(mockCauseError);
     expect(error.details).toHaveProperty('someDetail', 'this is the detail');
   });

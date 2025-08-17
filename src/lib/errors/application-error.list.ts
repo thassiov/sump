@@ -1,7 +1,7 @@
 export const errors = {
-  ACCOUNT_PROFILE_CREATE_ERROR: {
-    name: 'account-profile-create-error',
-    message: 'Could not create account and profile',
+  ACCOUNT_CREATE_ERROR: {
+    name: 'account-create-error',
+    message: 'Could not create account',
   },
   DATABASE_INSTANCE_ERROR: {
     name: 'database-instance-error',

@@ -1,16 +1,10 @@
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
-import { logger } from '../../lib/logger';
 import { AccountService } from './account.service';
 import { IAccount } from './types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
 
 describe('Account Service', () => {
-  beforeAll(() => {
-    logger.info = jest.fn();
-    logger.error = jest.fn();
-  });
-
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
@@ -36,12 +30,23 @@ describe('Account Service', () => {
       async (mockAccountInfo) => {
         const accountService = new AccountService(mockAccountRepository);
 
+        const loggerSpyInfo = jest.spyOn(
+          (accountService as unknown as { logger: { info: typeof jest.fn } })
+            .logger,
+          'info'
+        );
+        const loggerSpyError = jest.spyOn(
+          (accountService as unknown as { logger: { error: typeof jest.fn } })
+            .logger,
+          'error'
+        );
+
         await expect(
           accountService.createAccount(mockAccountInfo as ICreateAccountDto)
         ).rejects.toThrow(ServiceOperationError);
 
-        expect(logger.info).not.toHaveBeenCalled();
-        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(loggerSpyInfo).not.toHaveBeenCalled();
+        expect(loggerSpyError).toHaveBeenCalledTimes(1);
       }
     );
 
@@ -57,12 +62,23 @@ describe('Account Service', () => {
 
       const accountService = new AccountService(mockAccountRepository);
 
+      const loggerSpyInfo = jest.spyOn(
+        (accountService as unknown as { logger: { info: typeof jest.fn } })
+          .logger,
+        'info'
+      );
+      const loggerSpyError = jest.spyOn(
+        (accountService as unknown as { logger: { error: typeof jest.fn } })
+          .logger,
+        'error'
+      );
+
       await expect(accountService.createAccount(mockAccount)).rejects.toThrow(
         'repository-failure'
       );
 
-      expect(logger.info).not.toHaveBeenCalled();
-      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(loggerSpyInfo).not.toHaveBeenCalled();
+      expect(loggerSpyError).toHaveBeenCalledTimes(1);
     });
 
     it('should create a new account', async () => {
@@ -75,12 +91,23 @@ describe('Account Service', () => {
 
       const accountService = new AccountService(mockAccountRepository);
 
+      const loggerSpyInfo = jest.spyOn(
+        (accountService as unknown as { logger: { info: typeof jest.fn } })
+          .logger,
+        'info'
+      );
+      const loggerSpyError = jest.spyOn(
+        (accountService as unknown as { logger: { error: typeof jest.fn } })
+          .logger,
+        'error'
+      );
+
       const result = await accountService.createAccount(mockAccount);
 
       expect(result).toEqual({ accountId: 'id' });
 
-      expect(logger.info).toHaveBeenCalledTimes(1);
-      expect(logger.error).not.toHaveBeenCalled();
+      expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
+      expect(loggerSpyError).not.toHaveBeenCalled();
     });
   });
 

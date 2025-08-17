@@ -1,18 +1,24 @@
 import pino from 'pino';
 
-const serverLogger = pino();
+function setupLogger(moduleName: string) {
+  const moduleLogger = pino().child({ module: moduleName });
 
-export const logger = {
-  info: (...args: unknown[]) => {
-    serverLogger.info(args);
-  },
-  debug: (...args: unknown[]) => {
-    serverLogger.debug(args);
-  },
-  warn: (...args: unknown[]) => {
-    serverLogger.warn(args);
-  },
-  error: (...args: unknown[]) => {
-    serverLogger.error(args);
-  },
-};
+  const logger = {
+    info: (...args: unknown[]) => {
+      moduleLogger.info(args);
+    },
+    debug: (...args: unknown[]) => {
+      moduleLogger.debug(args);
+    },
+    warn: (...args: unknown[]) => {
+      moduleLogger.warn(args);
+    },
+    error: (...args: unknown[]) => {
+      moduleLogger.error(args);
+    },
+  };
+
+  return logger;
+}
+
+export { setupLogger };
