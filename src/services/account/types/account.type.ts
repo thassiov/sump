@@ -4,8 +4,8 @@ const accountSchema = z.object({
   id: z.string().uuid(),
   createdAt: z.string().date(),
   updatedAt: z.string().date(),
-  username: z.string().min(3).max(20),
   email: z.string().email(),
+  fullName: z.string().max(100),
 });
 
 type IAccount = z.infer<typeof accountSchema>;

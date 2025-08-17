@@ -1,5 +1,5 @@
-import { IAccount } from '../../../types/account.type';
 import { IUpdateAccountDto } from '../../../types/dto.type';
+import { IAccount } from './account.type';
 
 export type IAccountService = {
   getAccountById: (accountId: string) => Promise<IAccount | undefined>;

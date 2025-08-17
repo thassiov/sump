@@ -28,9 +28,9 @@ describe('Account Service', () => {
       [{}],
       [true],
       [10],
-      [{ username: '', email: '' }],
-      [{ username: undefined, email: undefined }],
-      [{ username: 'imtheuser', email: 2 }],
+      [{ email: '', fullName: '' }],
+      [{ email: undefined, fullName: undefined }],
+      [{ email: 2, fullName: 3 }],
     ])(
       'should fail to create a new account due to validation error (%p)',
       async (mockAccountInfo) => {
@@ -51,8 +51,8 @@ describe('Account Service', () => {
       );
 
       const mockAccount = {
-        username: 'fakeUsername',
         email: 'fake@email.com',
+        fullName: 'This Is The Full Name',
       };
 
       const accountService = new AccountService(mockAccountRepository);
@@ -67,8 +67,8 @@ describe('Account Service', () => {
 
     it('should create a new account', async () => {
       const mockAccount = {
-        username: 'userName',
         email: 'user@email.com',
+        fullName: 'This Is The Full Name',
       };
 
       mockAccountRepository.create.mockResolvedValueOnce('id');
@@ -88,8 +88,8 @@ describe('Account Service', () => {
     it('should retrieve a account', async () => {
       const mockAccount: IAccount = {
         id: 'id',
-        username: 'username',
         email: 'email',
+        fullName: 'This Is The Full Name',
         createdAt: 'date',
         updatedAt: 'date',
       };
@@ -127,8 +127,7 @@ describe('Account Service', () => {
     it('should update an account', async () => {
       const mockAccountId = 'id';
       const mockUpdateAccountDto: IUpdateAccountDto = {
-        username: 'username',
-        email: 'email',
+        fullName: 'This Is The Full Name',
       };
       const mockUpdateAccountResult = true;
 

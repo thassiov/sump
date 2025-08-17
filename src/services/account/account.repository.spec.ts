@@ -17,8 +17,8 @@ describe('[repository] account', () => {
       const mockAccountId = 'id';
       const mockDbResponse: IInsertReturningId = [{ id: mockAccountId }];
       const mockCreateAccountDto = {
-        username: 'username',
         email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as ICreateAccountDto;
 
       const mockSendInsert = jest
@@ -46,8 +46,8 @@ describe('[repository] account', () => {
     it('fails to create a new account by receiving an empty response from the database', async () => {
       const mockDbResponse: IInsertReturningId = [];
       const mockCreateAccountDto = {
-        username: 'username',
         email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as ICreateAccountDto;
 
       const mockThrownError = new Error('could-not-create-account');
@@ -98,8 +98,8 @@ describe('[repository] account', () => {
 
     it('fails to create a new account by a error thrown by the database', async () => {
       const mockCreateAccountDto = {
-        username: 'username',
         email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as ICreateAccountDto;
 
       const mockThrownError = new Error('some-other-error');
@@ -154,8 +154,8 @@ describe('[repository] account', () => {
       const mockAccountId = 'id';
       const mockDbResponse: IAccount = {
         id: 'id',
-        username: 'username',
         email: 'email',
+        fullName: 'This Is The Full Name',
         createdAt: 'date',
         updatedAt: 'date',
       };
@@ -252,8 +252,7 @@ describe('[repository] account', () => {
       const mockRepositoryResponse = true;
 
       const mockUpdateAccountDto = {
-        username: 'username',
-        email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as IUpdateAccountDto;
 
       const mockSendUpdate = jest
@@ -285,8 +284,7 @@ describe('[repository] account', () => {
       const mockRepositoryResponse = false;
 
       const mockUpdateAccountDto = {
-        username: 'username',
-        email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as IUpdateAccountDto;
 
       const mockSendUpdate = jest
@@ -315,8 +313,7 @@ describe('[repository] account', () => {
     it('fails to update an account by a error thrown by the database', async () => {
       const mockAccountId = 'id';
       const mockUpdateAccountDto = {
-        username: 'username',
-        email: 'some@email.com',
+        fullName: 'This Is The Full Name',
       } as IUpdateAccountDto;
 
       const mockThrownError = new Error('some-error');
