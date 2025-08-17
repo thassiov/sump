@@ -2,9 +2,9 @@ import { Knex } from 'knex';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
-import { IAccount } from '../../types/account.type';
-import { ICreateAccountDto, IUpdateAccountDto } from '../../types/dto.type';
 import { AccountRepository } from './account.repository';
+import { IAccount } from './types/account.type';
+import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
 
 describe('[repository] account', () => {
   beforeEach(() => {

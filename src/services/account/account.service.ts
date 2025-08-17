@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { contexts } from '../../lib/contexts';
 import { ServiceOperationError } from '../../lib/errors/service-operation.error';
 import { logger } from '../../lib/logger';
-import { IAccount } from '../../types/account.type';
+import { IAccount } from './types/account.type';
 import {
   createAccountDtoSchema,
   ICreateAccountDto,
@@ -33,7 +33,7 @@ export class AccountService implements IAccountService {
         context: contexts.ACCOUNT_PROFILE_CREATE,
       });
 
-      logger.info(errorInstance);
+      logger.error(errorInstance);
       throw errorInstance;
     }
 
@@ -42,6 +42,8 @@ export class AccountService implements IAccountService {
         newAccount,
         transaction
       );
+
+      logger.info(`new account created: ${accountId}`);
 
       return { accountId };
     } catch (error) {

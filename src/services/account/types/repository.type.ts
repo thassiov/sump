@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
-import { IAccount } from '../../../types/account.type';
-import { ICreateAccountDto, IUpdateAccountDto } from '../../../types/dto.type';
+import { IAccount } from './account.type';
+import { ICreateAccountDto, IUpdateAccountDto } from './dto.type';
 
 type IAccountRepository = {
   create: (

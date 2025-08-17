@@ -3,8 +3,8 @@ import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { configs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
-import { IAccount } from '../../types/account.type';
-import { ICreateAccountDto, IUpdateAccountDto } from '../../types/dto.type';
+import { IAccount } from './types/account.type';
+import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
 
 class AccountRepository implements IAccountRepository {
