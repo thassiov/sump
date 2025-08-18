@@ -1,16 +1,21 @@
 import knex, { Knex } from 'knex';
 import knexStringcase from 'knex-stringcase';
+import path from 'path';
 import { DatabaseConfig } from '../../../../lib/types';
 
 function getDatabaseClient(databaseConfig: DatabaseConfig): Knex {
+  const migrationsDir = path.resolve(__dirname, '../migrations');
+
   const opts = {
-    ...databaseConfig,
     ...knexStringcase(),
     client: 'pg',
     migrations: {
-      directory: '../migrations',
+      directory: migrationsDir,
       tableName: 'migrations',
       extension: 'ts',
+    },
+    connection: {
+      ...databaseConfig,
     },
   };
 

@@ -4,11 +4,12 @@
   "description": "sump - solin user management platform",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
-    "start:watch": "nodemon",
+    "dev:start": "ts-node ./src/index.ts",
+    "dev:watch": "nodemon",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "build": "rimraf ./build && tsc"
+    "build": "rimraf ./build && tsc",
+    "db:migration:up": "ts-node ./src/infra/database/postgres/tools/run-migration-up.ts"
   },
   "author": "Thassio Victor <tvmcarvalho@gmail.com>",
   "license": "MIT",

@@ -1,0 +1,53 @@
+services:
+  sump-image:
+    image: sump-image:latest
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  postgres-local:
+    image: 'postgres:13'
+    container_name: postgres-local
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=sump
+      - POSTGRES_PASSWORD=sump
+      - POSTGRES_DB=sump
+
+  postgres-init:
+    image: sump-image:latest
+    pull_policy: never
+    command:
+      ['npm', 'run', 'db:migration:up', '--', '--config=./sump-config.json']
+    restart: on-failure:5
+    depends_on:
+      - postgres-local
+      - sump-image
+    volumes:
+      - ./sump-config.json:/app/sump-config.json
+
+  # sump:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   develop:
+  #     watch:
+  #       - action: sync+restart
+  #         path: .
+  #         target: /app
+  #         ignore:
+  #           - node_modules/
+  #           - package.json
+  #           - package-lock.json
+  #       - action: rebuild
+  #         path: ./package.json
+  #   ports:
+  #     - '9010:8080'
+  #   command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
+  #   volumes:
+  #     - ./sump-config.json:/app/sump-config.json
+  #   depends_on:
+  #     postgres-init:
+  #       condition: service_completed_successfully
