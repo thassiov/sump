@@ -9,12 +9,10 @@ const router = express.Router();
 const logger = setupLogger('enpoint-v1-accounts');
 
 function makeServiceEndpoints(accountService: AccountService): express.Router {
-  router.use('/v1/accounts');
-
-  router.post('/', makeCreateAccountEndpointFactory(accountService));
-  router.get('/:id', makeGetAccountByIdEndpointFactory(accountService));
-  router.patch('/:id', makeUpdateAccountByIdEndpointFactory(accountService));
-  router.delete('/:id', makeRemoveAccountByIdEndpointFactory(accountService));
+  router.post('/v1/accounts/', makeCreateAccountEndpointFactory(accountService));
+  router.get('/v1/accounts/:id', makeGetAccountByIdEndpointFactory(accountService));
+  router.patch('/v1/accounts/:id', makeUpdateAccountByIdEndpointFactory(accountService));
+  router.delete('/v1/accounts/:id', makeRemoveAccountByIdEndpointFactory(accountService));
 
   return router;
 }

@@ -33,10 +33,9 @@ function setupExpressRestApi(routers: express.Router[], restApi: RestApiConfig) 
   return function startRestApi() {
     const serverPort = restApi.port;
     api.listen(serverPort, () => {
-      api.request.log.info(`Server started at http://0.0.0.0:${serverPort.toString()}`);
+     pinoHttp().logger.info(`Server started at http://0.0.0.0:${serverPort.toString()}`);
     });
   }
-
 }
 
 function errorHandler(

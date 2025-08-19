@@ -1,10 +1,12 @@
+import { Router } from 'express';
 import { Knex } from 'knex';
+
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
+import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
 import { setupLogger } from './lib/logger/logger';
 import { SumpConfig } from './lib/types';
 import * as services from './services';
-import { setupExpressRestApi } from './infra/rest-api/express';
 
 const logger = setupLogger('sump-bootstrap');
 
@@ -15,14 +17,29 @@ async function bootstrap(sumpConfig?: object) {
 
   // @NOTE: starting sump as a standalone 'micro' service
   if (config.service) {
+    logger.info(`Setting up service ${config.service} as a http service`);
+
+    logger.info('Fetching databaseClient instance');
     const databaseClient = getDatabaseClient(config.database);
+
+    logger.info('Creating service instance');
     const serviceInstance = createServiceInstance(config.service, {
       databaseClient,
     });
 
-    const router = services[config.service].endpoints(serviceInstance);
+    logger.info('Setting up service endpoints');
+    const router = setupServiceEndpoints(
+      serviceInstance,
+      services[config.service].endpoints
+    );
+
+    logger.info('Setting up rest api server');
     const startServer = setupExpressRestApi([router], config.restApi);
+
+    logger.info('Starting server');
     startServer();
+  } else {
+    console.log('the things from the main service');
   }
 }
 
@@ -45,23 +62,34 @@ function createServiceInstance(
   }
 }
 
-function createHttpServiceInstance(
-  serviceName: keyof typeof services,
-  configs: CreateServiceInstanceOptions
-) {
-  if (configs.url) {
-    const httpServiceInstance = new services[serviceName].httpService(
-      configs.url
-    );
-    return httpServiceInstance;
-  } else {
-    logger.error(
-      'No config passed when creating http service instance. Exiting...:',
-      serviceName
-    );
-    process.exit(1);
-  }
+// @FIX: this 'any stuff needs to be handled'
+function setupServiceEndpoints(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serviceInstance: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serviceEndpointFactory: any
+): Router {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return serviceEndpointFactory(serviceInstance);
 }
+
+// function createHttpServiceInstance(
+//   serviceName: keyof typeof services,
+//   configs: CreateServiceInstanceOptions
+// ) {
+//   if (configs.url) {
+//     const httpServiceInstance = new services[serviceName].httpService(
+//       configs.url
+//     );
+//     return httpServiceInstance;
+//   } else {
+//     logger.error(
+//       'No config passed when creating http service instance. Exiting...:',
+//       serviceName
+//     );
+//     process.exit(1);
+//   }
+// }
 
 type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
 

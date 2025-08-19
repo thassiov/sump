@@ -1,7 +1,7 @@
 import pino from 'pino';
 
 function setupLogger(moduleName: string) {
-  const moduleLogger = pino().child({ module: moduleName });
+  const moduleLogger = pino(pino.destination({ sync: true })).child({ module: moduleName });
 
   const logger = {
     info: (...args: unknown[]) => {

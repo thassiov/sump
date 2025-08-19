@@ -28,26 +28,26 @@ services:
     volumes:
       - ./sump-config.json:/app/sump-config.json
 
-  # sump:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   develop:
-  #     watch:
-  #       - action: sync+restart
-  #         path: .
-  #         target: /app
-  #         ignore:
-  #           - node_modules/
-  #           - package.json
-  #           - package-lock.json
-  #       - action: rebuild
-  #         path: ./package.json
-  #   ports:
-  #     - '9010:8080'
-  #   command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
-  #   volumes:
-  #     - ./sump-config.json:/app/sump-config.json
-  #   depends_on:
-  #     postgres-init:
-  #       condition: service_completed_successfully
+  sump-main-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /app
+          ignore:
+            - node_modules/
+            - package.json
+            - package-lock.json
+        - action: rebuild
+          path: ./package.json
+    ports:
+      - '8080:8080'
+    command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
+    volumes:
+      - ./sump-config.json:/app/sump-config.json
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
