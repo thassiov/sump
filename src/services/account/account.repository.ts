@@ -1,16 +1,18 @@
 import { Knex } from 'knex';
+import { BaseRepository } from '../../base-classes';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
-import { configs } from '../../lib/config';
+import { internalConfigs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import { RepositoryOperationError } from '../../lib/errors';
 import { IAccount } from './types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
 
-class AccountRepository implements IAccountRepository {
+class AccountRepository extends BaseRepository implements IAccountRepository {
   private tableName: string;
   constructor(private readonly dbClient: Knex) {
-    this.tableName = configs.repository.account.tableName;
+    super('account-repository');
+    this.tableName = internalConfigs.repository.account.tableName;
   }
 
   async create(

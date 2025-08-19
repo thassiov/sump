@@ -3,8 +3,9 @@ import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { StatusCodes } from 'http-status-codes';
 import pinoHttp from 'pino-http';
+import { RestApiConfig } from '../../../lib/types';
 
-function setupExpressRestApi(routes: express.Router[]) {
+function setupExpressRestApi(routers: express.Router[], restApi: RestApiConfig) {
   const api = express();
 
   api.use(helmet());
@@ -24,9 +25,18 @@ function setupExpressRestApi(routes: express.Router[]) {
   );
   api.use(express.json());
   api.use(express.urlencoded({ extended: true }));
+
+  routers.forEach((router) => api.use(router));
+
   api.use(errorHandler);
 
-  api.use('/v1', routes);
+  return function startRestApi() {
+    const serverPort = restApi.port;
+    api.listen(serverPort, () => {
+      api.request.log.info(`Server started at http://0.0.0.0:${serverPort.toString()}`);
+    });
+  }
+
 }
 
 function errorHandler(
