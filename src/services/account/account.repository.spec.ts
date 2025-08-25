@@ -1,7 +1,11 @@
 import { Knex } from 'knex';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { contexts } from '../../lib/contexts';
-import { RepositoryOperationError } from '../../lib/errors';
+import {
+  NotExpectedError,
+  NotFoundError,
+  UnexpectedError,
+} from '../../lib/errors';
 import { AccountRepository } from './account.repository';
 import { IAccount } from './types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
@@ -41,8 +45,6 @@ describe('[repository] account', () => {
       );
     });
 
-    // @TODO: this test is identical to the 'error thrown by the database' case. The repository logic maybe
-    // needs a bit more refining
     it('fails to create a new account by receiving an empty response from the database', async () => {
       const mockDbResponse: IInsertReturningId = [];
       const mockCreateAccountDto = {
@@ -50,14 +52,14 @@ describe('[repository] account', () => {
         fullName: 'This Is The Full Name',
       } as ICreateAccountDto;
 
-      const mockThrownError = new Error('could-not-create-account');
-      const repositoryError = new RepositoryOperationError({
-        cause: mockThrownError,
+      const mockThrownError = new NotExpectedError({
         context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
-            payload: mockCreateAccountDto,
+            ...mockCreateAccountDto,
           },
+          output: undefined,
+          message: 'database insert operation did not return an id',
         },
       });
 
@@ -79,15 +81,13 @@ describe('[repository] account', () => {
         thrown = error;
       }
 
-      expect(thrown).toBeInstanceOf(RepositoryOperationError);
-      expect((thrown as RepositoryOperationError).cause).toEqual(
-        mockThrownError
+      expect(thrown).toBeInstanceOf(NotExpectedError);
+      expect((thrown as NotExpectedError).cause).not.toBeDefined();
+      expect((thrown as NotExpectedError).context).toEqual(
+        mockThrownError.context
       );
-      expect((thrown as RepositoryOperationError).context).toEqual(
-        repositoryError.context
-      );
-      expect((thrown as RepositoryOperationError).details).toEqual(
-        repositoryError.details
+      expect((thrown as NotExpectedError).details).toEqual(
+        mockThrownError.details
       );
       expect(mockSendInsert).toHaveBeenCalledTimes(1);
       expect(mockSendInsert).toHaveBeenCalledWith(
@@ -103,12 +103,12 @@ describe('[repository] account', () => {
       } as ICreateAccountDto;
 
       const mockThrownError = new Error('some-other-error');
-      const repositoryError = new RepositoryOperationError({
+      const repositoryError = new UnexpectedError({
         cause: mockThrownError,
         context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
-            payload: mockCreateAccountDto,
+            ...mockCreateAccountDto,
           },
         },
       });
@@ -131,14 +131,12 @@ describe('[repository] account', () => {
         thrown = error;
       }
 
-      expect(thrown).toBeInstanceOf(RepositoryOperationError);
-      expect((thrown as RepositoryOperationError).cause).toEqual(
-        mockThrownError
-      );
-      expect((thrown as RepositoryOperationError).context).toEqual(
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+      expect((thrown as UnexpectedError).context).toEqual(
         repositoryError.context
       );
-      expect((thrown as RepositoryOperationError).details).toEqual(
+      expect((thrown as UnexpectedError).details).toEqual(
         repositoryError.details
       );
       expect(mockSendInsert).toHaveBeenCalledTimes(1);
@@ -202,7 +200,7 @@ describe('[repository] account', () => {
       const mockAccountId = 'id';
 
       const mockThrownError = new Error('some-error');
-      const repositoryError = new RepositoryOperationError({
+      const repositoryError = new UnexpectedError({
         cause: mockThrownError,
         context: contexts.ACCOUNT_GET_BY_ID,
         details: {
@@ -230,14 +228,12 @@ describe('[repository] account', () => {
         thrown = error;
       }
 
-      expect(thrown).toBeInstanceOf(RepositoryOperationError);
-      expect((thrown as RepositoryOperationError).cause).toEqual(
-        mockThrownError
-      );
-      expect((thrown as RepositoryOperationError).context).toEqual(
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+      expect((thrown as UnexpectedError).context).toEqual(
         repositoryError.context
       );
-      expect((thrown as RepositoryOperationError).details).toEqual(
+      expect((thrown as UnexpectedError).details).toEqual(
         repositoryError.details
       );
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
@@ -281,11 +277,20 @@ describe('[repository] account', () => {
     it('fails to update an account by receiving an empty response from the database (account does not exist)', async () => {
       const mockAccountId = 'id';
       const mockDbResponse = 0;
-      const mockRepositoryResponse = false;
 
       const mockUpdateAccountDto = {
         fullName: 'This Is The Full Name',
       } as IUpdateAccountDto;
+
+      const mockThrownError = new NotFoundError({
+        context: contexts.ACCOUNT_UPDATE_BY_ID,
+        details: {
+          input: {
+            accountId: mockAccountId,
+            ...mockUpdateAccountDto,
+          },
+        },
+      });
 
       const mockSendUpdate = jest
         .spyOn(
@@ -298,11 +303,20 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.updateAccountById(
-        mockAccountId,
-        mockUpdateAccountDto
+      let thrown;
+      try {
+        await instance.updateAccountById(mockAccountId, mockUpdateAccountDto);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(NotFoundError);
+      expect((thrown as NotFoundError).context).toEqual(
+        mockThrownError.context
       );
-      expect(result).toBe(mockRepositoryResponse);
+      expect((thrown as NotFoundError).details).toEqual(
+        mockThrownError.details
+      );
       expect(mockSendUpdate).toHaveBeenCalledTimes(1);
       expect(mockSendUpdate).toHaveBeenCalledWith(
         mockAccountId,
@@ -317,13 +331,13 @@ describe('[repository] account', () => {
       } as IUpdateAccountDto;
 
       const mockThrownError = new Error('some-error');
-      const repositoryError = new RepositoryOperationError({
+      const repositoryError = new UnexpectedError({
         cause: mockThrownError,
         context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
           input: {
             accountId: mockAccountId,
-            payload: mockUpdateAccountDto,
+            ...mockUpdateAccountDto,
           },
         },
       });
@@ -346,14 +360,12 @@ describe('[repository] account', () => {
         thrown = error;
       }
 
-      expect(thrown).toBeInstanceOf(RepositoryOperationError);
-      expect((thrown as RepositoryOperationError).cause).toEqual(
-        mockThrownError
-      );
-      expect((thrown as RepositoryOperationError).context).toEqual(
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+      expect((thrown as UnexpectedError).context).toEqual(
         repositoryError.context
       );
-      expect((thrown as RepositoryOperationError).details).toEqual(
+      expect((thrown as UnexpectedError).details).toEqual(
         repositoryError.details
       );
       expect(mockSendUpdate).toHaveBeenCalledTimes(1);
@@ -390,7 +402,15 @@ describe('[repository] account', () => {
     it('fails to remove an account by receiving an empty response from the database (account does not exist)', async () => {
       const mockAccountId = 'id';
       const mockDbResponse = 0;
-      const mockRepositoryResponse = false;
+
+      const mockThrownError = new NotFoundError({
+        context: contexts.ACCOUNT_REMOVE_BY_ID,
+        details: {
+          input: {
+            accountId: mockAccountId,
+          },
+        },
+      });
 
       const mockSendQuery = jest
         .spyOn(
@@ -403,8 +423,21 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.removeAccountById(mockAccountId);
-      expect(result).toBe(mockRepositoryResponse);
+      let thrown;
+      try {
+        await instance.removeAccountById(mockAccountId);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(NotFoundError);
+      expect((thrown as NotFoundError).context).toEqual(
+        mockThrownError.context
+      );
+      expect((thrown as NotFoundError).details).toEqual(
+        mockThrownError.details
+      );
+
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockAccountId);
     });
@@ -413,7 +446,7 @@ describe('[repository] account', () => {
       const mockAccountId = 'id';
 
       const mockThrownError = new Error('some-error');
-      const repositoryError = new RepositoryOperationError({
+      const repositoryError = new UnexpectedError({
         cause: mockThrownError,
         context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
@@ -441,14 +474,12 @@ describe('[repository] account', () => {
         thrown = error;
       }
 
-      expect(thrown).toBeInstanceOf(RepositoryOperationError);
-      expect((thrown as RepositoryOperationError).cause).toEqual(
-        mockThrownError
-      );
-      expect((thrown as RepositoryOperationError).context).toEqual(
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+      expect((thrown as UnexpectedError).context).toEqual(
         repositoryError.context
       );
-      expect((thrown as RepositoryOperationError).details).toEqual(
+      expect((thrown as UnexpectedError).details).toEqual(
         repositoryError.details
       );
       expect(mockSendQuery).toHaveBeenCalledTimes(1);

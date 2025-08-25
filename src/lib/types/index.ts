@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Knex } from 'knex';
 import z from 'zod';
 
 import { BaseRepository, BaseService } from '../../base-classes';
@@ -48,6 +49,15 @@ type ServiceModule = {
 
 type EndpointHandler = (req: Request, res: Response) => Promise<void>;
 
+type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
+
 export { sumpConfigSchema, uuidv4Schema };
 
-export type { DatabaseConfig, EndpointHandler, ServiceModule, SumpConfig, RestApiConfig };
+export type {
+  CreateServiceInstanceOptions,
+  DatabaseConfig,
+  EndpointHandler,
+  RestApiConfig,
+  ServiceModule,
+  SumpConfig,
+};

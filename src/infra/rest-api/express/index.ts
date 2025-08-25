@@ -3,9 +3,18 @@ import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { StatusCodes } from 'http-status-codes';
 import pinoHttp from 'pino-http';
+import {
+  ConflictError,
+  NotFoundError,
+  PermissionError,
+  ValidationError,
+} from '../../../lib/errors';
 import { RestApiConfig } from '../../../lib/types';
 
-function setupExpressRestApi(routers: express.Router[], restApi: RestApiConfig) {
+function setupExpressRestApi(
+  routers: express.Router[],
+  restApi: RestApiConfig
+) {
   const api = express();
 
   api.use(helmet());
@@ -33,9 +42,11 @@ function setupExpressRestApi(routers: express.Router[], restApi: RestApiConfig) 
   return function startRestApi() {
     const serverPort = restApi.port;
     api.listen(serverPort, () => {
-     pinoHttp().logger.info(`Server started at http://0.0.0.0:${serverPort.toString()}`);
+      pinoHttp().logger.info(
+        `Server started at http://0.0.0.0:${serverPort.toString()}`
+      );
     });
-  }
+  };
 }
 
 function errorHandler(
@@ -46,6 +57,34 @@ function errorHandler(
   _: NextFunction
 ) {
   req.log.error(err);
+
+  if (err instanceof NotFoundError) {
+    return res.status(StatusCodes.NOT_FOUND).json();
+  }
+
+  if (err instanceof ValidationError) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'error',
+      message: 'validation error',
+      details: err.details,
+    });
+  }
+
+  if (err instanceof PermissionError) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      status: 'error',
+      message: 'permission error',
+      details: err.details,
+    });
+  }
+
+  if (err instanceof ConflictError) {
+    return res.status(StatusCodes.CONFLICT).json({
+      status: 'error',
+      message: 'conflict: resource already exist',
+      details: err.details,
+    });
+  }
 
   return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     status: 'error',

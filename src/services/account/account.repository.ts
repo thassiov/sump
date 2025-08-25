@@ -1,9 +1,16 @@
 import { Knex } from 'knex';
+import { DatabaseError } from 'pg';
 import { BaseRepository } from '../../base-classes';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { internalConfigs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
-import { RepositoryOperationError } from '../../lib/errors';
+import {
+  ConflictError,
+  NotExpectedError,
+  NotFoundError,
+  UnexpectedError,
+} from '../../lib/errors';
+import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { IAccount } from './types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
@@ -26,16 +33,47 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       );
 
       if (!result) {
-        throw new Error('could-not-create-account');
+        throw new NotExpectedError({
+          context: contexts.ACCOUNT_CREATE,
+          details: {
+            input: { ...accountDto },
+            output: result,
+            message: 'database insert operation did not return an id',
+          },
+        });
       }
 
       return result.id;
     } catch (error) {
-      const repositoryError = new RepositoryOperationError({
+      console.log('ooooh come one');
+      this.logger.error(error);
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      if (error instanceof DatabaseError) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (error.detail!.endsWith('already exists.')) {
+          const conflictError = new ConflictError({
+            cause: error as Error,
+            context: contexts.ACCOUNT_CREATE,
+            details: {
+              input: { ...accountDto },
+              message: 'User identification already in use',
+            },
+          });
+
+          throw conflictError;
+        }
+      }
+
+      console.log('is this working at least?');
+
+      const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_CREATE,
         details: {
-          input: { payload: accountDto },
+          input: { ...accountDto },
         },
       });
 
@@ -47,7 +85,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     try {
       return await this.sendFindByIdQuery(accountId);
     } catch (error) {
-      const repositoryError = new RepositoryOperationError({
+      const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_GET_BY_ID,
         details: {
@@ -70,16 +108,25 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       );
 
       if (result === 0) {
-        return false;
+        throw new NotFoundError({
+          context: contexts.ACCOUNT_UPDATE_BY_ID,
+          details: {
+            input: { accountId, ...updateAccountDto },
+          },
+        });
       }
 
       return true;
     } catch (error) {
-      const repositoryError = new RepositoryOperationError({
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
-          input: { accountId, payload: updateAccountDto },
+          input: { accountId, ...updateAccountDto },
         },
       });
 
@@ -92,12 +139,21 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       const result = await this.sendDeleteByIdQuery(accountId);
 
       if (result === 0) {
-        return false;
+        throw new NotFoundError({
+          context: contexts.ACCOUNT_REMOVE_BY_ID,
+          details: {
+            input: { accountId },
+          },
+        });
       }
 
       return true;
     } catch (error) {
-      const repositoryError = new RepositoryOperationError({
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {

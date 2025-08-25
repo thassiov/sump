@@ -1,6 +1,8 @@
 import z from 'zod';
 import { accountSchema } from './account.type';
 
+const idSchema = z.string().uuid();
+
 const createAccountDtoSchema = accountSchema.pick({
   email: true,
   fullName: true,
@@ -11,7 +13,7 @@ const updateAccountDtoSchema = createAccountDtoSchema.partial();
 type IUpdateAccountDto = z.infer<typeof updateAccountDtoSchema>;
 
 type ICreateAccountOperationResult = {
-  accountId: string;
+  id: string;
 };
 
 export type {
@@ -20,4 +22,4 @@ export type {
   IUpdateAccountDto,
 };
 
-export { createAccountDtoSchema, updateAccountDtoSchema };
+export { createAccountDtoSchema, idSchema, updateAccountDtoSchema };

@@ -1,4 +1,4 @@
-import { ServiceOperationError } from '../../lib/errors/service-operation.error';
+import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { AccountService } from './account.service';
 import { IAccount } from './types/account.type';
 import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
@@ -43,7 +43,7 @@ describe('Account Service', () => {
 
         await expect(
           accountService.createAccount(mockAccountInfo as ICreateAccountDto)
-        ).rejects.toThrow(ServiceOperationError);
+        ).rejects.toThrow(ValidationError);
 
         expect(loggerSpyInfo).not.toHaveBeenCalled();
         expect(loggerSpyError).toHaveBeenCalledTimes(1);
@@ -51,9 +51,10 @@ describe('Account Service', () => {
     );
 
     it('should fail to create a new account due to repository error', async () => {
-      mockAccountRepository.create.mockRejectedValueOnce(
-        new Error('repository-failure')
-      );
+      const mockThrownError = new UnexpectedError({
+        details: { message: 'repository-failure' },
+      });
+      mockAccountRepository.create.mockRejectedValueOnce(mockThrownError);
 
       const mockAccount = {
         email: 'fake@email.com',
@@ -73,8 +74,17 @@ describe('Account Service', () => {
         'error'
       );
 
-      await expect(accountService.createAccount(mockAccount)).rejects.toThrow(
-        'repository-failure'
+      let thrown;
+
+      try {
+        await accountService.createAccount(mockAccount);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).details).toEqual(
+        mockThrownError.details
       );
 
       expect(loggerSpyInfo).not.toHaveBeenCalled();
@@ -87,7 +97,9 @@ describe('Account Service', () => {
         fullName: 'This Is The Full Name',
       };
 
-      mockAccountRepository.create.mockResolvedValueOnce('id');
+      const mockAccountId = 'id';
+
+      mockAccountRepository.create.mockResolvedValueOnce(mockAccountId);
 
       const accountService = new AccountService(mockAccountRepository);
 
@@ -104,7 +116,7 @@ describe('Account Service', () => {
 
       const result = await accountService.createAccount(mockAccount);
 
-      expect(result).toEqual({ accountId: 'id' });
+      expect(result).toEqual(mockAccountId);
 
       expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
       expect(loggerSpyError).not.toHaveBeenCalled();

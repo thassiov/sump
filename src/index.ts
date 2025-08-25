@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import { Knex } from 'knex';
 
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
 import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
 import { setupLogger } from './lib/logger/logger';
-import { SumpConfig } from './lib/types';
+import { CreateServiceInstanceOptions, SumpConfig } from './lib/types';
 import * as services from './services';
 
 const logger = setupLogger('sump-bootstrap');
@@ -43,6 +42,8 @@ async function bootstrap(sumpConfig?: object) {
   }
 }
 
+// @FIX: this types are all wrong, but ill fix it later with some 'typeof baseservice/baserepository'
+//  and changes in the base clases themselves
 function createServiceInstance(
   serviceName: keyof typeof services,
   configs: CreateServiceInstanceOptions
@@ -90,8 +91,6 @@ function setupServiceEndpoints(
 //     process.exit(1);
 //   }
 // }
-
-type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
 
 (async () => {
   await bootstrap();
