@@ -97,7 +97,7 @@ describe('Account Service', () => {
         fullName: 'This Is The Full Name',
       };
 
-      const mockAccountId = 'id';
+      const mockAccountId = '3705306c-2a03-48da-91fa-707065f1c780';
 
       mockAccountRepository.create.mockResolvedValueOnce(mockAccountId);
 
@@ -126,7 +126,7 @@ describe('Account Service', () => {
   describe('getAccountById', () => {
     it('should retrieve a account', async () => {
       const mockAccount: IAccount = {
-        id: 'id',
+        id: '4763444c-52aa-42c5-833d-7a7d5e683cb6',
         email: 'email',
         fullName: 'This Is The Full Name',
         createdAt: 'date',
@@ -147,7 +147,7 @@ describe('Account Service', () => {
 
   describe('removeAccountbyId', () => {
     it('should delete an account', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = '9abde0b5-2a4c-43ff-ad9d-c47198a6cd11';
       const mockResult = true;
 
       mockAccountRepository.removeAccountById.mockResolvedValue(mockResult);
@@ -164,7 +164,7 @@ describe('Account Service', () => {
 
   describe('updateAccountById', () => {
     it('should update an account', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = '63827dd1-b8b8-42e2-ae78-bd71d73958a3';
       const mockUpdateAccountDto: IUpdateAccountDto = {
         fullName: 'This Is The Full Name',
       };

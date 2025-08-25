@@ -120,7 +120,7 @@ export class AccountService extends BaseService implements IAccountService {
           input: { accountId },
           errors: isIdValid.error.issues,
         },
-        context: contexts.ACCOUNT_REMOVE_BY_ID,
+        context: contexts.ACCOUNT_UPDATE_BY_ID,
       });
 
       this.logger.error(errorInstance);

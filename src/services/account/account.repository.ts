@@ -45,7 +45,6 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       return result.id;
     } catch (error) {
-      console.log('ooooh come one');
       this.logger.error(error);
       if (error instanceof BaseCustomError) {
         throw error;
@@ -66,8 +65,6 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
           throw conflictError;
         }
       }
-
-      console.log('is this working at least?');
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
