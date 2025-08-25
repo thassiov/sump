@@ -8,6 +8,9 @@ const repository = {
   account: {
     tableName: 'account',
   },
+  tenant: {
+    tableName: 'tenant',
+  },
 };
 
 // @NOTE: this needs a better name because it is confusing to have it when
