@@ -8,29 +8,26 @@ class TenantHttpService extends BaseHttpService implements ITenantService {
     super('tenant-http-service', url);
   }
 
-  async createTenant(newTenant: ICreateTenantDto): Promise<string> {
+  async create(dto: ICreateTenantDto): Promise<string> {
     return await this.httpClient.post<string>(this.serviceUrl, {
-      body: newTenant,
+      body: dto,
     });
   }
 
-  async getTenantById(tenantId: string): Promise<ITenant | undefined> {
-    const url = `${this.serviceUrl}/${tenantId}`;
+  async getById(id: string): Promise<ITenant | undefined> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.get<ITenant | undefined>(url);
   }
 
-  async removeTenantById(tenantId: string): Promise<boolean> {
-    const url = `${this.serviceUrl}/${tenantId}`;
+  async deleteById(id: string): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.delete<boolean>(url);
   }
 
-  async updateTenantById(
-    tenantId: string,
-    updateTenantDto: IUpdateTenantDto
-  ): Promise<boolean> {
-    const url = `${this.serviceUrl}/${tenantId}`;
+  async updateById(id: string, dto: IUpdateTenantDto): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.patch<boolean>(url, {
-      body: updateTenantDto,
+      body: dto,
     });
   }
 }

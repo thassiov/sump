@@ -23,20 +23,17 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async create(
-    accountDto: ICreateAccountDto,
+    dto: ICreateAccountDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
-      const [result] = await this.sendInsertReturningIdQuery(
-        accountDto,
-        transaction
-      );
+      const [result] = await this.sendInsertReturningIdQuery(dto, transaction);
 
       if (!result) {
         throw new NotExpectedError({
           context: contexts.ACCOUNT_CREATE,
           details: {
-            input: { ...accountDto },
+            input: { ...dto },
             output: result,
             message: 'database insert operation did not return an id',
           },
@@ -57,7 +54,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
             cause: error as Error,
             context: contexts.ACCOUNT_CREATE,
             details: {
-              input: { ...accountDto },
+              input: { ...dto },
               message: 'User identification already in use',
             },
           });
@@ -70,7 +67,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.ACCOUNT_CREATE,
         details: {
-          input: { ...accountDto },
+          input: { ...dto },
         },
       });
 
@@ -78,15 +75,15 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async getAccountById(accountId: string): Promise<IAccount | undefined> {
+  async getById(id: string): Promise<IAccount | undefined> {
     try {
-      return await this.sendFindByIdQuery(accountId);
+      return await this.sendFindByIdQuery(id);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_GET_BY_ID,
         details: {
-          input: { accountId },
+          input: { id },
         },
       });
 
@@ -94,21 +91,15 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async updateAccountById(
-    accountId: string,
-    updateAccountDto: IUpdateAccountDto
-  ): Promise<boolean> {
+  async updateById(id: string, dto: IUpdateAccountDto): Promise<boolean> {
     try {
-      const result = await this.sendUpdateByIdQuery(
-        accountId,
-        updateAccountDto
-      );
+      const result = await this.sendUpdateByIdQuery(id, dto);
 
       if (result === 0) {
         throw new NotFoundError({
           context: contexts.ACCOUNT_UPDATE_BY_ID,
           details: {
-            input: { accountId, ...updateAccountDto },
+            input: { id, ...dto },
           },
         });
       }
@@ -123,7 +114,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
-          input: { accountId, ...updateAccountDto },
+          input: { id, ...dto },
         },
       });
 
@@ -131,15 +122,15 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async removeAccountById(accountId: string): Promise<boolean> {
+  async deleteById(id: string): Promise<boolean> {
     try {
-      const result = await this.sendDeleteByIdQuery(accountId);
+      const result = await this.sendDeleteByIdQuery(id);
 
       if (result === 0) {
         throw new NotFoundError({
           context: contexts.ACCOUNT_REMOVE_BY_ID,
           details: {
-            input: { accountId },
+            input: { id },
           },
         });
       }
@@ -154,7 +145,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
         cause: error as Error,
         context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
-          input: { accountId },
+          input: { id },
         },
       });
 
@@ -178,25 +169,21 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     return await query;
   }
 
-  private async sendFindByIdQuery(
-    accountId: string
-  ): Promise<IAccount | undefined> {
+  private async sendFindByIdQuery(id: string): Promise<IAccount | undefined> {
     return await this.dbClient<IAccount>(this.tableName)
-      .where('id', accountId)
+      .where('id', id)
       .first();
   }
 
   private async sendUpdateByIdQuery(
-    accountId: string,
-    updateAccountDto: IUpdateAccountDto
+    id: string,
+    dto: IUpdateAccountDto
   ): Promise<number> {
-    return await this.dbClient(this.tableName)
-      .where('id', accountId)
-      .update(updateAccountDto);
+    return await this.dbClient(this.tableName).where('id', id).update(dto);
   }
 
-  private async sendDeleteByIdQuery(accountId: string): Promise<number> {
-    return await this.dbClient(this.tableName).where('id', accountId).del();
+  private async sendDeleteByIdQuery(id: string): Promise<number> {
+    return await this.dbClient(this.tableName).where('id', id).del();
   }
 }
 

@@ -12,12 +12,12 @@ describe('Tenant Service', () => {
 
   const mockTenantRepository = {
     create: jest.fn(),
-    getTenantById: jest.fn(),
-    removeTenantById: jest.fn(),
-    updateTenantById: jest.fn(),
+    getById: jest.fn(),
+    deleteById: jest.fn(),
+    updateById: jest.fn(),
   };
 
-  describe('createTenant', () => {
+  describe('create', () => {
     it.each([
       [{}],
       [true],
@@ -42,7 +42,7 @@ describe('Tenant Service', () => {
         );
 
         await expect(
-          tenantService.createTenant(mockTenantInfo as ICreateTenantDto)
+          tenantService.create(mockTenantInfo as ICreateTenantDto)
         ).rejects.toThrow(ValidationError);
 
         expect(loggerSpyInfo).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe('Tenant Service', () => {
 
       let thrown;
       try {
-        await tenantService.createTenant(mockTenant);
+        await tenantService.create(mockTenant);
       } catch (error) {
         thrown = error;
       }
@@ -113,7 +113,7 @@ describe('Tenant Service', () => {
         'error'
       );
 
-      const result = await tenantService.createTenant(mockTenant);
+      const result = await tenantService.create(mockTenant);
 
       expect(result).toEqual(mockTenantId);
 
@@ -122,7 +122,7 @@ describe('Tenant Service', () => {
     });
   });
 
-  describe('getTenantById', () => {
+  describe('getById', () => {
     it('should retrieve a tenant', async () => {
       const mockTenant: ITenant = {
         id: 'cc20c36a-ce11-49bd-962a-d95d77807730',
@@ -132,13 +132,13 @@ describe('Tenant Service', () => {
         updatedAt: 'date',
       };
 
-      mockTenantRepository.getTenantById.mockResolvedValue(mockTenant);
+      mockTenantRepository.getById.mockResolvedValue(mockTenant);
 
       const instance = new TenantService(
         mockTenantRepository as unknown as ITenantRepository
       );
 
-      const result = await instance.getTenantById(mockTenant.id);
+      const result = await instance.getById(mockTenant.id);
 
       expect(result).toEqual(mockTenant);
     });
@@ -149,19 +149,19 @@ describe('Tenant Service', () => {
       const mockTenantId = '1310c276-2eb7-441c-9b5a-8b2efd874b1b';
       const mockResult = true;
 
-      mockTenantRepository.removeTenantById.mockResolvedValue(mockResult);
+      mockTenantRepository.deleteById.mockResolvedValue(mockResult);
 
       const instance = new TenantService(
         mockTenantRepository as unknown as ITenantRepository
       );
 
-      const result = await instance.removeTenantById(mockTenantId);
+      const result = await instance.deleteById(mockTenantId);
 
       expect(result).toBe(mockResult);
     });
   });
 
-  describe('updateTenantById', () => {
+  describe('updateById', () => {
     it('should update an tenant', async () => {
       const mockTenantId = 'dea9eb0d-bd75-4215-aebf-829f6d52a8ba';
       const mockUpdateTenantDto: IUpdateTenantDto = {
@@ -169,15 +169,13 @@ describe('Tenant Service', () => {
       };
       const mockUpdateTenantResult = true;
 
-      mockTenantRepository.updateTenantById.mockResolvedValue(
-        mockUpdateTenantResult
-      );
+      mockTenantRepository.updateById.mockResolvedValue(mockUpdateTenantResult);
 
       const instance = new TenantService(
         mockTenantRepository as unknown as ITenantRepository
       );
 
-      const result = await instance.updateTenantById(
+      const result = await instance.updateById(
         mockTenantId,
         mockUpdateTenantDto
       );

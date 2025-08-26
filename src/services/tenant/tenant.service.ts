@@ -19,16 +19,16 @@ export class TenantService extends BaseService implements ITenantService {
     super('tenant-service');
   }
 
-  async createTenant(
-    newTenant: ICreateTenantDto,
+  async create(
+    dto: ICreateTenantDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
-    const validationResult = createTenantDtoSchema.safeParse(newTenant);
+    const validationResult = createTenantDtoSchema.safeParse(dto);
 
     if (!validationResult.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { ...newTenant },
+          input: { ...dto },
           errors: validationResult.error.issues,
         },
         context: contexts.TENANT_CREATE,
@@ -39,10 +39,7 @@ export class TenantService extends BaseService implements ITenantService {
     }
 
     try {
-      const tenantId = await this.tenantRepository.create(
-        newTenant,
-        transaction
-      );
+      const tenantId = await this.tenantRepository.create(dto, transaction);
 
       this.logger.info(`new tenant created: ${tenantId}`);
 
@@ -55,7 +52,7 @@ export class TenantService extends BaseService implements ITenantService {
 
       const errorInstance = new UnexpectedError({
         details: {
-          input: { ...newTenant },
+          input: { ...dto },
         },
         cause: error as Error,
         context: contexts.TENANT_CREATE,
@@ -67,13 +64,13 @@ export class TenantService extends BaseService implements ITenantService {
     }
   }
 
-  async getTenantById(tenantId: string): Promise<ITenant | undefined> {
-    const isIdValid = idSchema.safeParse(tenantId);
+  async getById(id: string): Promise<ITenant | undefined> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { tenantId },
+          input: { id },
           errors: isIdValid.error.issues,
         },
         context: contexts.TENANT_GET_BY_ID,
@@ -83,16 +80,16 @@ export class TenantService extends BaseService implements ITenantService {
       throw errorInstance;
     }
 
-    return this.tenantRepository.getTenantById(tenantId);
+    return this.tenantRepository.getById(id);
   }
 
-  async removeTenantById(tenantId: string): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(tenantId);
+  async deleteById(id: string): Promise<boolean> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { tenantId },
+          input: { id },
           errors: isIdValid.error.issues,
         },
         context: contexts.TENANT_REMOVE_BY_ID,
@@ -102,19 +99,17 @@ export class TenantService extends BaseService implements ITenantService {
       throw errorInstance;
     }
 
-    return this.tenantRepository.removeTenantById(tenantId);
+    return this.tenantRepository.deleteById(id);
   }
 
-  async updateTenantById(
-    tenantId: string,
-    updateTenantDto: IUpdateTenantDto
-  ): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(tenantId);
+  // @TODO: ensure that _id_  cant be sent in the dto so not to overwrite the actual id
+  async updateById(id: string, dto: IUpdateTenantDto): Promise<boolean> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { tenantId, ...updateTenantDto },
+          input: { id, ...dto },
           errors: isIdValid.error.issues,
         },
         context: contexts.TENANT_UPDATE_BY_ID,
@@ -124,12 +119,12 @@ export class TenantService extends BaseService implements ITenantService {
       throw errorInstance;
     }
 
-    const isPayloadValid = updateTenantDtoSchema.safeParse(updateTenantDto);
+    const isPayloadValid = updateTenantDtoSchema.safeParse(dto);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { tenantId, ...updateTenantDto },
+          input: { id, ...dto },
           errors: isPayloadValid.error.issues,
         },
         context: contexts.TENANT_UPDATE_BY_ID,
@@ -139,6 +134,6 @@ export class TenantService extends BaseService implements ITenantService {
       throw errorInstance;
     }
 
-    return this.tenantRepository.updateTenantById(tenantId, updateTenantDto);
+    return this.tenantRepository.updateById(id, dto);
   }
 }

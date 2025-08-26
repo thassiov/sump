@@ -12,12 +12,12 @@ describe('Account Service', () => {
 
   const mockAccountRepository = {
     create: jest.fn(),
-    getAccountById: jest.fn(),
-    removeAccountById: jest.fn(),
-    updateAccountById: jest.fn(),
+    getById: jest.fn(),
+    deleteById: jest.fn(),
+    updateById: jest.fn(),
   };
 
-  describe('createAccount', () => {
+  describe('create', () => {
     it.each([
       [{}],
       [true],
@@ -42,7 +42,7 @@ describe('Account Service', () => {
         );
 
         await expect(
-          accountService.createAccount(mockAccountInfo as ICreateAccountDto)
+          accountService.create(mockAccountInfo as ICreateAccountDto)
         ).rejects.toThrow(ValidationError);
 
         expect(loggerSpyInfo).not.toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe('Account Service', () => {
       let thrown;
 
       try {
-        await accountService.createAccount(mockAccount);
+        await accountService.create(mockAccount);
       } catch (error) {
         thrown = error;
       }
@@ -114,7 +114,7 @@ describe('Account Service', () => {
         'error'
       );
 
-      const result = await accountService.createAccount(mockAccount);
+      const result = await accountService.create(mockAccount);
 
       expect(result).toEqual(mockAccountId);
 
@@ -123,7 +123,7 @@ describe('Account Service', () => {
     });
   });
 
-  describe('getAccountById', () => {
+  describe('getById', () => {
     it('should retrieve a account', async () => {
       const mockAccount: IAccount = {
         id: '4763444c-52aa-42c5-833d-7a7d5e683cb6',
@@ -133,13 +133,13 @@ describe('Account Service', () => {
         updatedAt: 'date',
       };
 
-      mockAccountRepository.getAccountById.mockResolvedValue(mockAccount);
+      mockAccountRepository.getById.mockResolvedValue(mockAccount);
 
       const instance = new AccountService(
         mockAccountRepository as unknown as IAccountRepository
       );
 
-      const result = await instance.getAccountById(mockAccount.id);
+      const result = await instance.getById(mockAccount.id);
 
       expect(result).toEqual(mockAccount);
     });
@@ -150,19 +150,19 @@ describe('Account Service', () => {
       const mockAccountId = '9abde0b5-2a4c-43ff-ad9d-c47198a6cd11';
       const mockResult = true;
 
-      mockAccountRepository.removeAccountById.mockResolvedValue(mockResult);
+      mockAccountRepository.deleteById.mockResolvedValue(mockResult);
 
       const instance = new AccountService(
         mockAccountRepository as unknown as IAccountRepository
       );
 
-      const result = await instance.removeAccountById(mockAccountId);
+      const result = await instance.deleteById(mockAccountId);
 
       expect(result).toBe(mockResult);
     });
   });
 
-  describe('updateAccountById', () => {
+  describe('updateById', () => {
     it('should update an account', async () => {
       const mockAccountId = '63827dd1-b8b8-42e2-ae78-bd71d73958a3';
       const mockUpdateAccountDto: IUpdateAccountDto = {
@@ -170,7 +170,7 @@ describe('Account Service', () => {
       };
       const mockUpdateAccountResult = true;
 
-      mockAccountRepository.updateAccountById.mockResolvedValue(
+      mockAccountRepository.updateById.mockResolvedValue(
         mockUpdateAccountResult
       );
 
@@ -178,7 +178,7 @@ describe('Account Service', () => {
         mockAccountRepository as unknown as IAccountRepository
       );
 
-      const result = await instance.updateAccountById(
+      const result = await instance.updateById(
         mockAccountId,
         mockUpdateAccountDto
       );

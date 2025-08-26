@@ -4,15 +4,12 @@ import { ICreateAccountDto, IUpdateAccountDto } from './dto.type';
 
 type IAccountRepository = {
   create: (
-    createAccountDto: ICreateAccountDto,
+    dto: ICreateAccountDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getAccountById(accountId: string): Promise<IAccount | undefined>;
-  removeAccountById(accountId: string): Promise<boolean>;
-  updateAccountById(
-    accountId: string,
-    updateAccountDto: IUpdateAccountDto
-  ): Promise<boolean>;
+  getById(id: string): Promise<IAccount | undefined>;
+  deleteById(id: string): Promise<boolean>;
+  updateById(id: string, dto: IUpdateAccountDto): Promise<boolean>;
 };
 
 export type { IAccountRepository };

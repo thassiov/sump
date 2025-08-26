@@ -20,17 +20,17 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   // @NOTE: maybe the transaction argument must be called something else here
-  async createAccount(
-    newAccount: ICreateAccountDto,
+  async create(
+    dto: ICreateAccountDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     // @TODO: move this validation to a api middleware. this service is suposed to receive the correct data
-    const validationResult = createAccountDtoSchema.safeParse(newAccount);
+    const validationResult = createAccountDtoSchema.safeParse(dto);
 
     if (!validationResult.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: newAccount,
+          input: dto,
           errors: validationResult.error.issues,
         },
         context: contexts.ACCOUNT_CREATE,
@@ -41,10 +41,7 @@ export class AccountService extends BaseService implements IAccountService {
     }
 
     try {
-      const accountId = await this.accountRepository.create(
-        newAccount,
-        transaction
-      );
+      const accountId = await this.accountRepository.create(dto, transaction);
 
       this.logger.info(`new account created: ${accountId}`);
 
@@ -57,10 +54,9 @@ export class AccountService extends BaseService implements IAccountService {
 
       const errorInstance = new UnexpectedError({
         details: {
-          input: newAccount,
+          input: dto,
         },
         cause: error as Error,
-        // @NOTE: add a new context, just for the account
         context: contexts.ACCOUNT_CREATE,
       });
 
@@ -70,13 +66,13 @@ export class AccountService extends BaseService implements IAccountService {
     }
   }
 
-  async getAccountById(accountId: string): Promise<IAccount | undefined> {
-    const isIdValid = idSchema.safeParse(accountId);
+  async getById(id: string): Promise<IAccount | undefined> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { accountId },
+          input: { id },
           errors: isIdValid.error.issues,
         },
         context: contexts.ACCOUNT_GET_BY_ID,
@@ -86,16 +82,16 @@ export class AccountService extends BaseService implements IAccountService {
       throw errorInstance;
     }
 
-    return this.accountRepository.getAccountById(accountId);
+    return this.accountRepository.getById(id);
   }
 
-  async removeAccountById(accountId: string): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(accountId);
+  async deleteById(id: string): Promise<boolean> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { accountId },
+          input: { id },
           errors: isIdValid.error.issues,
         },
         context: contexts.ACCOUNT_REMOVE_BY_ID,
@@ -105,19 +101,16 @@ export class AccountService extends BaseService implements IAccountService {
       throw errorInstance;
     }
 
-    return this.accountRepository.removeAccountById(accountId);
+    return this.accountRepository.deleteById(id);
   }
 
-  async updateAccountById(
-    accountId: string,
-    updateAccountDto: IUpdateAccountDto
-  ): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(accountId);
+  async updateById(id: string, dto: IUpdateAccountDto): Promise<boolean> {
+    const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { accountId },
+          input: { id },
           errors: isIdValid.error.issues,
         },
         context: contexts.ACCOUNT_UPDATE_BY_ID,
@@ -127,12 +120,12 @@ export class AccountService extends BaseService implements IAccountService {
       throw errorInstance;
     }
 
-    const isPayloadValid = updateAccountDtoSchema.safeParse(updateAccountDto);
+    const isPayloadValid = updateAccountDtoSchema.safeParse(dto);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { accountId },
+          input: { id, ...dto },
           errors: isPayloadValid.error.issues,
         },
         context: contexts.ACCOUNT_UPDATE_BY_ID,
@@ -142,9 +135,6 @@ export class AccountService extends BaseService implements IAccountService {
       throw errorInstance;
     }
 
-    return this.accountRepository.updateAccountById(
-      accountId,
-      updateAccountDto
-    );
+    return this.accountRepository.updateById(id, dto);
   }
 }

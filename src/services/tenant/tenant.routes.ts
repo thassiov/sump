@@ -9,70 +9,63 @@ const router = express.Router();
 // const logger = setupLogger('enpoint-v1-accounts');
 
 function makeServiceEndpoints(tenantService: TenantService): express.Router {
-  router.post('/v1/tenants/', makeCreateTenantEndpointFactory(tenantService));
-  router.get(
-    '/v1/tenants/:id',
-    makeGetTenantByIdEndpointFactory(tenantService)
-  );
-  router.patch(
-    '/v1/tenants/:id',
-    makeUpdateTenantByIdEndpointFactory(tenantService)
-  );
+  router.post('/v1/tenants/', makeCreateEndpointFactory(tenantService));
+  router.get('/v1/tenants/:id', makeGetByIdEndpointFactory(tenantService));
+  router.patch('/v1/tenants/:id', makeUpdateByIdEndpointFactory(tenantService));
   router.delete(
     '/v1/tenants/:id',
-    makeRemoveTenantByIdEndpointFactory(tenantService)
+    makeDeleteByIdEndpointFactory(tenantService)
   );
 
   return router;
 }
 
-function makeCreateTenantEndpointFactory(
+function makeCreateEndpointFactory(
   tenantService: TenantService
 ): EndpointHandler {
-  return async function makeCreateTenantEndpoint(
+  return async function makeCreateEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const accountId = await tenantService.createTenant(
-      req.body as ICreateTenantDto
-    );
+    const id = await tenantService.create(req.body as ICreateTenantDto);
 
-    res.status(StatusCodes.CREATED).json({ accountId });
+    res.status(StatusCodes.CREATED).json({ id });
     return;
   };
 }
 
-function makeGetTenantByIdEndpointFactory(
+function makeGetByIdEndpointFactory(
   tenantService: TenantService
 ): EndpointHandler {
-  return async function makeGetTenantByIdEndpoint(
+  return async function makeGetByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const account = await tenantService.getTenantById(req.params['id']!);
+    const id = req.params['id']!;
+    const tenant = await tenantService.getById(id);
 
-    if (!account) {
+    if (!tenant) {
       res.status(StatusCodes.NOT_FOUND).send();
       return;
     }
 
-    res.status(StatusCodes.OK).json({ account });
+    res.status(StatusCodes.OK).json({ tenant });
     return;
   };
 }
 
-function makeUpdateTenantByIdEndpointFactory(
+function makeUpdateByIdEndpointFactory(
   tenantService: TenantService
 ): EndpointHandler {
-  return async function makeUpdateTenantByIdEndpoint(
+  return async function makeUpdateByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const tenantId = req.params['id']!;
-    const payload = req.body as IUpdateTenantDto;
-    const tenant = await tenantService.updateTenantById(tenantId, payload);
+    const id = req.params['id']!;
+    const dto = req.body as IUpdateTenantDto;
+    const tenant = await tenantService.updateById(id, dto);
 
     if (!tenant) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -84,17 +77,17 @@ function makeUpdateTenantByIdEndpointFactory(
   };
 }
 
-function makeRemoveTenantByIdEndpointFactory(
+function makeDeleteByIdEndpointFactory(
   tenantService: TenantService
 ): EndpointHandler {
-  return async function makeRemoveTenantByIdEndpoint(
+  return async function makeDeleteByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const tenantId = req.params['id']!;
+    const id = req.params['id']!;
 
-    await tenantService.removeTenantById(tenantId);
+    await tenantService.deleteById(id);
 
     res.status(StatusCodes.NO_CONTENT).send();
     return;

@@ -147,7 +147,7 @@ describe('[repository] tenant', () => {
     });
   });
 
-  describe('getTenantById', () => {
+  describe('getById', () => {
     it('gets an tenant by its id', async () => {
       const mockTenantId = 'fc743488-35e4-41a6-8ce4-0b59edd1e4e8';
       const mockDbResponse: ITenant = {
@@ -169,7 +169,7 @@ describe('[repository] tenant', () => {
 
       const instance = new TenantRepository({} as unknown as Knex);
 
-      const result = await instance.getTenantById(mockTenantId);
+      const result = await instance.getById(mockTenantId);
       expect(result).toBe(mockDbResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockTenantId);
@@ -190,7 +190,7 @@ describe('[repository] tenant', () => {
 
       const instance = new TenantRepository({} as unknown as Knex);
 
-      const result = await instance.getTenantById(mockTenantId);
+      const result = await instance.getById(mockTenantId);
       expect(result).toBe(mockDbResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockTenantId);
@@ -205,7 +205,7 @@ describe('[repository] tenant', () => {
         context: contexts.TENANT_GET_BY_ID,
         details: {
           input: {
-            tenantId: mockTenantId,
+            id: mockTenantId,
           },
         },
       });
@@ -223,7 +223,7 @@ describe('[repository] tenant', () => {
 
       let thrown;
       try {
-        await instance.getTenantById(mockTenantId);
+        await instance.getById(mockTenantId);
       } catch (error) {
         thrown = error;
       }
@@ -241,7 +241,7 @@ describe('[repository] tenant', () => {
     });
   });
 
-  describe('updateTenantById', () => {
+  describe('updateById', () => {
     it('updates an tenant by its id', async () => {
       const mockTenantId = '18d61ace-180a-44e2-9604-fecc66d6f3d4';
       const mockDbResponse = 1;
@@ -262,7 +262,7 @@ describe('[repository] tenant', () => {
 
       const instance = new TenantRepository({} as unknown as Knex);
 
-      const result = await instance.updateTenantById(
+      const result = await instance.updateById(
         mockTenantId,
         mockUpdateTenantDto
       );
@@ -286,7 +286,7 @@ describe('[repository] tenant', () => {
         context: contexts.TENANT_UPDATE_BY_ID,
         details: {
           input: {
-            tenantId: mockTenantId,
+            id: mockTenantId,
             ...mockUpdateTenantDto,
           },
         },
@@ -305,7 +305,7 @@ describe('[repository] tenant', () => {
 
       let thrown;
       try {
-        await instance.updateTenantById(mockTenantId, mockUpdateTenantDto);
+        await instance.updateById(mockTenantId, mockUpdateTenantDto);
       } catch (error) {
         thrown = error;
       }
@@ -336,7 +336,7 @@ describe('[repository] tenant', () => {
         context: contexts.TENANT_UPDATE_BY_ID,
         details: {
           input: {
-            tenantId: mockTenantId,
+            id: mockTenantId,
             ...mockUpdateTenantDto,
           },
         },
@@ -355,7 +355,7 @@ describe('[repository] tenant', () => {
 
       let thrown;
       try {
-        await instance.updateTenantById(mockTenantId, mockUpdateTenantDto);
+        await instance.updateById(mockTenantId, mockUpdateTenantDto);
       } catch (error) {
         thrown = error;
       }
@@ -376,7 +376,7 @@ describe('[repository] tenant', () => {
     });
   });
 
-  describe('removeTenantById', () => {
+  describe('deleteById', () => {
     it('removes an tenant by its id', async () => {
       const mockTenantId = '4ad3201a-ac8d-4a84-a8b9-35456e9e4f93';
       const mockDbResponse = 1;
@@ -393,7 +393,7 @@ describe('[repository] tenant', () => {
 
       const instance = new TenantRepository({} as unknown as Knex);
 
-      const result = await instance.removeTenantById(mockTenantId);
+      const result = await instance.deleteById(mockTenantId);
       expect(result).toBe(mockRepositoryResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockTenantId);
@@ -407,7 +407,7 @@ describe('[repository] tenant', () => {
         context: contexts.TENANT_REMOVE_BY_ID,
         details: {
           input: {
-            tenantId: mockTenantId,
+            id: mockTenantId,
           },
         },
       });
@@ -425,7 +425,7 @@ describe('[repository] tenant', () => {
 
       let thrown;
       try {
-        await instance.removeTenantById(mockTenantId);
+        await instance.deleteById(mockTenantId);
       } catch (error) {
         thrown = error;
       }
@@ -451,7 +451,7 @@ describe('[repository] tenant', () => {
         context: contexts.TENANT_REMOVE_BY_ID,
         details: {
           input: {
-            tenantId: mockTenantId,
+            id: mockTenantId,
           },
         },
       });
@@ -469,7 +469,7 @@ describe('[repository] tenant', () => {
 
       let thrown;
       try {
-        await instance.removeTenantById(mockTenantId);
+        await instance.deleteById(mockTenantId);
       } catch (error) {
         thrown = error;
       }

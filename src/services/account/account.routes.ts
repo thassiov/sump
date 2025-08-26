@@ -9,51 +9,44 @@ const router = express.Router();
 // const logger = setupLogger('enpoint-v1-accounts');
 
 function makeServiceEndpoints(accountService: AccountService): express.Router {
-  router.post(
-    '/v1/accounts/',
-    makeCreateAccountEndpointFactory(accountService)
-  );
-  router.get(
-    '/v1/accounts/:id',
-    makeGetAccountByIdEndpointFactory(accountService)
-  );
+  router.post('/v1/accounts/', makeCreateEndpointFactory(accountService));
+  router.get('/v1/accounts/:id', makeGetByIdEndpointFactory(accountService));
   router.patch(
     '/v1/accounts/:id',
-    makeUpdateAccountByIdEndpointFactory(accountService)
+    makeUpdateByIdEndpointFactory(accountService)
   );
   router.delete(
     '/v1/accounts/:id',
-    makeRemoveAccountByIdEndpointFactory(accountService)
+    makeDeleteByIdEndpointFactory(accountService)
   );
 
   return router;
 }
 
-function makeCreateAccountEndpointFactory(
+function makeCreateEndpointFactory(
   accountService: AccountService
 ): EndpointHandler {
-  return async function makeCreateAccountEndpoint(
+  return async function makeCreateEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const accountId = await accountService.createAccount(
-      req.body as ICreateAccountDto
-    );
+    const id = await accountService.create(req.body as ICreateAccountDto);
 
-    res.status(StatusCodes.CREATED).json({ accountId });
+    res.status(StatusCodes.CREATED).json({ id });
     return;
   };
 }
 
-function makeGetAccountByIdEndpointFactory(
+function makeGetByIdEndpointFactory(
   accountService: AccountService
 ): EndpointHandler {
-  return async function makeGetAccountByIdEndpoint(
+  return async function makeGetByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const account = await accountService.getAccountById(req.params['id']!);
+    const id = req.params['id']!;
+    const account = await accountService.getById(id);
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -65,17 +58,17 @@ function makeGetAccountByIdEndpointFactory(
   };
 }
 
-function makeUpdateAccountByIdEndpointFactory(
+function makeUpdateByIdEndpointFactory(
   accountService: AccountService
 ): EndpointHandler {
-  return async function makeUpdateAccountByIdEndpoint(
+  return async function makeUpdateByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const accountId = req.params['id']!;
-    const payload = req.body as IUpdateAccountDto;
-    const account = await accountService.updateAccountById(accountId, payload);
+    const id = req.params['id']!;
+    const dto = req.body as IUpdateAccountDto;
+    const account = await accountService.updateById(id, dto);
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -87,17 +80,17 @@ function makeUpdateAccountByIdEndpointFactory(
   };
 }
 
-function makeRemoveAccountByIdEndpointFactory(
+function makeDeleteByIdEndpointFactory(
   accountService: AccountService
 ): EndpointHandler {
-  return async function makeRemoveAccountByIdEndpoint(
+  return async function makeDeleteByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const accountId = req.params['id']!;
+    const id = req.params['id']!;
 
-    await accountService.removeAccountById(accountId);
+    await accountService.deleteById(id);
 
     res.status(StatusCodes.NO_CONTENT).send();
     return;

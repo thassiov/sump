@@ -4,15 +4,12 @@ import { ITenant } from './tenant.type';
 
 type ITenantRepository = {
   create: (
-    createTenantDto: ICreateTenantDto,
+    dto: ICreateTenantDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getTenantById(tenantId: string): Promise<ITenant | undefined>;
-  removeTenantById(tenantId: string): Promise<boolean>;
-  updateTenantById(
-    tenantId: string,
-    updateTenantDto: IUpdateTenantDto
-  ): Promise<boolean>;
+  getById(id: string): Promise<ITenant | undefined>;
+  deleteById(id: string): Promise<boolean>;
+  updateById(id: string, dto: IUpdateTenantDto): Promise<boolean>;
 };
 
 export type { ITenantRepository };

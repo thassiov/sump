@@ -8,29 +8,26 @@ class AccountHttpService extends BaseHttpService implements IAccountService {
     super('account-http-service', url);
   }
 
-  async createAccount(newAccount: ICreateAccountDto): Promise<string> {
+  async create(dto: ICreateAccountDto): Promise<string> {
     return await this.httpClient.post<string>(this.serviceUrl, {
-      body: newAccount,
+      body: dto,
     });
   }
 
-  async getAccountById(accountId: string): Promise<IAccount | undefined> {
-    const url = `${this.serviceUrl}/${accountId}`;
+  async getById(id: string): Promise<IAccount | undefined> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.get<IAccount | undefined>(url);
   }
 
-  async removeAccountById(accountId: string): Promise<boolean> {
-    const url = `${this.serviceUrl}/${accountId}`;
+  async deleteById(id: string): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.delete<boolean>(url);
   }
 
-  async updateAccountById(
-    accountId: string,
-    updateAccountDto: IUpdateAccountDto
-  ): Promise<boolean> {
-    const url = `${this.serviceUrl}/${accountId}`;
+  async updateById(id: string, dto: IUpdateAccountDto): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.patch<boolean>(url, {
-      body: updateAccountDto,
+      body: dto,
     });
   }
 }

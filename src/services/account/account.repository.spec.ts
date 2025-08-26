@@ -147,7 +147,7 @@ describe('[repository] account', () => {
     });
   });
 
-  describe('getAccountById', () => {
+  describe('getById', () => {
     it('gets an account by its id', async () => {
       const mockAccountId = 'id';
       const mockDbResponse: IAccount = {
@@ -169,7 +169,7 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.getAccountById(mockAccountId);
+      const result = await instance.getById(mockAccountId);
       expect(result).toBe(mockDbResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockAccountId);
@@ -190,7 +190,7 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.getAccountById(mockAccountId);
+      const result = await instance.getById(mockAccountId);
       expect(result).toBe(mockDbResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockAccountId);
@@ -205,7 +205,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_GET_BY_ID,
         details: {
           input: {
-            accountId: mockAccountId,
+            id: mockAccountId,
           },
         },
       });
@@ -223,7 +223,7 @@ describe('[repository] account', () => {
 
       let thrown;
       try {
-        await instance.getAccountById(mockAccountId);
+        await instance.getById(mockAccountId);
       } catch (error) {
         thrown = error;
       }
@@ -241,7 +241,7 @@ describe('[repository] account', () => {
     });
   });
 
-  describe('updateAccountById', () => {
+  describe('updateById', () => {
     it('updates an account by its id', async () => {
       const mockAccountId = 'id';
       const mockDbResponse = 1;
@@ -262,7 +262,7 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.updateAccountById(
+      const result = await instance.updateById(
         mockAccountId,
         mockUpdateAccountDto
       );
@@ -286,7 +286,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
           input: {
-            accountId: mockAccountId,
+            id: mockAccountId,
             ...mockUpdateAccountDto,
           },
         },
@@ -305,7 +305,7 @@ describe('[repository] account', () => {
 
       let thrown;
       try {
-        await instance.updateAccountById(mockAccountId, mockUpdateAccountDto);
+        await instance.updateById(mockAccountId, mockUpdateAccountDto);
       } catch (error) {
         thrown = error;
       }
@@ -336,7 +336,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_UPDATE_BY_ID,
         details: {
           input: {
-            accountId: mockAccountId,
+            id: mockAccountId,
             ...mockUpdateAccountDto,
           },
         },
@@ -355,7 +355,7 @@ describe('[repository] account', () => {
 
       let thrown;
       try {
-        await instance.updateAccountById(mockAccountId, mockUpdateAccountDto);
+        await instance.updateById(mockAccountId, mockUpdateAccountDto);
       } catch (error) {
         thrown = error;
       }
@@ -376,7 +376,7 @@ describe('[repository] account', () => {
     });
   });
 
-  describe('removeAccountById', () => {
+  describe('deleteById', () => {
     it('removes an account by its id', async () => {
       const mockAccountId = 'id';
       const mockDbResponse = 1;
@@ -393,7 +393,7 @@ describe('[repository] account', () => {
 
       const instance = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.removeAccountById(mockAccountId);
+      const result = await instance.deleteById(mockAccountId);
       expect(result).toBe(mockRepositoryResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockAccountId);
@@ -407,7 +407,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
           input: {
-            accountId: mockAccountId,
+            id: mockAccountId,
           },
         },
       });
@@ -425,7 +425,7 @@ describe('[repository] account', () => {
 
       let thrown;
       try {
-        await instance.removeAccountById(mockAccountId);
+        await instance.deleteById(mockAccountId);
       } catch (error) {
         thrown = error;
       }
@@ -451,7 +451,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_REMOVE_BY_ID,
         details: {
           input: {
-            accountId: mockAccountId,
+            id: mockAccountId,
           },
         },
       });
@@ -469,7 +469,7 @@ describe('[repository] account', () => {
 
       let thrown;
       try {
-        await instance.removeAccountById(mockAccountId);
+        await instance.deleteById(mockAccountId);
       } catch (error) {
         thrown = error;
       }

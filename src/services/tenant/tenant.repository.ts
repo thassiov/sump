@@ -21,20 +21,17 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
   }
 
   async create(
-    tenantDto: ICreateTenantDto,
+    dto: ICreateTenantDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
-      const [result] = await this.sendInsertReturningIdQuery(
-        tenantDto,
-        transaction
-      );
+      const [result] = await this.sendInsertReturningIdQuery(dto, transaction);
 
       if (!result) {
         throw new NotExpectedError({
           context: contexts.TENANT_CREATE,
           details: {
-            input: { ...tenantDto },
+            input: { ...dto },
             output: result,
             message: 'database insert operation did not return an id',
           },
@@ -52,7 +49,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
         cause: error as Error,
         context: contexts.TENANT_CREATE,
         details: {
-          input: { ...tenantDto },
+          input: { ...dto },
         },
       });
 
@@ -60,15 +57,15 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async getTenantById(tenantId: string): Promise<ITenant | undefined> {
+  async getById(id: string): Promise<ITenant | undefined> {
     try {
-      return await this.sendFindByIdQuery(tenantId);
+      return await this.sendFindByIdQuery(id);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.TENANT_GET_BY_ID,
         details: {
-          input: { tenantId },
+          input: { id },
         },
       });
 
@@ -76,18 +73,15 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async updateTenantById(
-    tenantId: string,
-    updateTenantDto: IUpdateTenantDto
-  ): Promise<boolean> {
+  async updateById(id: string, dto: IUpdateTenantDto): Promise<boolean> {
     try {
-      const result = await this.sendUpdateByIdQuery(tenantId, updateTenantDto);
+      const result = await this.sendUpdateByIdQuery(id, dto);
 
       if (result === 0) {
         throw new NotFoundError({
           context: contexts.TENANT_UPDATE_BY_ID,
           details: {
-            input: { tenantId, ...updateTenantDto },
+            input: { id, ...dto },
           },
         });
       }
@@ -102,7 +96,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
         cause: error as Error,
         context: contexts.TENANT_UPDATE_BY_ID,
         details: {
-          input: { tenantId, ...updateTenantDto },
+          input: { id, ...dto },
         },
       });
 
@@ -110,15 +104,15 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async removeTenantById(tenantId: string): Promise<boolean> {
+  async deleteById(id: string): Promise<boolean> {
     try {
-      const result = await this.sendDeleteByIdQuery(tenantId);
+      const result = await this.sendDeleteByIdQuery(id);
 
       if (result === 0) {
         throw new NotFoundError({
           context: contexts.TENANT_REMOVE_BY_ID,
           details: {
-            input: { tenantId },
+            input: { id },
           },
         });
       }
@@ -133,7 +127,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
         cause: error as Error,
         context: contexts.TENANT_REMOVE_BY_ID,
         details: {
-          input: { tenantId },
+          input: { id },
         },
       });
 
@@ -157,25 +151,19 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     return await query;
   }
 
-  private async sendFindByIdQuery(
-    tenantId: string
-  ): Promise<ITenant | undefined> {
-    return await this.dbClient<ITenant>(this.tableName)
-      .where('id', tenantId)
-      .first();
+  private async sendFindByIdQuery(id: string): Promise<ITenant | undefined> {
+    return await this.dbClient<ITenant>(this.tableName).where('id', id).first();
   }
 
   private async sendUpdateByIdQuery(
-    tenantId: string,
-    updateTenantDto: IUpdateTenantDto
+    id: string,
+    dto: IUpdateTenantDto
   ): Promise<number> {
-    return await this.dbClient(this.tableName)
-      .where('id', tenantId)
-      .update(updateTenantDto);
+    return await this.dbClient(this.tableName).where('id', id).update(dto);
   }
 
-  private async sendDeleteByIdQuery(tenantId: string): Promise<number> {
-    return await this.dbClient(this.tableName).where('id', tenantId).del();
+  private async sendDeleteByIdQuery(id: string): Promise<number> {
+    return await this.dbClient(this.tableName).where('id', id).del();
   }
 }
 
