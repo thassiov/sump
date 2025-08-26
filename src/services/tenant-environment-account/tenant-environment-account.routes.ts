@@ -2,48 +2,48 @@ import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 // import { setupLogger } from '../../lib/logger/logger';
 import { EndpointHandler } from '../../lib/types';
-import { TenantEnvironmentService } from './tenant-environment.service';
+import { TenantEnvironmentAccountService } from './tenant-environment-account.service';
 import {
-  ICreateTenantEnvironmentDto,
-  IUpdateTenantEnvironmentDto,
+  ICreateTenantEnvironmentAccountDto,
+  IUpdateTenantEnvironmentAccountDto,
 } from './types/dto.type';
 
 const router = express.Router();
 // const logger = setupLogger('enpoint-v1-accounts');
 
 function makeServiceEndpoints(
-  tenantEnvironmentService: TenantEnvironmentService
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): express.Router {
-  // @FIX: this endpoints are dependent on tenant . Also, it shouldnt be called directly
+  // @FIX: this endpoints are dependent on tenant environment. Also, it shouldnt be called directly
   router.post(
-    '/v1/environments/',
-    makeCreateEndpointFactory(tenantEnvironmentService)
+    '/v1/accounts/',
+    makeCreateEndpointFactory(tenantEnvironmentAccountService)
   );
   router.get(
-    '/v1/environments/:id',
-    makeGetByIdEndpointFactory(tenantEnvironmentService)
+    '/v1/accounts/:id',
+    makeGetByIdEndpointFactory(tenantEnvironmentAccountService)
   );
   router.patch(
-    '/v1/environments/:id',
-    makeUpdateByIdEndpointFactory(tenantEnvironmentService)
+    '/v1/accounts/:id',
+    makeUpdateByIdEndpointFactory(tenantEnvironmentAccountService)
   );
   router.delete(
-    '/v1/environments/:id',
-    makeDeleteByIdEndpointFactory(tenantEnvironmentService)
+    '/v1/accounts/:id',
+    makeDeleteByIdEndpointFactory(tenantEnvironmentAccountService)
   );
 
   return router;
 }
 
 function makeCreateEndpointFactory(
-  tenantEnvironmentService: TenantEnvironmentService
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): EndpointHandler {
   return async function makeCreateEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const id = await tenantEnvironmentService.create(
-      req.body as ICreateTenantEnvironmentDto
+    const id = await tenantEnvironmentAccountService.create(
+      req.body as ICreateTenantEnvironmentAccountDto
     );
 
     res.status(StatusCodes.CREATED).json({ id });
@@ -52,7 +52,7 @@ function makeCreateEndpointFactory(
 }
 
 function makeGetByIdEndpointFactory(
-  tenantEnvironmentService: TenantEnvironmentService
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): EndpointHandler {
   return async function makeGetByIdEndpoint(
     req: Request,
@@ -60,20 +60,20 @@ function makeGetByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const tenant = await tenantEnvironmentService.getById(id);
+    const account = await tenantEnvironmentAccountService.getById(id);
 
-    if (!tenant) {
+    if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
       return;
     }
 
-    res.status(StatusCodes.OK).json({ tenant });
+    res.status(StatusCodes.OK).json({ account });
     return;
   };
 }
 
 function makeUpdateByIdEndpointFactory(
-  tenantEnvironmentService: TenantEnvironmentService
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): EndpointHandler {
   return async function makeUpdateByIdEndpoint(
     req: Request,
@@ -81,10 +81,10 @@ function makeUpdateByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentDto;
-    const tenant = await tenantEnvironmentService.updateById(id, dto);
+    const dto = req.body as IUpdateTenantEnvironmentAccountDto;
+    const account = await tenantEnvironmentAccountService.updateById(id, dto);
 
-    if (!tenant) {
+    if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
       return;
     }
@@ -95,7 +95,7 @@ function makeUpdateByIdEndpointFactory(
 }
 
 function makeDeleteByIdEndpointFactory(
-  tenantEnvironmentService: TenantEnvironmentService
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): EndpointHandler {
   return async function makeDeleteByIdEndpoint(
     req: Request,
@@ -104,7 +104,7 @@ function makeDeleteByIdEndpointFactory(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
 
-    await tenantEnvironmentService.deleteById(id);
+    await tenantEnvironmentAccountService.deleteById(id);
 
     res.status(StatusCodes.NO_CONTENT).send();
     return;
