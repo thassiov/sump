@@ -404,7 +404,7 @@ describe('[repository] account', () => {
       const mockDbResponse = 0;
 
       const mockThrownError = new NotFoundError({
-        context: contexts.ACCOUNT_REMOVE_BY_ID,
+        context: contexts.ACCOUNT_DELETE_BY_ID,
         details: {
           input: {
             id: mockAccountId,
@@ -448,7 +448,7 @@ describe('[repository] account', () => {
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
         cause: mockThrownError,
-        context: contexts.ACCOUNT_REMOVE_BY_ID,
+        context: contexts.ACCOUNT_DELETE_BY_ID,
         details: {
           input: {
             id: mockAccountId,

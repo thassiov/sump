@@ -92,7 +92,7 @@ export class TenantService extends BaseService implements ITenantService {
           input: { id },
           errors: isIdValid.error.issues,
         },
-        context: contexts.TENANT_REMOVE_BY_ID,
+        context: contexts.TENANT_DELETE_BY_ID,
       });
 
       this.logger.error(errorInstance);

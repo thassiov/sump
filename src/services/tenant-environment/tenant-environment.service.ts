@@ -3,37 +3,38 @@ import { BaseService } from '../../base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { IAccount } from './types/account.type';
 import {
-  createAccountDtoSchema,
-  ICreateAccountDto,
+  createTenantEnvironmentDtoSchema,
+  ICreateTenantEnvironmentDto,
   idSchema,
-  IUpdateAccountDto,
-  updateAccountDtoSchema,
+  IUpdateTenantEnvironmentDto,
+  updateTenantEnvironmentDtoSchema,
 } from './types/dto.type';
-import { IAccountRepository } from './types/repository.type';
-import { IAccountService } from './types/service.type';
+import { ITenantEnvironmentRepository } from './types/repository.type';
+import { ITenantEnvironmentService } from './types/service.type';
+import { ITenantEnvironment } from './types/tenant-environment.type';
 
-export class AccountService extends BaseService implements IAccountService {
-  constructor(private readonly accountRepository: IAccountRepository) {
-    super('account-service');
+export class TenantEnvironmentService
+  extends BaseService
+  implements ITenantEnvironmentService
+{
+  constructor(private readonly tenantRepository: ITenantEnvironmentRepository) {
+    super('tenant-service');
   }
 
-  // @NOTE: maybe the transaction argument must be called something else here
   async create(
-    dto: ICreateAccountDto,
+    dto: ICreateTenantEnvironmentDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
-    // @TODO: move this validation to a api middleware. this service is suposed to receive the correct data
-    const validationResult = createAccountDtoSchema.safeParse(dto);
+    const validationResult = createTenantEnvironmentDtoSchema.safeParse(dto);
 
     if (!validationResult.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: dto,
+          input: { ...dto },
           errors: validationResult.error.issues,
         },
-        context: contexts.ACCOUNT_CREATE,
+        context: contexts.TENANT_ENVIRONMENT_CREATE,
       });
 
       this.logger.error(errorInstance);
@@ -41,11 +42,11 @@ export class AccountService extends BaseService implements IAccountService {
     }
 
     try {
-      const accountId = await this.accountRepository.create(dto, transaction);
+      const tenantId = await this.tenantRepository.create(dto, transaction);
 
-      this.logger.info(`new account created: ${accountId}`);
+      this.logger.info(`new tenant created: ${tenantId}`);
 
-      return accountId;
+      return tenantId;
     } catch (error) {
       if (error instanceof BaseCustomError) {
         this.logger.error(error);
@@ -54,10 +55,10 @@ export class AccountService extends BaseService implements IAccountService {
 
       const errorInstance = new UnexpectedError({
         details: {
-          input: dto,
+          input: { ...dto },
         },
         cause: error as Error,
-        context: contexts.ACCOUNT_CREATE,
+        context: contexts.TENANT_ENVIRONMENT_CREATE,
       });
 
       this.logger.error(errorInstance);
@@ -66,7 +67,7 @@ export class AccountService extends BaseService implements IAccountService {
     }
   }
 
-  async getById(id: string): Promise<IAccount | undefined> {
+  async getById(id: string): Promise<ITenantEnvironment | undefined> {
     const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
@@ -75,14 +76,14 @@ export class AccountService extends BaseService implements IAccountService {
           input: { id },
           errors: isIdValid.error.issues,
         },
-        context: contexts.ACCOUNT_GET_BY_ID,
+        context: contexts.TENANT_ENVIRONMENT_GET_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    return this.accountRepository.getById(id);
+    return this.tenantRepository.getById(id);
   }
 
   async deleteById(id: string): Promise<boolean> {
@@ -94,33 +95,37 @@ export class AccountService extends BaseService implements IAccountService {
           input: { id },
           errors: isIdValid.error.issues,
         },
-        context: contexts.ACCOUNT_DELETE_BY_ID,
+        context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    return this.accountRepository.deleteById(id);
+    return this.tenantRepository.deleteById(id);
   }
 
-  async updateById(id: string, dto: IUpdateAccountDto): Promise<boolean> {
+  // @TODO: ensure that _id_  cant be sent in the dto so not to overwrite the actual id
+  async updateById(
+    id: string,
+    dto: IUpdateTenantEnvironmentDto
+  ): Promise<boolean> {
     const isIdValid = idSchema.safeParse(id);
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { id },
+          input: { id, ...dto },
           errors: isIdValid.error.issues,
         },
-        context: contexts.ACCOUNT_UPDATE_BY_ID,
+        context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    const isPayloadValid = updateAccountDtoSchema.safeParse(dto);
+    const isPayloadValid = updateTenantEnvironmentDtoSchema.safeParse(dto);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({
@@ -128,13 +133,13 @@ export class AccountService extends BaseService implements IAccountService {
           input: { id, ...dto },
           errors: isPayloadValid.error.issues,
         },
-        context: contexts.ACCOUNT_UPDATE_BY_ID,
+        context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    return this.accountRepository.updateById(id, dto);
+    return this.tenantRepository.updateById(id, dto);
   }
 }

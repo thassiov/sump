@@ -110,7 +110,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_REMOVE_BY_ID,
+          context: contexts.TENANT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -125,7 +125,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_REMOVE_BY_ID,
+        context: contexts.TENANT_DELETE_BY_ID,
         details: {
           input: { id },
         },
