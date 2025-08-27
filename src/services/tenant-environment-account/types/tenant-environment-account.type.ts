@@ -10,7 +10,10 @@ const tenantEnvironmentAccountSchema = z.object({
   username: z.string().max(20),
   avatarUrl: z.string().check(z.url()),
   tenantEnvironmentId: z.uuid(), // @NOTE: not certain about this property name...
-  customProperties: z.record(z.string(), z.object()),
+  customProperties: z.record(
+    z.string(),
+    z.object().refine(() => ({}))
+  ),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
