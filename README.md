@@ -19,7 +19,7 @@ TL;DR: a personal project made as a study on the [SAGA pattern](https://microser
 There are 4 main components in this system:
 
 - `tenant` - the main container that groups all the other components (like an `organization` in other platforms);
-- `account` - related exclusively to the tenant, it can (depending on the permissions) act on the other components and the tenant itself;
+- `account` - related exclusively to the tenant management, it can (depending on the permissions) act on the other components and the tenant itself;
 - `tenant-environment` - a sub container inside the tenant. This is where the actual users of whatever application this is plugged into will resider (eg. `dev`, `staging`, `prod` environments);
 - `tenant-environment-account` - this is your application's user. It lives inside an environment from the tenant. This is *different* from the `account` model.
 
