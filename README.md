@@ -12,6 +12,9 @@ But this collects *user accounts* to recirculate (auth). A identity platform.
 
 TL;DR: a personal project made as a study on the [SAGA pattern](https://microservices.io/patterns/data/saga.html) and making a program that can be used as either an imported npm package, a standalone monolith or some microservices.
 
+@TODO: describe in full the intent of the project
+@TODO: describe the 'no frameworks or orm/odm' approach
+
 ### How it works (or at least should work)
 
 ##### The "moving parts"
@@ -29,7 +32,21 @@ The typical use for a identity/user management platform, and what `sump` is iten
 - create a new `tenant-environment` (also give it a name and settings), 
 - start creating users (`tenant-environment-account`) in the new environment and authenticating them when needed.
 
-##### 
+##### The services
+
+@TODO: describe the business/main service, local api and rest api
+@TODO: describe the account service, local api and rest api
+@TODO: describe the tenant service, local api and rest api
+@TODO: describe the tenant-environment service, local api and rest api
+@TODO: describe the tenant-environment-account service, local api and rest api
+
+##### OpenID Provider 
+
+@TODO: describe the usage of [node-oidc-provider](https://github.com/panva/node-oidc-provider) as the way to do user auth 
+
+##### Config options and file (sump-config.json)
+
+@TODO: describe the configs sump supports
 
 ### Installation and Deployment 
 
@@ -95,7 +112,36 @@ sump.listen((port) => console.log(`server running! http://localhost:${port}`));
 ```
 
 ### How to use it
+
+@TODO: describe instance methods
+@TODO: describe REST api
+
 ### Development
+
+The only dependency you'll need to work on this project is have docker installed.
+There is a `Dockerfile` to build the image of the service and a `docker-compose.yaml` file that builds the necessary services to make it all run.
+
+Currently the services are (listed inside the docker-compose file):
+
+- posgres-local: just a instance of postgres to make the project work;
+- base-image: builds the image to be used by the other services;
+- posgres-init: using the built image, runs the migrations to build tables and setup whatever else is needed in the db;
+- *main-service*: using the built image, starts the service exposing the port 8080 at the localhost.
+
+To run services *with hot reload* of changed files, use the following command:
+
+```bash
+docker compose up --watch --build
+```
+
+The `--watch` flag uses the `develop` block inside the main-service to know what to look for.
+
+- changes inside `./src` triggers a service restart
+- changes in the `package.json` file rebuild the image of the service
+
 ### Roadmap (no guarantees it will be followed, though. but at least this is something)
+
+@TODO: write the roadmap
+
 ### License
 [MIT](./LICENSE), of course.
