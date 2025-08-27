@@ -1,11 +1,11 @@
 import z from 'zod';
 
 const tenantSchema = z.object({
-  id: z.string().uuid(),
-  ownerId: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  createdAt: z.string().date(),
-  updatedAt: z.string().date(),
+  customProperties: z.record(z.string(), z.object()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 type ITenant = z.infer<typeof tenantSchema>;

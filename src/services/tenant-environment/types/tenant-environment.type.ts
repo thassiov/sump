@@ -1,11 +1,12 @@
 import z from 'zod';
 
 const tenantEnvironmentSchema = z.object({
-  id: z.string().uuid(),
-  ownerId: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  createdAt: z.string().date(),
-  updatedAt: z.string().date(),
+  tenantId: z.uuid(),
+  customProperties: z.record(z.string(), z.object()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 type ITenantEnvironment = z.infer<typeof tenantEnvironmentSchema>;
