@@ -3,7 +3,8 @@
 
 A definition from [dictonary.com](https://www.dictionary.com/browse/sump):
 > _"sump: a pit, well, or the like in which water or other liquid is collected."_
-but this collects *user accounts* to recirculate (auth). 
+
+But this collects *user accounts* to recirculate (auth). 
 
 
 ### The idea and requirements
