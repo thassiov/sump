@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { contexts } from '../../lib/contexts';
@@ -7,8 +8,7 @@ import {
   UnexpectedError,
 } from '../../lib/errors';
 import { AccountRepository } from './account.repository';
-import { IAccount } from './types/account.type';
-import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
+import { IGetAccountDto, IUpdateAccountAllowedDtos } from './types/dto.type';
 
 describe('[repository] account', () => {
   beforeEach(() => {
@@ -18,12 +18,18 @@ describe('[repository] account', () => {
 
   describe('create', () => {
     it('creates a new account', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse: IInsertReturningId = [{ id: mockAccountId }];
-      const mockCreateAccountDto = {
-        email: 'some@email.com',
-        fullName: 'This Is The Full Name',
-      } as ICreateAccountDto;
+
+      const mockAccount = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['admin'],
+      };
 
       const mockSendInsert = jest
         .spyOn(
@@ -34,29 +40,31 @@ describe('[repository] account', () => {
         )
         .mockResolvedValueOnce(mockDbResponse);
 
-      const instance = new AccountRepository({} as unknown as Knex);
+      const accountRepository = new AccountRepository({} as unknown as Knex);
 
-      const result = await instance.create(mockCreateAccountDto);
+      const result = await accountRepository.create(mockAccount);
       expect(result).toBe(mockAccountId);
       expect(mockSendInsert).toHaveBeenCalledTimes(1);
-      expect(mockSendInsert).toHaveBeenCalledWith(
-        mockCreateAccountDto,
-        undefined
-      );
+      expect(mockSendInsert).toHaveBeenCalledWith(mockAccount, undefined);
     });
 
     it('fails to create a new account by receiving an empty response from the database', async () => {
       const mockDbResponse: IInsertReturningId = [];
-      const mockCreateAccountDto = {
-        email: 'some@email.com',
-        fullName: 'This Is The Full Name',
-      } as ICreateAccountDto;
+      const mockAccount = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['admin'],
+      };
 
       const mockThrownError = new NotExpectedError({
         context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
-            ...mockCreateAccountDto,
+            ...mockAccount,
           },
           output: undefined,
           message: 'database insert operation did not return an id',
@@ -72,11 +80,11 @@ describe('[repository] account', () => {
         )
         .mockResolvedValueOnce(mockDbResponse);
 
-      const instance = new AccountRepository({} as unknown as Knex);
+      const accountRepository = new AccountRepository({} as unknown as Knex);
 
       let thrown;
       try {
-        await instance.create(mockCreateAccountDto);
+        await accountRepository.create(mockAccount);
       } catch (error) {
         thrown = error;
       }
@@ -90,17 +98,19 @@ describe('[repository] account', () => {
         mockThrownError.details
       );
       expect(mockSendInsert).toHaveBeenCalledTimes(1);
-      expect(mockSendInsert).toHaveBeenCalledWith(
-        mockCreateAccountDto,
-        undefined
-      );
+      expect(mockSendInsert).toHaveBeenCalledWith(mockAccount, undefined);
     });
 
     it('fails to create a new account by a error thrown by the database', async () => {
-      const mockCreateAccountDto = {
-        email: 'some@email.com',
-        fullName: 'This Is The Full Name',
-      } as ICreateAccountDto;
+      const mockAccount = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['admin'],
+      };
 
       const mockThrownError = new Error('some-other-error');
       const repositoryError = new UnexpectedError({
@@ -108,7 +118,7 @@ describe('[repository] account', () => {
         context: contexts.ACCOUNT_CREATE,
         details: {
           input: {
-            ...mockCreateAccountDto,
+            ...mockAccount,
           },
         },
       });
@@ -122,11 +132,11 @@ describe('[repository] account', () => {
         )
         .mockRejectedValueOnce(mockThrownError);
 
-      const instance = new AccountRepository({} as unknown as Knex);
+      const accountRepository = new AccountRepository({} as unknown as Knex);
 
       let thrown;
       try {
-        await instance.create(mockCreateAccountDto);
+        await accountRepository.create(mockAccount);
       } catch (error) {
         thrown = error;
       }
@@ -140,49 +150,50 @@ describe('[repository] account', () => {
         repositoryError.details
       );
       expect(mockSendInsert).toHaveBeenCalledTimes(1);
-      expect(mockSendInsert).toHaveBeenCalledWith(
-        mockCreateAccountDto,
-        undefined
-      );
+      expect(mockSendInsert).toHaveBeenCalledWith(mockAccount, undefined);
     });
   });
 
   describe('getById', () => {
     it('gets an account by its id', async () => {
-      const mockAccountId = 'id';
-      const mockDbResponse: IAccount = {
-        id: 'id',
-        email: 'email',
-        fullName: 'This Is The Full Name',
-        createdAt: 'date',
-        updatedAt: 'date',
+      const mockAccountId = faker.string.uuid();
+
+      const mockGetAccountResponse: IGetAccountDto = {
+        id: mockAccountId,
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['owner'],
       };
 
       const mockSendQuery = jest
         .spyOn(
           AccountRepository.prototype as unknown as {
-            sendFindByIdQuery: () => Promise<IAccount | undefined>;
+            sendFindByIdQuery: () => Promise<IGetAccountDto | undefined>;
           },
           'sendFindByIdQuery'
         )
-        .mockResolvedValueOnce(mockDbResponse);
+        .mockResolvedValueOnce(mockGetAccountResponse);
 
       const instance = new AccountRepository({} as unknown as Knex);
 
       const result = await instance.getById(mockAccountId);
-      expect(result).toBe(mockDbResponse);
+      expect(result).toEqual(mockGetAccountResponse);
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockAccountId);
     });
 
     it('gets an empty response as the account does not exist', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse = undefined;
 
       const mockSendQuery = jest
         .spyOn(
           AccountRepository.prototype as unknown as {
-            sendFindByIdQuery: () => Promise<IAccount | undefined>;
+            sendFindByIdQuery: () => Promise<IGetAccountDto | undefined>;
           },
           'sendFindByIdQuery'
         )
@@ -197,7 +208,7 @@ describe('[repository] account', () => {
     });
 
     it('fails to get an account by a error thrown by the database', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
@@ -213,7 +224,7 @@ describe('[repository] account', () => {
       const mockSendQuery = jest
         .spyOn(
           AccountRepository.prototype as unknown as {
-            sendFindByIdQuery: () => Promise<IAccount | undefined>;
+            sendFindByIdQuery: () => Promise<IGetAccountDto | undefined>;
           },
           'sendFindByIdQuery'
         )
@@ -243,13 +254,13 @@ describe('[repository] account', () => {
 
   describe('updateById', () => {
     it('updates an account by its id', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse = 1;
       const mockRepositoryResponse = true;
 
       const mockUpdateAccountDto = {
-        fullName: 'This Is The Full Name',
-      } as IUpdateAccountDto;
+        name: 'This Is The Full Name',
+      } as IUpdateAccountAllowedDtos;
 
       const mockSendUpdate = jest
         .spyOn(
@@ -275,12 +286,12 @@ describe('[repository] account', () => {
     });
 
     it('fails to update an account by receiving an empty response from the database (account does not exist)', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse = 0;
 
       const mockUpdateAccountDto = {
-        fullName: 'This Is The Full Name',
-      } as IUpdateAccountDto;
+        name: 'This Is The Full Name',
+      } as IUpdateAccountAllowedDtos;
 
       const mockThrownError = new NotFoundError({
         context: contexts.ACCOUNT_UPDATE_BY_ID,
@@ -325,10 +336,10 @@ describe('[repository] account', () => {
     });
 
     it('fails to update an account by a error thrown by the database', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockUpdateAccountDto = {
-        fullName: 'This Is The Full Name',
-      } as IUpdateAccountDto;
+        name: 'This Is The Full Name',
+      } as IUpdateAccountAllowedDtos;
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
@@ -378,7 +389,7 @@ describe('[repository] account', () => {
 
   describe('deleteById', () => {
     it('removes an account by its id', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse = 1;
       const mockRepositoryResponse = true;
 
@@ -400,7 +411,7 @@ describe('[repository] account', () => {
     });
 
     it('fails to remove an account by receiving an empty response from the database (account does not exist)', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
       const mockDbResponse = 0;
 
       const mockThrownError = new NotFoundError({
@@ -443,7 +454,7 @@ describe('[repository] account', () => {
     });
 
     it('fails to remove an account by a error thrown by the database', async () => {
-      const mockAccountId = 'id';
+      const mockAccountId = faker.string.uuid();
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({

@@ -12,7 +12,11 @@ import {
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { IAccount } from './types/account.type';
-import { ICreateAccountDto, IUpdateAccountDto } from './types/dto.type';
+import {
+  ICreateAccountDto,
+  IGetAccountDto,
+  IUpdateAccountAllowedDtos,
+} from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
 
 class AccountRepository extends BaseRepository implements IAccountRepository {
@@ -75,7 +79,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async getById(id: string): Promise<IAccount | undefined> {
+  async getById(id: IAccount['id']): Promise<IGetAccountDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
@@ -91,7 +95,10 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async updateById(id: string, dto: IUpdateAccountDto): Promise<boolean> {
+  async updateById(
+    id: IAccount['id'],
+    dto: IUpdateAccountAllowedDtos
+  ): Promise<boolean> {
     try {
       const result = await this.sendUpdateByIdQuery(id, dto);
 
@@ -122,7 +129,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteById(id: IAccount['id']): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdQuery(id);
 
@@ -169,20 +176,22 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     return await query;
   }
 
-  private async sendFindByIdQuery(id: string): Promise<IAccount | undefined> {
-    return await this.dbClient<IAccount>(this.tableName)
+  private async sendFindByIdQuery(
+    id: IAccount['id']
+  ): Promise<IGetAccountDto | undefined> {
+    return await this.dbClient<IGetAccountDto>(this.tableName)
       .where('id', id)
       .first();
   }
 
   private async sendUpdateByIdQuery(
-    id: string,
-    dto: IUpdateAccountDto
+    id: IAccount['id'],
+    dto: IUpdateAccountAllowedDtos
   ): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).update(dto);
   }
 
-  private async sendDeleteByIdQuery(id: string): Promise<number> {
+  private async sendDeleteByIdQuery(id: IAccount['id']): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
   }
 }

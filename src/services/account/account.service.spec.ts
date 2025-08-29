@@ -300,6 +300,7 @@ describe('Account Service', () => {
         name: faker.person.fullName(),
         username: faker.internet.username(),
         avatarUrl: faker.image.url(),
+        roles: ['admin'],
       };
 
       const mockAccountId = faker.string.uuid();
