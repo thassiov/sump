@@ -5,7 +5,7 @@ import z from 'zod';
 import { BaseRepository, BaseService } from '../../base-classes';
 import { BaseHttpService } from '../../base-classes/http-service.base-class';
 
-const uuidv4Schema = z.string().uuid();
+const idSchema = z.uuid();
 
 const restApiConfigSchema = z.object({
   port: z.number(),
@@ -51,7 +51,7 @@ type EndpointHandler = (req: Request, res: Response) => Promise<void>;
 
 type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
 
-export { sumpConfigSchema, uuidv4Schema };
+export { sumpConfigSchema, idSchema };
 
 export type {
   CreateServiceInstanceOptions,

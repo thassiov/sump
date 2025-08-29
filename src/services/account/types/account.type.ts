@@ -8,12 +8,12 @@ const roleRegex =
 const accountSchema = z.object({
   id: z.uuid(),
   email: z.string().check(z.email()),
-  emailVerified: z.boolean(),
-  phone: z.string().check(z.e164()),
-  phoneVerified: z.boolean(),
-  name: z.string().max(100),
+  emailVerified: z.boolean().default(false),
+  phone: z.string().check(z.e164()).optional(),
+  phoneVerified: z.boolean().default(false),
+  name: z.string().min(3).max(100),
   username: z.string().max(20),
-  avatarUrl: z.string().check(z.url()),
+  avatarUrl: z.string().check(z.url()).optional(),
   tenantId: z.uuid(),
   roles: z
     .array(
