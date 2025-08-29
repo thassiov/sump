@@ -1,4 +1,4 @@
-# sump - solin/simple user management platform
+# sump - simple user management platform
 
 > [!CAUTION]
 > This is still *very* WIP
