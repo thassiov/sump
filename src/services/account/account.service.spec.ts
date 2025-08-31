@@ -6,7 +6,6 @@ import { AccountService } from './account.service';
 import {
   ICreateAccountDto,
   IGetAccountDto,
-  IUpdateAccountDto,
   IUpdateAccountEmailDto,
   IUpdateAccountNonSensitivePropertiesDto,
   IUpdateAccountPhoneDto,
@@ -154,11 +153,6 @@ describe('Account Service', () => {
       ],
       [
         {
-          roles: ['owner'],
-        },
-      ],
-      [
-        {
           emailVerified: true,
         },
       ],
@@ -188,6 +182,7 @@ describe('Account Service', () => {
           name: faker.person.fullName(),
           username: faker.internet.username(),
           avatarUrl: faker.image.url(),
+          roles: ['admin'],
           ...internalProperty,
         };
 
@@ -257,6 +252,7 @@ describe('Account Service', () => {
         name: faker.person.fullName(),
         username: faker.internet.username(),
         avatarUrl: faker.image.url(),
+        roles: ['admin'],
       };
 
       const accountService = new AccountService(mockAccountRepository);

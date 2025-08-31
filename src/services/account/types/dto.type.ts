@@ -26,7 +26,6 @@ const createAccountNoInternalPropertiesDtoSchema = z
     phoneVerified: true,
     emailVerified: true,
     tenantId: true,
-    roles: true,
     createdAt: true,
     updatedAt: true,
   });
