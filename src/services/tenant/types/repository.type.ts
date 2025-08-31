@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { ICreateTenantDto, IUpdateTenantDto } from './dto.type';
+import { ICreateTenantDto, IUpdateTenantAllowedDtos } from './dto.type';
 import { ITenant } from './tenant.type';
 
 type ITenantRepository = {
@@ -7,9 +7,22 @@ type ITenantRepository = {
     dto: ICreateTenantDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getById(id: string): Promise<ITenant | undefined>;
-  deleteById(id: string): Promise<boolean>;
-  updateById(id: string, dto: IUpdateTenantDto): Promise<boolean>;
+  getById(id: ITenant['id']): Promise<ITenant | undefined>;
+  deleteById(id: ITenant['id']): Promise<boolean>;
+  updateById(
+    id: ITenant['id'],
+    dto: IUpdateTenantAllowedDtos
+  ): Promise<boolean>;
+
+  setCustomPropertyById(
+    id: ITenant['id'],
+    customProperty: ITenant['customProperties']
+  ): Promise<boolean>;
+
+  deleteCustomPropertyById(
+    id: ITenant['id'],
+    customPropertyKey: string
+  ): Promise<boolean>;
 };
 
 export type { ITenantRepository };
