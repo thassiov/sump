@@ -8,6 +8,38 @@ A definition from [dictonary.com](https://www.dictionary.com/browse/sump):
 
 But this collects *user accounts* to recirculate (auth).
 
+# TOC
+
+<!-- TOC start -->
+
+- [The idea and requirements](#the-idea-and-requirements)
+   * [My intent with this project](#my-intent-with-this-project)
+   * [The desire to `stay lightweight` dependency wise](#the-desire-to-stay-lightweight-dependency-wise)
+- [How it works (or at least should work)](#how-it-works-or-at-least-should-work)
+      + [The "moving parts"](#the-moving-parts)
+      + [Sump as a restful service monolith](#sump-as-a-restful-service-monolith)
+      + [Sump as microservices](#sump-as-microservices)
+      + [Sump as a npm dependency](#sump-as-a-npm-dependency)
+      + [The services](#the-services)
+         - [main service](#main-service)
+         - [tenant service](#tenant-service)
+         - [account service](#account-service)
+         - [tenant environment service](#tenant-environment-service)
+         - [tenant environment account service](#tenant-environment-account-service)
+      + [OpenID Provider ](#openid-provider)
+      + [Config options and file (sump-config.json)](#config-options-and-file-sump-configjson)
+- [Installation and Deployment ](#installation-and-deployment)
+      + [As a npm module](#as-a-npm-module)
+      + [Using it as a standalone monolith service](#using-it-as-a-standalone-monolith-service)
+         - [Using the `listen` method from the sump instance](#using-the-listen-method-from-the-sump-instance)
+         - [Using a docker image ](#using-a-docker-image)
+- [How to use it](#how-to-use-it)
+- [Development](#development)
+- [Roadmap (no guarantees it will be followed, though. but at least this is something)](#roadmap-no-guarantees-it-will-be-followed-though-but-at-least-this-is-something)
+- [License](#license)
+
+<!-- TOC end -->
+
 ### The idea and requirements
 
 TL;DR: a personal project made as a study on the [SAGA pattern](https://microservices.io/patterns/data/saga.html) and making a program that can be used as either an imported npm package, a standalone monolith or some microservices. I'm not using frameworks or ORM/ODM.
@@ -190,6 +222,7 @@ sump.listen((port) => console.log(`server running! http://localhost:${port}`));
 ### How to use it
 
 @TODO: describe instance methods
+
 @TODO: describe REST api
 
 ### Development
