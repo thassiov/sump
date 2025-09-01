@@ -9,7 +9,11 @@ import {
   UnexpectedError,
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { ICreateTenantDto, IUpdateTenantDto } from './types/dto.type';
+import {
+  ICreateTenantDto,
+  IGetTenantDto,
+  IUpdateTenantAllowedDtos,
+} from './types/dto.type';
 import { ITenantRepository } from './types/repository.type';
 import { ITenant } from './types/tenant.type';
 
@@ -57,7 +61,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async getById(id: string): Promise<ITenant | undefined> {
+  async getById(id: ITenant['id']): Promise<IGetTenantDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
@@ -73,7 +77,10 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async updateById(id: string, dto: IUpdateTenantDto): Promise<boolean> {
+  async updateById(
+    id: ITenant['id'],
+    dto: IUpdateTenantAllowedDtos
+  ): Promise<boolean> {
     try {
       const result = await this.sendUpdateByIdQuery(id, dto);
 
@@ -104,7 +111,7 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteById(id: ITenant['id']): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdQuery(id);
 
@@ -135,8 +142,58 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     }
   }
 
+  async setCustomPropertyById(
+    id: ITenant['id'],
+    dto: ITenant['customProperties']
+  ): Promise<boolean> {
+    try {
+      await this.sendSetJsonDataOnPathById(id, dto);
+
+      return true;
+    } catch (error) {
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.TENANT_SET_CUSTOM_PROPERTY_BY_ID,
+        details: {
+          input: { id, ...dto },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
+  async deleteCustomPropertyById(
+    id: ITenant['id'],
+    customPropertyKey: string
+  ): Promise<boolean> {
+    try {
+      await this.sendDeleteJsonDataOnPathById(id, customPropertyKey);
+
+      return true;
+    } catch (error) {
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.TENANT_DELETE_CUSTOM_PROPERTY_BY_ID,
+        details: {
+          input: { id, customPropertyKey },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   private async sendInsertReturningIdQuery(
-    payload: object,
+    payload: ICreateTenantDto,
     transaction?: Knex.Transaction
   ): Promise<IInsertReturningId> {
     const query = this.dbClient
@@ -151,19 +208,44 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     return await query;
   }
 
-  private async sendFindByIdQuery(id: string): Promise<ITenant | undefined> {
-    return await this.dbClient<ITenant>(this.tableName).where('id', id).first();
+  private async sendFindByIdQuery(
+    id: ITenant['id']
+  ): Promise<IGetTenantDto | undefined> {
+    return await this.dbClient<IGetTenantDto>(this.tableName)
+      .where('id', id)
+      .first();
   }
 
   private async sendUpdateByIdQuery(
-    id: string,
-    dto: IUpdateTenantDto
+    id: ITenant['id'],
+    dto: IUpdateTenantAllowedDtos
   ): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).update(dto);
   }
 
-  private async sendDeleteByIdQuery(id: string): Promise<number> {
+  private async sendDeleteByIdQuery(id: ITenant['id']): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
+  }
+
+  private async sendSetJsonDataOnPathById(
+    id: ITenant['id'],
+    customProperty: ITenant['customProperties']
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+    const key = Object.keys(customProperty)[0] as string;
+
+    await this.dbClient(this.tableName)
+      .where('id', id)
+      .jsonSet('customProperties', `$.${key}`, customProperty);
+  }
+
+  private async sendDeleteJsonDataOnPathById(
+    id: ITenant['id'],
+    jsonPath: string
+  ): Promise<void> {
+    await this.dbClient(this.tableName)
+      .where('id', id)
+      .jsonRemove('customProperties', `$.${jsonPath}`);
   }
 }
 

@@ -31,13 +31,6 @@ type ITenantCustomPropertiesOperationDtoSchema = z.infer<
   typeof tenantCustomPropertiesOperationDtoSchema
 >;
 
-const updateTenantDtoSchema = createTenantDtoSchema
-  .partial()
-  .refine((val) => Object.keys(val).length, {
-    message: 'payload cannot be empty',
-  });
-type IUpdateTenantDto = z.infer<typeof updateTenantDtoSchema>;
-
 const getTenantDtoSchema = tenantSchema.pick({
   id: true,
   name: true,
@@ -52,7 +45,6 @@ export type {
   IGetTenantDto,
   ITenantCustomPropertiesOperationDtoSchema,
   IUpdateTenantAllowedDtos,
-  IUpdateTenantDto,
   IUpdateTenantNonSensitivePropertiesDto,
 };
 
@@ -60,6 +52,5 @@ export {
   createTenantDtoSchema,
   getTenantDtoSchema,
   tenantCustomPropertiesOperationDtoSchema,
-  updateTenantDtoSchema,
   updateTenantNonSensitivePropertiesDtoSchema,
 };
