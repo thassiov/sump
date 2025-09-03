@@ -3,36 +3,66 @@ import { BaseService } from '../../base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
+import { formatZodError } from '../../lib/utils/formatters';
+import { ITenant } from '../tenant/types/tenant.type';
 import {
   createTenantEnvironmentDtoSchema,
-  ICreateTenantEnvironmentDto,
-  idSchema,
-  IUpdateTenantEnvironmentDto,
-  updateTenantEnvironmentDtoSchema,
+  createTenantEnvironmentNoInternalPropertiesDtoSchema,
+  ICreateTenantEnvironmentNoInternalPropertiesDto,
+  IGetTenantEnvironmentDto,
+  IUpdateTenantEnvironmentNonSensitivePropertiesDto,
+  tenantEnvironmentCustomPropertiesOperationDtoSchema,
+  updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
 } from './types/dto.type';
 import { ITenantEnvironmentRepository } from './types/repository.type';
 import { ITenantEnvironmentService } from './types/service.type';
-import { ITenantEnvironment } from './types/tenant-environment.type';
+import {
+  ITenantEnvironment,
+  tenantEnvironmentSchema,
+} from './types/tenant-environment.type';
 
 export class TenantEnvironmentService
   extends BaseService
   implements ITenantEnvironmentService
 {
-  constructor(private readonly tenantRepository: ITenantEnvironmentRepository) {
-    super('tenant-service');
+  constructor(
+    private readonly tenantEnvironmentRepository: ITenantEnvironmentRepository
+  ) {
+    super('tenant-environment-service');
   }
 
   async create(
-    dto: ICreateTenantEnvironmentDto,
+    tenantId: ITenant['id'],
+    dto: ICreateTenantEnvironmentNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
-    const validationResult = createTenantEnvironmentDtoSchema.safeParse(dto);
+    this.logger.info(`create environment in tenant ${tenantId}`);
+
+    const isTenantIdValid = createTenantEnvironmentDtoSchema
+      .pick({ tenantId: true })
+      .safeParse({ tenantId });
+
+    if (!isTenantIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { tenantId },
+          errors: formatZodError(isTenantIdValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_CREATE,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    const validationResult =
+      createTenantEnvironmentNoInternalPropertiesDtoSchema.safeParse(dto);
 
     if (!validationResult.success) {
       const errorInstance = new ValidationError({
         details: {
           input: { ...dto },
-          errors: validationResult.error.issues,
+          errors: formatZodError(validationResult.error.issues),
         },
         context: contexts.TENANT_ENVIRONMENT_CREATE,
       });
@@ -42,11 +72,14 @@ export class TenantEnvironmentService
     }
 
     try {
-      const tenantId = await this.tenantRepository.create(dto, transaction);
+      const tenantEnvironmentId = await this.tenantEnvironmentRepository.create(
+        { ...dto, tenantId },
+        transaction
+      );
 
-      this.logger.info(`new tenant created: ${tenantId}`);
+      this.logger.info(`new environment created: ${tenantEnvironmentId}`);
 
-      return tenantId;
+      return tenantEnvironmentId;
     } catch (error) {
       if (error instanceof BaseCustomError) {
         this.logger.error(error);
@@ -67,14 +100,20 @@ export class TenantEnvironmentService
     }
   }
 
-  async getById(id: string): Promise<ITenantEnvironment | undefined> {
-    const isIdValid = idSchema.safeParse(id);
+  async getById(
+    id: ITenantEnvironment['id']
+  ): Promise<IGetTenantEnvironmentDto | undefined> {
+    this.logger.info(`getById: ${id}`);
+
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ id: true })
+      .safeParse({ id });
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
           input: { id },
-          errors: isIdValid.error.issues,
+          errors: formatZodError(isIdValid.error.issues),
         },
         context: contexts.TENANT_ENVIRONMENT_GET_BY_ID,
       });
@@ -83,17 +122,21 @@ export class TenantEnvironmentService
       throw errorInstance;
     }
 
-    return this.tenantRepository.getById(id);
+    return this.tenantEnvironmentRepository.getById(id);
   }
 
-  async deleteById(id: string): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(id);
+  async deleteById(id: ITenantEnvironment['id']): Promise<boolean> {
+    this.logger.info(`deleteById: ${id}`);
+
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ id: true })
+      .safeParse({ id });
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
           input: { id },
-          errors: isIdValid.error.issues,
+          errors: formatZodError(isIdValid.error.issues),
         },
         context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
       });
@@ -102,44 +145,142 @@ export class TenantEnvironmentService
       throw errorInstance;
     }
 
-    return this.tenantRepository.deleteById(id);
+    return this.tenantEnvironmentRepository.deleteById(id);
   }
 
-  // @TODO: ensure that _id_  cant be sent in the dto so not to overwrite the actual id
-  async updateById(
-    id: string,
-    dto: IUpdateTenantEnvironmentDto
+  async updateNonSensitivePropertiesById(
+    id: ITenantEnvironment['id'],
+    dto: IUpdateTenantEnvironmentNonSensitivePropertiesDto
   ): Promise<boolean> {
-    const isIdValid = idSchema.safeParse(id);
+    this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
+
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ id: true })
+      .safeParse({ id });
 
     if (!isIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { id, ...dto },
-          errors: isIdValid.error.issues,
+          input: { id },
+          errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
+        context:
+          contexts.TENANT_ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    const isPayloadValid = updateTenantEnvironmentDtoSchema.safeParse(dto);
+    const isPayloadValid =
+      updateTenantEnvironmentNonSensitivePropertiesDtoSchema.safeParse(dto);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { id, ...dto },
-          errors: isPayloadValid.error.issues,
+          input: { ...dto },
+          errors: formatZodError(isPayloadValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
+        context:
+          contexts.TENANT_ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);
       throw errorInstance;
     }
 
-    return this.tenantRepository.updateById(id, dto);
+    return this.tenantEnvironmentRepository.updateById(id, dto);
+  }
+
+  async setCustomPropertyById(
+    id: ITenantEnvironment['id'],
+    customProperties: ITenantEnvironment['customProperties']
+  ): Promise<boolean> {
+    this.logger.info(`setCustomPropertyById: ${id}`);
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ id: true })
+      .safeParse({ id });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { id },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    const isPayloadValid =
+      tenantEnvironmentCustomPropertiesOperationDtoSchema.safeParse({
+        customProperties,
+      });
+
+    if (!isPayloadValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { ...customProperties },
+          errors: formatZodError(isPayloadValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.tenantEnvironmentRepository.setCustomPropertyById(
+      id,
+      customProperties
+    );
+  }
+
+  async deleteCustomPropertyById(
+    id: ITenant['id'],
+    customPropertyKey: string
+  ): Promise<boolean> {
+    this.logger.info(`deleteCustomPropertyById: ${id}`);
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ id: true })
+      .safeParse({ id });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { id },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    const isPayloadValid =
+      tenantEnvironmentCustomPropertiesOperationDtoSchema.keyType.safeParse(
+        customPropertyKey
+      );
+
+    if (!isPayloadValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { customPropertyKey },
+          errors: formatZodError(isPayloadValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.tenantEnvironmentRepository.deleteCustomPropertyById(
+      id,
+      customPropertyKey
+    );
   }
 }

@@ -1,10 +1,12 @@
 import z from 'zod';
 
+const customPropertySchema = z.record(z.string(), z.json());
+
 const tenantEnvironmentSchema = z.object({
   id: z.uuid(),
-  name: z.string(),
+  name: z.string().min(2),
   tenantId: z.uuid(),
-  customProperties: z.record(z.string(), z.object()),
+  customProperties: customPropertySchema,
   createdAt: z.date(),
   updatedAt: z.date(),
 });

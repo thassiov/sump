@@ -1,7 +1,8 @@
 import { Knex } from 'knex';
 import {
   ICreateTenantEnvironmentDto,
-  IUpdateTenantEnvironmentDto,
+  IGetTenantEnvironmentDto,
+  IUpdateTenantEnvironmentAllowedDtos,
 } from './dto.type';
 import { ITenantEnvironment } from './tenant-environment.type';
 
@@ -10,9 +11,24 @@ type ITenantEnvironmentRepository = {
     dto: ICreateTenantEnvironmentDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getById(id: string): Promise<ITenantEnvironment | undefined>;
-  deleteById(id: string): Promise<boolean>;
-  updateById(id: string, dto: IUpdateTenantEnvironmentDto): Promise<boolean>;
+  getById(
+    id: ITenantEnvironment['id']
+  ): Promise<IGetTenantEnvironmentDto | undefined>;
+  deleteById(id: ITenantEnvironment['id']): Promise<boolean>;
+  updateById(
+    id: ITenantEnvironment['id'],
+    dto: IUpdateTenantEnvironmentAllowedDtos
+  ): Promise<boolean>;
+
+  setCustomPropertyById(
+    id: ITenantEnvironment['id'],
+    customProperty: ITenantEnvironment['customProperties']
+  ): Promise<boolean>;
+
+  deleteCustomPropertyById(
+    id: ITenantEnvironment['id'],
+    customPropertyKey: string
+  ): Promise<boolean>;
 };
 
 export type { ITenantEnvironmentRepository };
