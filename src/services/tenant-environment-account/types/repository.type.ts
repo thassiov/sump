@@ -16,7 +16,7 @@ type ITenantEnvironmentAccountRepository = {
   ): Promise<IGetTenantEnvironmentAccountDto | undefined>;
   deleteById(id: ITenantEnvironmentAccount['id']): Promise<boolean>;
   updateById(
-    id: string,
+    id: ITenantEnvironmentAccount['id'],
     dto: IUpdateTenantEnvironmentAccountAllowedDtos
   ): Promise<boolean>;
 
