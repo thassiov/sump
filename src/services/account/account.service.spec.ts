@@ -13,7 +13,7 @@ import {
 } from './types/dto.type';
 import { IAccountRepository } from './types/repository.type';
 
-describe('Account Service', () => {
+describe('account.service', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();

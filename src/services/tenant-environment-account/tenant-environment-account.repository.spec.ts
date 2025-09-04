@@ -14,7 +14,7 @@ import {
   IUpdateTenantEnvironmentAccountAllowedDtos,
 } from './types/dto.type';
 
-describe('[repository] account', () => {
+describe('tenant-environment-account.repository', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();

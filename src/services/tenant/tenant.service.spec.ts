@@ -10,7 +10,7 @@ import {
 } from './types/dto.type';
 import { ITenantRepository } from './types/repository.type';
 
-describe('Tenant Service', () => {
+describe('tenant.service', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();

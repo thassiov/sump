@@ -11,7 +11,7 @@ import {
 } from './types/dto.type';
 import { ITenantEnvironmentRepository } from './types/repository.type';
 
-describe('TenantEnvironment Service', () => {
+describe('tenant-environment.service', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();

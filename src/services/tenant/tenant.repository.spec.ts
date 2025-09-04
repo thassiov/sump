@@ -15,7 +15,7 @@ import {
 } from './types/dto.type';
 import { ITenant } from './types/tenant.type';
 
-describe('[repository] tenant', () => {
+describe('tenant.repository', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();

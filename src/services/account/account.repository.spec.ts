@@ -10,7 +10,7 @@ import {
 import { AccountRepository } from './account.repository';
 import { IGetAccountDto, IUpdateAccountAllowedDtos } from './types/dto.type';
 
-describe('[repository] account', () => {
+describe('account.repository', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
