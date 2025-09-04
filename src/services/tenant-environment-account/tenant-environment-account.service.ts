@@ -182,7 +182,8 @@ export class TenantEnvironmentAccountService
           input: { id },
           errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
+        context:
+          contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -200,7 +201,8 @@ export class TenantEnvironmentAccountService
           input: { ...dto },
           errors: formatZodError(isPayloadValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
+        context:
+          contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);

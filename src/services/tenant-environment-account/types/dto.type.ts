@@ -18,6 +18,7 @@ const createTenantEnvironmentAccountNoInternalPropertiesDtoSchema = z
   .strictObject(tenantEnvironmentAccountSchema.shape)
   .omit({
     id: true,
+    tenantEnvironmentId: true,
     emailVerified: true,
     phoneVerified: true,
     createdAt: true,
