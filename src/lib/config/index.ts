@@ -11,6 +11,12 @@ const repository = {
   tenant: {
     tableName: 'tenant',
   },
+  tenantEnvironment: {
+    tableName: 'tenant_environment',
+  },
+  tenantEnvironmentAccount: {
+    tableName: 'tenant_environment_account',
+  },
 };
 
 // @NOTE: this needs a better name because it is confusing to have it when

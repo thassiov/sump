@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { contexts } from '../../lib/contexts';
@@ -9,11 +10,12 @@ import {
 import { TenantEnvironmentRepository } from './tenant-environment.repository';
 import {
   ICreateTenantEnvironmentDto,
-  IUpdateTenantEnvironmentDto,
+  IGetTenantEnvironmentDto,
+  IUpdateTenantEnvironmentAllowedDtos,
 } from './types/dto.type';
 import { ITenantEnvironment } from './types/tenant-environment.type';
 
-describe('[repository] tenant', () => {
+describe('tenant-environment.repository', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
@@ -21,13 +23,15 @@ describe('[repository] tenant', () => {
 
   describe('create', () => {
     it('creates a new tenant environment', async () => {
-      const mockTenantEnvironmentId = 'id';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse: IInsertReturningId = [
         { id: mockTenantEnvironmentId },
       ];
+
       const mockCreateTenantEnvironmentDto = {
-        name: 'this tenant name',
-        ownerId: '84acb0bb-f8ab-4ea1-a4f1-830747cedcb3',
+        tenantId: faker.string.uuid(),
+        name: faker.company.name(),
+        customProperties: {},
       } as ICreateTenantEnvironmentDto;
 
       const mockSendInsert = jest
@@ -53,8 +57,9 @@ describe('[repository] tenant', () => {
     it('fails to create a new tenant environment by receiving an empty response from the database', async () => {
       const mockDbResponse: IInsertReturningId = [];
       const mockCreateTenantEnvironmentDto = {
-        name: 'this tenant name',
-        ownerId: 'af442a12-8088-4c81-8fcc-2a5bf37230ca',
+        tenantId: faker.string.uuid(),
+        name: faker.company.name(),
+        customProperties: {},
       } as ICreateTenantEnvironmentDto;
 
       const mockThrownError = new NotExpectedError({
@@ -103,8 +108,9 @@ describe('[repository] tenant', () => {
 
     it('fails to create a new tenant environment by a error thrown by the database', async () => {
       const mockCreateTenantEnvironmentDto = {
-        name: 'this tenant name',
-        ownerId: 'f2fc4410-0c6c-4075-8094-75229c995ed4',
+        tenantId: faker.string.uuid(),
+        name: faker.company.name(),
+        customProperties: {},
       } as ICreateTenantEnvironmentDto;
 
       const mockThrownError = new Error('some-other-error');
@@ -154,19 +160,20 @@ describe('[repository] tenant', () => {
 
   describe('getById', () => {
     it('gets an tenant environment by its id', async () => {
-      const mockTenantEnvironmentId = 'fc743488-35e4-41a6-8ce4-0b59edd1e4e8';
-      const mockDbResponse: ITenantEnvironment = {
-        id: 'fc743488-35e4-41a6-8ce4-0b59edd1e4e8',
-        name: 'this tenant name',
-        ownerId: '8be2b60d-a7e0-4179-a7ee-94a325dcf6a8',
-        createdAt: 'date',
-        updatedAt: 'date',
+      const mockTenantEnvironmentId = faker.string.uuid();
+      const mockDbResponse: IGetTenantEnvironmentDto = {
+        id: mockTenantEnvironmentId,
+        tenantId: faker.string.uuid(),
+        name: faker.company.name(),
+        customProperties: {},
       };
 
       const mockSendQuery = jest
         .spyOn(
           TenantEnvironmentRepository.prototype as unknown as {
-            sendFindByIdQuery: () => Promise<ITenantEnvironment | undefined>;
+            sendFindByIdQuery: () => Promise<
+              IGetTenantEnvironmentDto | undefined
+            >;
           },
           'sendFindByIdQuery'
         )
@@ -181,13 +188,15 @@ describe('[repository] tenant', () => {
     });
 
     it('gets an empty response as the tenant environment does not exist', async () => {
-      const mockTenantEnvironmentId = '050cfde1-e5ed-4266-a254-57642b41d72e';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse = undefined;
 
       const mockSendQuery = jest
         .spyOn(
           TenantEnvironmentRepository.prototype as unknown as {
-            sendFindByIdQuery: () => Promise<ITenantEnvironment | undefined>;
+            sendFindByIdQuery: () => Promise<
+              IGetTenantEnvironmentDto | undefined
+            >;
           },
           'sendFindByIdQuery'
         )
@@ -202,7 +211,7 @@ describe('[repository] tenant', () => {
     });
 
     it('fails to get a tenant environment by a error thrown by the database', async () => {
-      const mockTenantEnvironmentId = 'fa0f210d-b28c-423d-9a5e-c9ed3d871682';
+      const mockTenantEnvironmentId = faker.string.uuid();
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
@@ -248,13 +257,13 @@ describe('[repository] tenant', () => {
 
   describe('updateById', () => {
     it('updates a tenant environment by its id', async () => {
-      const mockTenantEnvironmentId = '18d61ace-180a-44e2-9604-fecc66d6f3d4';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse = 1;
       const mockRepositoryResponse = true;
 
       const mockUpdateTenantEnvironmentDto = {
-        name: 'this tenant name',
-      } as IUpdateTenantEnvironmentDto;
+        name: faker.word.noun(),
+      } as IUpdateTenantEnvironmentAllowedDtos;
 
       const mockSendUpdate = jest
         .spyOn(
@@ -280,12 +289,12 @@ describe('[repository] tenant', () => {
     });
 
     it('fails to update a tenant environment by receiving an empty response from the database (tenant environment does not exist)', async () => {
-      const mockTenantEnvironmentId = '3e1c379b-3989-41e7-9a11-5ada7bf5c312';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse = 0;
 
       const mockUpdateTenantEnvironmentDto = {
-        name: 'this tenant name',
-      } as IUpdateTenantEnvironmentDto;
+        name: faker.word.noun(),
+      } as IUpdateTenantEnvironmentAllowedDtos;
 
       const mockThrownError = new NotFoundError({
         context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
@@ -333,10 +342,10 @@ describe('[repository] tenant', () => {
     });
 
     it('fails to update a tenant environment by a error thrown by the database', async () => {
-      const mockTenantEnvironmentId = '71d9a25c-5cec-4255-8169-580c00d7dffe';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockUpdateTenantEnvironmentDto = {
-        name: 'this tenant name',
-      } as IUpdateTenantEnvironmentDto;
+        name: faker.word.noun(),
+      } as IUpdateTenantEnvironmentAllowedDtos;
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
@@ -389,7 +398,7 @@ describe('[repository] tenant', () => {
 
   describe('deleteById', () => {
     it('deletes a tenant environment by its id', async () => {
-      const mockTenantEnvironmentId = '4ad3201a-ac8d-4a84-a8b9-35456e9e4f93';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse = 1;
       const mockRepositoryResponse = true;
 
@@ -411,7 +420,7 @@ describe('[repository] tenant', () => {
     });
 
     it('fails to delete a tenant environment by receiving an empty response from the database (tenant does not exist)', async () => {
-      const mockTenantEnvironmentId = '03770fbd-23a3-46d1-88c0-f78169cfdd41';
+      const mockTenantEnvironmentId = faker.string.uuid();
       const mockDbResponse = 0;
 
       const mockThrownError = new NotFoundError({
@@ -454,7 +463,7 @@ describe('[repository] tenant', () => {
     });
 
     it('fails to delete a tenant environment by a error thrown by the database', async () => {
-      const mockTenantEnvironmentId = 'aa692f0b-1df5-4412-a836-6cbdd1790362';
+      const mockTenantEnvironmentId = faker.string.uuid();
 
       const mockThrownError = new Error('some-error');
       const repositoryError = new UnexpectedError({
@@ -495,6 +504,178 @@ describe('[repository] tenant', () => {
       );
       expect(mockSendQuery).toHaveBeenCalledTimes(1);
       expect(mockSendQuery).toHaveBeenCalledWith(mockTenantEnvironmentId);
+    });
+  });
+
+  describe('customProperties', () => {
+    describe('setCustomPropertyById', () => {
+      it('should set a custom property by the tenant environment id', async () => {
+        const mockTenantEnvironmentId = faker.string.uuid();
+        const mockRepositoryResponse = true;
+
+        const mockCustomProperty = {
+          customProperty1: faker.lorem.paragraph(),
+        };
+
+        const sendSetJsonDataOnPathById = jest
+          .spyOn(
+            TenantEnvironmentRepository.prototype as unknown as {
+              sendSetJsonDataOnPathById: () => Promise<void>;
+            },
+            'sendSetJsonDataOnPathById'
+          )
+          .mockResolvedValueOnce();
+
+        const instance = new TenantEnvironmentRepository({} as unknown as Knex);
+
+        const result = await instance.setCustomPropertyById(
+          mockTenantEnvironmentId,
+          mockCustomProperty
+        );
+        expect(result).toBe(mockRepositoryResponse);
+        expect(sendSetJsonDataOnPathById).toHaveBeenCalledTimes(1);
+        expect(sendSetJsonDataOnPathById).toHaveBeenCalledWith(
+          mockTenantEnvironmentId,
+          mockCustomProperty
+        );
+      });
+
+      it('should fail to set the property by a error thrown by the database', async () => {
+        const mockTenantEnvironmentId = faker.string.uuid();
+        const mockCustomProperty = {
+          customProperty1: faker.lorem.paragraph(),
+        };
+
+        const mockThrownError = new Error('some-error');
+        const repositoryError = new UnexpectedError({
+          cause: mockThrownError,
+          context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+          details: {
+            input: {
+              id: mockTenantEnvironmentId,
+              ...mockCustomProperty,
+            },
+          },
+        });
+
+        const sendSetJsonDataOnPathById = jest
+          .spyOn(
+            TenantEnvironmentRepository.prototype as unknown as {
+              sendSetJsonDataOnPathById: () => Promise<void>;
+            },
+            'sendSetJsonDataOnPathById'
+          )
+          .mockRejectedValueOnce(mockThrownError);
+
+        const instance = new TenantEnvironmentRepository({} as unknown as Knex);
+
+        let thrown;
+        try {
+          await instance.setCustomPropertyById(
+            mockTenantEnvironmentId,
+            mockCustomProperty
+          );
+        } catch (error) {
+          thrown = error;
+        }
+
+        expect(thrown).toBeInstanceOf(UnexpectedError);
+        expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+        expect((thrown as UnexpectedError).context).toEqual(
+          repositoryError.context
+        );
+        expect((thrown as UnexpectedError).details).toEqual(
+          repositoryError.details
+        );
+        expect(sendSetJsonDataOnPathById).toHaveBeenCalledTimes(1);
+        expect(sendSetJsonDataOnPathById).toHaveBeenCalledWith(
+          mockTenantEnvironmentId,
+          mockCustomProperty
+        );
+      });
+    });
+
+    describe('deleteCustomPropertyById', () => {
+      it('should delete a custom property by the tenant environment id', async () => {
+        const mockTenantEnvironmentId = faker.string.uuid();
+        const mockRepositoryResponse = true;
+
+        const mockCustomPropertyKey = 'customProperty1';
+
+        const mockSendDeleteJsonDataOnPathById = jest
+          .spyOn(
+            TenantEnvironmentRepository.prototype as unknown as {
+              sendDeleteJsonDataOnPathById: () => Promise<void>;
+            },
+            'sendDeleteJsonDataOnPathById'
+          )
+          .mockResolvedValueOnce();
+
+        const instance = new TenantEnvironmentRepository({} as unknown as Knex);
+
+        const result = await instance.deleteCustomPropertyById(
+          mockTenantEnvironmentId,
+          mockCustomPropertyKey
+        );
+        expect(result).toBe(mockRepositoryResponse);
+        expect(mockSendDeleteJsonDataOnPathById).toHaveBeenCalledTimes(1);
+        expect(mockSendDeleteJsonDataOnPathById).toHaveBeenCalledWith(
+          mockTenantEnvironmentId,
+          mockCustomPropertyKey
+        );
+      });
+
+      it('should fail to delete the property by a error thrown by the database', async () => {
+        const mockTenantEnvironmentId = faker.string.uuid();
+        const mockCustomPropertyKey = 'customProperty1';
+
+        const mockThrownError = new Error('some-error');
+        const repositoryError = new UnexpectedError({
+          cause: mockThrownError,
+          context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+          details: {
+            input: {
+              id: mockTenantEnvironmentId,
+              customPropertyKey: mockCustomPropertyKey,
+            },
+          },
+        });
+
+        const mockSendDeleteJsonDataOnPathById = jest
+          .spyOn(
+            TenantEnvironmentRepository.prototype as unknown as {
+              sendDeleteJsonDataOnPathById: () => Promise<void>;
+            },
+            'sendDeleteJsonDataOnPathById'
+          )
+          .mockRejectedValueOnce(mockThrownError);
+
+        const instance = new TenantEnvironmentRepository({} as unknown as Knex);
+
+        let thrown;
+        try {
+          await instance.deleteCustomPropertyById(
+            mockTenantEnvironmentId,
+            mockCustomPropertyKey
+          );
+        } catch (error) {
+          thrown = error;
+        }
+
+        expect(thrown).toBeInstanceOf(UnexpectedError);
+        expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+        expect((thrown as UnexpectedError).context).toEqual(
+          repositoryError.context
+        );
+        expect((thrown as UnexpectedError).details).toEqual(
+          repositoryError.details
+        );
+        expect(mockSendDeleteJsonDataOnPathById).toHaveBeenCalledTimes(1);
+        expect(mockSendDeleteJsonDataOnPathById).toHaveBeenCalledWith(
+          mockTenantEnvironmentId,
+          mockCustomPropertyKey
+        );
+      });
     });
   });
 });
