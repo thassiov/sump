@@ -1,5 +1,8 @@
 import { BaseHttpService } from '../../base-classes';
-import { ICreateTenantDto, IUpdateTenantDto } from './types/dto.type';
+import {
+  ICreateTenantDto,
+  IUpdateTenantNonSensitivePropertiesDto,
+} from './types/dto.type';
 import { ITenantService } from './types/service.type';
 import { ITenant } from './types/tenant.type';
 
@@ -24,10 +27,33 @@ class TenantHttpService extends BaseHttpService implements ITenantService {
     return await this.httpClient.delete<boolean>(url);
   }
 
-  async updateById(id: string, dto: IUpdateTenantDto): Promise<boolean> {
+  async updateNonSensitivePropertiesById(
+    id: ITenant['id'],
+    dto: IUpdateTenantNonSensitivePropertiesDto
+  ): Promise<boolean> {
     const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.patch<boolean>(url, {
       body: dto,
+    });
+  }
+
+  async setCustomPropertyById(
+    id: ITenant['id'],
+    customProperty: ITenant['customProperties']
+  ): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}/customProperty`;
+    return await this.httpClient.post<boolean>(url, {
+      body: customProperty,
+    });
+  }
+
+  async deleteCustomPropertyById(
+    id: ITenant['id'],
+    customPropertyKey: string
+  ): Promise<boolean> {
+    const url = `${this.serviceUrl}/${id}/customProperty`;
+    return await this.httpClient.delete<boolean>(url, {
+      body: { customPropertyKey },
     });
   }
 }
