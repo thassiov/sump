@@ -2,37 +2,43 @@ import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 // import { setupLogger } from '../../lib/logger/logger';
 import { EndpointHandler } from '../../lib/types';
-import {
-  IUpdateTenantEnvironmentAccountEmailDto,
-  IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
-  IUpdateTenantEnvironmentAccountPhoneDto,
-  IUpdateTenantEnvironmentAccountUsernameDto,
-} from '../tenant-environment-account/types/dto.type';
 import { AccountService } from './account.service';
-import { ICreateAccountDto } from './types/dto.type';
+import {
+  ICreateAccountDto,
+  IUpdateAccountEmailDto,
+  IUpdateAccountNonSensitivePropertiesDto,
+  IUpdateAccountPhoneDto,
+  IUpdateAccountUsernameDto,
+} from './types/dto.type';
 
 const router = express.Router();
 // const logger = setupLogger('enpoint-v1-accounts');
 
 function makeServiceEndpoints(accountService: AccountService): express.Router {
   router.post('/v1/accounts/', makeCreateEndpointFactory(accountService));
+
   router.get('/v1/accounts/:id', makeGetByIdEndpointFactory(accountService));
+
   router.patch(
     '/v1/accounts/:id',
     makeUpdateNonSensitivePropertiesByIdEndpointFactory(accountService)
   );
+
   router.patch(
     '/v1/accounts/:id/email',
     makeUpdateEmailByIdEndpointFactory(accountService)
   );
+
   router.patch(
     '/v1/accounts/:id/phone',
     makeUpdatePhoneByIdEndpointFactory(accountService)
   );
+
   router.patch(
     '/v1/accounts/:id/username',
     makeUpdateUsernameByIdEndpointFactory(accountService)
   );
+
   router.delete(
     '/v1/accounts/:id',
     makeDeleteByIdEndpointFactory(accountService)
@@ -89,8 +95,7 @@ function makeUpdateNonSensitivePropertiesByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto =
-      req.body as IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto;
+    const dto = req.body as IUpdateAccountNonSensitivePropertiesDto;
     const account = await accountService.updateNonSensitivePropertiesById(
       id,
       dto
@@ -115,7 +120,7 @@ function makeUpdateEmailByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentAccountEmailDto;
+    const dto = req.body as IUpdateAccountEmailDto;
     const account = await accountService.updateEmailById(id, dto);
 
     if (!account) {
@@ -137,7 +142,7 @@ function makeUpdatePhoneByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentAccountPhoneDto;
+    const dto = req.body as IUpdateAccountPhoneDto;
     const account = await accountService.updatePhoneById(id, dto);
 
     if (!account) {
@@ -159,7 +164,7 @@ function makeUpdateUsernameByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentAccountUsernameDto;
+    const dto = req.body as IUpdateAccountUsernameDto;
     const account = await accountService.updateUsernameById(id, dto);
 
     if (!account) {

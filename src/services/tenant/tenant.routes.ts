@@ -14,11 +14,14 @@ const router = express.Router();
 
 function makeServiceEndpoints(tenantService: TenantService): express.Router {
   router.post('/v1/tenants/', makeCreateEndpointFactory(tenantService));
+
   router.get('/v1/tenants/:id', makeGetByIdEndpointFactory(tenantService));
+
   router.patch(
     '/v1/tenants/:id',
     makeUpdateNonSensitivePropertiesByIdEndpointFactory(tenantService)
   );
+
   router.delete(
     '/v1/tenants/:id',
     makeDeleteByIdEndpointFactory(tenantService)
