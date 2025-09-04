@@ -5,7 +5,8 @@ import { EndpointHandler } from '../../lib/types';
 import { TenantEnvironmentService } from './tenant-environment.service';
 import {
   ICreateTenantEnvironmentDto,
-  IUpdateTenantEnvironmentDto,
+  ITenantEnvironmentCustomPropertiesOperationDtoSchema,
+  IUpdateTenantEnvironmentNonSensitivePropertiesDto,
 } from './types/dto.type';
 
 const router = express.Router();
@@ -25,11 +26,23 @@ function makeServiceEndpoints(
   );
   router.patch(
     '/v1/environments/:id',
-    makeUpdateByIdEndpointFactory(tenantEnvironmentService)
+    makeUpdateNonSensitivePropertiesByIdEndpointFactory(
+      tenantEnvironmentService
+    )
   );
   router.delete(
     '/v1/environments/:id',
     makeDeleteByIdEndpointFactory(tenantEnvironmentService)
+  );
+
+  router.post(
+    '/v1/environments/:id/customProperty',
+    makeSetCustomPropertyByIdEndpointFactory(tenantEnvironmentService)
+  );
+
+  router.delete(
+    '/v1/environments/:id/customProperty',
+    makeDeleteCustomPropertyByIdEndpointFactory(tenantEnvironmentService)
   );
 
   return router;
@@ -42,7 +55,9 @@ function makeCreateEndpointFactory(
     req: Request,
     res: Response
   ): Promise<void> {
+    const tenantId = req.query['tenantId'] as string;
     const id = await tenantEnvironmentService.create(
+      tenantId,
       req.body as ICreateTenantEnvironmentDto
     );
 
@@ -72,17 +87,18 @@ function makeGetByIdEndpointFactory(
   };
 }
 
-function makeUpdateByIdEndpointFactory(
+function makeUpdateNonSensitivePropertiesByIdEndpointFactory(
   tenantEnvironmentService: TenantEnvironmentService
 ): EndpointHandler {
-  return async function makeUpdateByIdEndpoint(
+  return async function makeUpdateNonSensitivePropertiesByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentDto;
-    const tenant = await tenantEnvironmentService.updateById(id, dto);
+    const dto = req.body as IUpdateTenantEnvironmentNonSensitivePropertiesDto;
+    const tenant =
+      await tenantEnvironmentService.updateNonSensitivePropertiesById(id, dto);
 
     if (!tenant) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -107,6 +123,57 @@ function makeDeleteByIdEndpointFactory(
     await tenantEnvironmentService.deleteById(id);
 
     res.status(StatusCodes.NO_CONTENT).send();
+    return;
+  };
+}
+
+function makeSetCustomPropertyByIdEndpointFactory(
+  tenantEnvironmentService: TenantEnvironmentService
+): EndpointHandler {
+  return async function makeSetCustomPropertyByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto =
+      req.body as ITenantEnvironmentCustomPropertiesOperationDtoSchema;
+    const tenant = await tenantEnvironmentService.setCustomPropertyById(
+      id,
+      dto
+    );
+
+    if (!tenant) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function makeDeleteCustomPropertyByIdEndpointFactory(
+  tenantEnvironmentService: TenantEnvironmentService
+): EndpointHandler {
+  return async function makeDeleteCustomPropertyByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto = req.body as { customPropertyKey: string };
+    const tenant = await tenantEnvironmentService.deleteCustomPropertyById(
+      id,
+      dto.customPropertyKey
+    );
+
+    if (!tenant) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
     return;
   };
 }
