@@ -1,6 +1,7 @@
 import z from 'zod';
 import { accountSchema } from './account.type';
 
+// @TODO: this schema might need to be reviewed at some point. it seems wrong
 const createAccountDtoSchema = accountSchema
   .pick({
     email: true,
@@ -19,6 +20,7 @@ const createAccountDtoSchema = accountSchema
   });
 type ICreateAccountDto = z.infer<typeof createAccountDtoSchema>;
 
+// @FIXME: this is dumb. fix it with `pick` instead
 const createAccountNoInternalPropertiesDtoSchema = z
   .strictObject(accountSchema.shape)
   .omit({
