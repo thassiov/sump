@@ -551,7 +551,8 @@ describe('Account Service', () => {
         'should update an account _non sensitive properties_ by id (%p)',
         async (dto) => {
           const mockAccountId = faker.string.uuid();
-          const mockUpdateAccountDto: IUpdateAccountDto = dto;
+          const mockUpdateAccountDto: IUpdateAccountNonSensitivePropertiesDto =
+            dto;
           const mockUpdateAccountResult = true;
 
           mockAccountRepository.updateById.mockResolvedValue(
@@ -612,7 +613,7 @@ describe('Account Service', () => {
         'should fail update an account _non sensitive properties_ by sending empty values (%p)',
         async (dto) => {
           const mockAccountId = faker.string.uuid();
-          const mockUpdateAccountDto: IUpdateAccountDto = dto;
+          const mockUpdateAccountDto = dto;
 
           const accountService = new AccountService(
             mockAccountRepository as unknown as IAccountRepository
