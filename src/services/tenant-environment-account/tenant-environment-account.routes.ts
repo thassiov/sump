@@ -4,8 +4,12 @@ import { StatusCodes } from 'http-status-codes';
 import { EndpointHandler } from '../../lib/types';
 import { TenantEnvironmentAccountService } from './tenant-environment-account.service';
 import {
-  ICreateTenantEnvironmentAccountDto,
-  IUpdateTenantEnvironmentAccountDto,
+  ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
+  ITenantEnvironmentAccountCustomPropertiesOperationDtoSchema,
+  IUpdateTenantEnvironmentAccountEmailDto,
+  IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
+  IUpdateTenantEnvironmentAccountPhoneDto,
+  IUpdateTenantEnvironmentAccountUsernameDto,
 } from './types/dto.type';
 
 const router = express.Router();
@@ -14,22 +18,51 @@ const router = express.Router();
 function makeServiceEndpoints(
   tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): express.Router {
-  // @FIX: this endpoints are dependent on tenant environment. Also, it shouldnt be called directly
   router.post(
-    '/v1/accounts/',
+    '/v1/tenant-environment-accounts/',
     makeCreateEndpointFactory(tenantEnvironmentAccountService)
   );
+
   router.get(
-    '/v1/accounts/:id',
+    '/v1/tenant-environment-accounts/:id',
     makeGetByIdEndpointFactory(tenantEnvironmentAccountService)
   );
+
   router.patch(
-    '/v1/accounts/:id',
-    makeUpdateByIdEndpointFactory(tenantEnvironmentAccountService)
+    '/v1/tenant-environment-accounts/:id',
+    makeUpdateNonSensitivePropertiesByIdEndpointFactory(
+      tenantEnvironmentAccountService
+    )
   );
+
+  router.patch(
+    '/v1/tenant-environment-accounts/:id/email',
+    makeUpdateEmailByIdEndpointFactory(tenantEnvironmentAccountService)
+  );
+
+  router.patch(
+    '/v1/tenant-environment-accounts/:id/phone',
+    makeUpdatePhoneByIdEndpointFactory(tenantEnvironmentAccountService)
+  );
+
+  router.patch(
+    '/v1/tenant-environment-accounts/:id/username',
+    makeUpdateUsernameByIdEndpointFactory(tenantEnvironmentAccountService)
+  );
+
   router.delete(
-    '/v1/accounts/:id',
+    '/v1/tenant-environment-accounts/:id',
     makeDeleteByIdEndpointFactory(tenantEnvironmentAccountService)
+  );
+
+  router.post(
+    '/v1/tenant-environment-accounts/:id/customProperty',
+    makeSetCustomPropertyByIdEndpointFactory(tenantEnvironmentAccountService)
+  );
+
+  router.delete(
+    '/v1/tenant-environment-accounts/:id/customProperty',
+    makeDeleteCustomPropertyByIdEndpointFactory(tenantEnvironmentAccountService)
   );
 
   return router;
@@ -42,8 +75,10 @@ function makeCreateEndpointFactory(
     req: Request,
     res: Response
   ): Promise<void> {
+    const tenantEnvironmentId = req.query['tenantEnvironmentId'] as string;
     const id = await tenantEnvironmentAccountService.create(
-      req.body as ICreateTenantEnvironmentAccountDto
+      tenantEnvironmentId,
+      req.body as ICreateTenantEnvironmentAccountNoInternalPropertiesDto
     );
 
     res.status(StatusCodes.CREATED).json({ id });
@@ -72,17 +107,97 @@ function makeGetByIdEndpointFactory(
   };
 }
 
-function makeUpdateByIdEndpointFactory(
+function makeUpdateNonSensitivePropertiesByIdEndpointFactory(
   tenantEnvironmentAccountService: TenantEnvironmentAccountService
 ): EndpointHandler {
-  return async function makeUpdateByIdEndpoint(
+  return async function makeUpdateNonSensitivePropertiesByIdEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const dto = req.body as IUpdateTenantEnvironmentAccountDto;
-    const account = await tenantEnvironmentAccountService.updateById(id, dto);
+    const dto =
+      req.body as IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto;
+    const account =
+      await tenantEnvironmentAccountService.updateNonSensitivePropertiesById(
+        id,
+        dto
+      );
+
+    if (!account) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function makeUpdateEmailByIdEndpointFactory(
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
+): EndpointHandler {
+  return async function makeUpdateEmailByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto = req.body as IUpdateTenantEnvironmentAccountEmailDto;
+    const account = await tenantEnvironmentAccountService.updateEmailById(
+      id,
+      dto
+    );
+
+    if (!account) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function makeUpdatePhoneByIdEndpointFactory(
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
+): EndpointHandler {
+  return async function makeUpdatePhoneByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto = req.body as IUpdateTenantEnvironmentAccountPhoneDto;
+    const account = await tenantEnvironmentAccountService.updatePhoneById(
+      id,
+      dto
+    );
+
+    if (!account) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function makeUpdateUsernameByIdEndpointFactory(
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
+): EndpointHandler {
+  return async function makeUpdateUsernameByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto = req.body as IUpdateTenantEnvironmentAccountUsernameDto;
+    const account = await tenantEnvironmentAccountService.updateUsernameById(
+      id,
+      dto
+    );
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -107,6 +222,58 @@ function makeDeleteByIdEndpointFactory(
     await tenantEnvironmentAccountService.deleteById(id);
 
     res.status(StatusCodes.NO_CONTENT).send();
+    return;
+  };
+}
+
+function makeSetCustomPropertyByIdEndpointFactory(
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
+): EndpointHandler {
+  return async function makeSetCustomPropertyByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto =
+      req.body as ITenantEnvironmentAccountCustomPropertiesOperationDtoSchema;
+    const tenant = await tenantEnvironmentAccountService.setCustomPropertyById(
+      id,
+      dto
+    );
+
+    if (!tenant) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function makeDeleteCustomPropertyByIdEndpointFactory(
+  tenantEnvironmentAccountService: TenantEnvironmentAccountService
+): EndpointHandler {
+  return async function makeDeleteCustomPropertyByIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = req.params['id']!;
+    const dto = req.body as { customPropertyKey: string };
+    const tenant =
+      await tenantEnvironmentAccountService.deleteCustomPropertyById(
+        id,
+        dto.customPropertyKey
+      );
+
+    if (!tenant) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).send();
     return;
   };
 }
