@@ -16,8 +16,9 @@ import { IAccountRepository } from './types/repository.type';
 
 describe('account.service', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   const mockAccountRepository = {
@@ -474,48 +475,51 @@ describe('account.service', () => {
           username: faker.internet.username(),
         },
       ],
-    ])('should retrieve a account (%p)', async (dto) => {
-      const mockAccount: IGetAccountDto = {
-        id: faker.string.uuid(),
-        email: dto.email || faker.internet.email(),
-        phone: dto.phone || faker.phone.number({ style: 'international' }),
-        name: faker.person.fullName(),
-        username: dto.username || faker.internet.username(),
-        avatarUrl: faker.image.url(),
-        tenantId: faker.string.uuid(),
-        roles: ['owner'],
-      };
+    ])(
+      'should retrieve a account (%p)',
+      async (dto: IAccountUserDefinedIdentification) => {
+        const mockAccount: IGetAccountDto = {
+          id: faker.string.uuid(),
+          email: dto.email ?? faker.internet.email(),
+          phone: dto.phone ?? faker.phone.number({ style: 'international' }),
+          name: faker.person.fullName(),
+          username: dto.username ?? faker.internet.username(),
+          avatarUrl: faker.image.url(),
+          tenantId: faker.string.uuid(),
+          roles: ['owner'],
+        };
 
-      // @TODO: spy on this method so we assert number of calls and arguments passed
-      mockAccountRepository.getByUserDefinedIdentification.mockResolvedValue([
-        mockAccount,
-      ]);
+        // @TODO: spy on this method so we assert number of calls and arguments passed
+        mockAccountRepository.getByUserDefinedIdentification.mockResolvedValue([
+          mockAccount,
+        ]);
 
-      const accountService = new AccountService(
-        mockAccountRepository as unknown as IAccountRepository
-      );
+        const accountService = new AccountService(
+          mockAccountRepository as unknown as IAccountRepository
+        );
 
-      const loggerSpyInfo = jest.spyOn(
-        (accountService as unknown as { logger: { info: typeof jest.fn } })
-          .logger,
-        'info'
-      );
-      const loggerSpyError = jest.spyOn(
-        (accountService as unknown as { logger: { error: typeof jest.fn } })
-          .logger,
-        'error'
-      );
+        const loggerSpyInfo = jest.spyOn(
+          (accountService as unknown as { logger: { info: typeof jest.fn } })
+            .logger,
+          'info'
+        );
+        const loggerSpyError = jest.spyOn(
+          (accountService as unknown as { logger: { error: typeof jest.fn } })
+            .logger,
+          'error'
+        );
 
-      const result = await accountService.getByUserDefinedIdentification(dto);
+        const result = await accountService.getByUserDefinedIdentification(dto);
 
-      expect(result).toEqual([mockAccount]);
+        expect(result).toEqual([mockAccount]);
 
-      expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
-      expect(loggerSpyInfo).toHaveBeenCalledWith(
-        `getByUserDefinedIdentification: ${JSON.stringify(dto)}`
-      );
-      expect(loggerSpyError).toHaveBeenCalledTimes(0);
-    });
+        expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
+        expect(loggerSpyInfo).toHaveBeenCalledWith(
+          `getByUserDefinedIdentification: ${JSON.stringify(dto)}`
+        );
+        expect(loggerSpyError).toHaveBeenCalledTimes(0);
+      }
+    );
 
     it.each([
       [
