@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { IAccount } from './account.type';
 import {
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountAllowedDtos,
@@ -12,6 +13,9 @@ type IAccountRepository = {
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById(id: IAccount['id']): Promise<IGetAccountDto | undefined>;
+  getByUserDefinedIdentification: (
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  ) => Promise<IGetAccountDto[] | undefined>;
   deleteById(id: IAccount['id']): Promise<boolean>;
   updateById(
     id: IAccount['id'],

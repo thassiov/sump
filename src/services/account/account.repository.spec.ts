@@ -252,6 +252,134 @@ describe('account.repository', () => {
     });
   });
 
+  describe('getByUserDefinedIdentification', () => {
+    it('gets an account', async () => {
+      const accountUserDefinedIdentificationObject = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        username: faker.internet.username(),
+      };
+
+      const mockGetAccountResponse: IGetAccountDto = {
+        id: faker.string.uuid(),
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['owner'],
+      };
+
+      const mockSendQuery = jest
+        .spyOn(
+          AccountRepository.prototype as unknown as {
+            sendFindByUserDefinedIdentificationQuery: () => Promise<
+              IGetAccountDto[] | undefined
+            >;
+          },
+          'sendFindByUserDefinedIdentificationQuery'
+        )
+        .mockResolvedValueOnce([mockGetAccountResponse]);
+
+      const instance = new AccountRepository({} as unknown as Knex);
+
+      const result = await instance.getByUserDefinedIdentification(
+        accountUserDefinedIdentificationObject
+      );
+      expect(result).toEqual([mockGetAccountResponse]);
+      expect(mockSendQuery).toHaveBeenCalledTimes(1);
+      expect(mockSendQuery).toHaveBeenCalledWith(
+        accountUserDefinedIdentificationObject
+      );
+    });
+
+    it('gets an empty response as the account does not exist', async () => {
+      const accountUserDefinedIdentificationObject = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        username: faker.internet.username(),
+      };
+      const mockDbResponse = undefined;
+
+      const mockSendQuery = jest
+        .spyOn(
+          AccountRepository.prototype as unknown as {
+            sendFindByUserDefinedIdentificationQuery: () => Promise<
+              IGetAccountDto[] | undefined
+            >;
+          },
+          'sendFindByUserDefinedIdentificationQuery'
+        )
+        .mockResolvedValueOnce(mockDbResponse);
+
+      const instance = new AccountRepository({} as unknown as Knex);
+
+      const result = await instance.getByUserDefinedIdentification(
+        accountUserDefinedIdentificationObject
+      );
+      expect(result).toBe(mockDbResponse);
+      expect(mockSendQuery).toHaveBeenCalledTimes(1);
+      expect(mockSendQuery).toHaveBeenCalledWith(
+        accountUserDefinedIdentificationObject
+      );
+    });
+
+    it('fails to get an account by a error thrown by the database', async () => {
+      const accountUserDefinedIdentificationObject = {
+        email: faker.internet.email(),
+        phone: faker.phone.number({ style: 'international' }),
+        username: faker.internet.username(),
+      };
+
+      const mockThrownError = new Error('some-error');
+      const repositoryError = new UnexpectedError({
+        cause: mockThrownError,
+        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        details: {
+          input: {
+            ...accountUserDefinedIdentificationObject,
+          },
+        },
+      });
+
+      const mockSendQuery = jest
+        .spyOn(
+          AccountRepository.prototype as unknown as {
+            sendFindByUserDefinedIdentificationQuery: () => Promise<
+              IGetAccountDto[] | undefined
+            >;
+          },
+          'sendFindByUserDefinedIdentificationQuery'
+        )
+        .mockRejectedValueOnce(mockThrownError);
+
+      const instance = new AccountRepository({} as unknown as Knex);
+
+      let thrown;
+      try {
+        await instance.getByUserDefinedIdentification(
+          accountUserDefinedIdentificationObject
+        );
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(UnexpectedError);
+      expect((thrown as UnexpectedError).cause).toEqual(mockThrownError);
+      expect((thrown as UnexpectedError).context).toEqual(
+        repositoryError.context
+      );
+      expect((thrown as UnexpectedError).details).toEqual(
+        repositoryError.details
+      );
+      expect(mockSendQuery).toHaveBeenCalledTimes(1);
+      expect(mockSendQuery).toHaveBeenCalledWith(
+        accountUserDefinedIdentificationObject
+      );
+    });
+  });
+
   describe('updateById', () => {
     it('updates an account by its id', async () => {
       const mockAccountId = faker.string.uuid();
