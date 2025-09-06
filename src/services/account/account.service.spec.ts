@@ -4,6 +4,7 @@ import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { AccountService } from './account.service';
 import {
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountEmailDto,
@@ -22,6 +23,7 @@ describe('account.service', () => {
   const mockAccountRepository = {
     create: jest.fn(),
     getById: jest.fn(),
+    getByUserDefinedIdentification: jest.fn(),
     deleteById: jest.fn(),
     updateById: jest.fn(),
   };
@@ -446,6 +448,270 @@ describe('account.service', () => {
       expect(loggerSpyInfo).toHaveBeenCalledWith(`getById: ${faultyAccountId}`);
       expect(loggerSpyError).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('getByUserDefinedIdentification', () => {
+    it.each([
+      [
+        {
+          email: faker.internet.email(),
+          phone: faker.phone.number({ style: 'international' }),
+          username: faker.internet.username(),
+        },
+      ],
+      [
+        {
+          email: faker.internet.email(),
+        },
+      ],
+      [
+        {
+          phone: faker.phone.number({ style: 'international' }),
+        },
+      ],
+      [
+        {
+          username: faker.internet.username(),
+        },
+      ],
+    ])('should retrieve a account (%p)', async (dto) => {
+      const mockAccount: IGetAccountDto = {
+        id: faker.string.uuid(),
+        email: dto.email || faker.internet.email(),
+        phone: dto.phone || faker.phone.number({ style: 'international' }),
+        name: faker.person.fullName(),
+        username: dto.username || faker.internet.username(),
+        avatarUrl: faker.image.url(),
+        tenantId: faker.string.uuid(),
+        roles: ['owner'],
+      };
+
+      // @TODO: spy on this method so we assert number of calls and arguments passed
+      mockAccountRepository.getByUserDefinedIdentification.mockResolvedValue([
+        mockAccount,
+      ]);
+
+      const accountService = new AccountService(
+        mockAccountRepository as unknown as IAccountRepository
+      );
+
+      const loggerSpyInfo = jest.spyOn(
+        (accountService as unknown as { logger: { info: typeof jest.fn } })
+          .logger,
+        'info'
+      );
+      const loggerSpyError = jest.spyOn(
+        (accountService as unknown as { logger: { error: typeof jest.fn } })
+          .logger,
+        'error'
+      );
+
+      const result = await accountService.getByUserDefinedIdentification(dto);
+
+      expect(result).toEqual([mockAccount]);
+
+      expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
+      expect(loggerSpyInfo).toHaveBeenCalledWith(
+        `getByUserDefinedIdentification: ${JSON.stringify(dto)}`
+      );
+      expect(loggerSpyError).toHaveBeenCalledTimes(0);
+    });
+
+    it.each([
+      [
+        {
+          email: faker.internet.email(),
+          phone: faker.phone.number({ style: 'international' }),
+          username: faker.internet.username(),
+        },
+      ],
+      [
+        {
+          email: faker.internet.email(),
+        },
+      ],
+      [
+        {
+          phone: faker.phone.number({ style: 'international' }),
+        },
+      ],
+      [
+        {
+          username: faker.internet.username(),
+        },
+      ],
+    ])(
+      'should return undefined when the account was not found (%p)',
+      async (dto) => {
+        const mockAccount = undefined;
+        // @TODO: spy on this method so we assert number of calls and arguments passed
+        mockAccountRepository.getById.mockResolvedValue(mockAccount);
+
+        const accountService = new AccountService(
+          mockAccountRepository as unknown as IAccountRepository
+        );
+
+        const loggerSpyInfo = jest.spyOn(
+          (accountService as unknown as { logger: { info: typeof jest.fn } })
+            .logger,
+          'info'
+        );
+        const loggerSpyError = jest.spyOn(
+          (accountService as unknown as { logger: { error: typeof jest.fn } })
+            .logger,
+          'error'
+        );
+
+        const result = await accountService.getByUserDefinedIdentification(dto);
+
+        expect(result).toEqual(mockAccount);
+
+        expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
+        expect(loggerSpyInfo).toHaveBeenCalledWith(
+          `getByUserDefinedIdentification: ${JSON.stringify(dto)}`
+        );
+        expect(loggerSpyError).toHaveBeenCalledTimes(0);
+      }
+    );
+
+    it.each([
+      [
+        {
+          email: faker.internet.email(),
+          what: 'what',
+        },
+      ],
+      [
+        {
+          email: faker.internet.email(),
+          phone: faker.phone.number({ style: 'international' }),
+          username: 3,
+        },
+      ],
+      [
+        {
+          email: undefined,
+          phone: faker.phone.number({ style: 'international' }),
+          username: faker.internet.username(),
+        },
+      ],
+      [
+        {
+          email: faker.internet.email(),
+          phone: '',
+          username: faker.internet.username(),
+        },
+      ],
+      [{}],
+      [
+        {
+          someprop: 'thisissomestring',
+        },
+      ],
+      [
+        {
+          email: '',
+        },
+      ],
+      [
+        {
+          email: undefined,
+        },
+      ],
+      [
+        {
+          email: 3,
+        },
+      ],
+      [
+        {
+          phone: '',
+        },
+      ],
+      [
+        {
+          phone: undefined,
+        },
+      ],
+      [
+        {
+          phone: 3,
+        },
+      ],
+      [
+        {
+          username: '',
+        },
+      ],
+      [
+        {
+          username: undefined,
+        },
+      ],
+      [
+        {
+          username: 3,
+        },
+      ],
+    ])(
+      'should fail by not sending a valid identification (%p)',
+      async (dto) => {
+        // const errors = Object.keys(dto).map((key) => {
+        //   if (['username', 'phone', 'email'].includes(key)) {
+        //     return [key, 'field value is invalid'];
+        //   }
+        //   return [key, 'field is not allowed'];
+        // });
+
+        const mockExpectedError = {
+          details: {
+            input: { ...dto },
+            // errors: Object.fromEntries(errors),
+          },
+          context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        };
+
+        const accountService = new AccountService(
+          mockAccountRepository as unknown as IAccountRepository
+        );
+
+        const loggerSpyInfo = jest.spyOn(
+          (accountService as unknown as { logger: { info: typeof jest.fn } })
+            .logger,
+          'info'
+        );
+        const loggerSpyError = jest.spyOn(
+          (accountService as unknown as { logger: { error: typeof jest.fn } })
+            .logger,
+          'error'
+        );
+
+        let thrown;
+
+        try {
+          await accountService.getByUserDefinedIdentification(
+            dto as IAccountUserDefinedIdentification
+          );
+        } catch (error) {
+          thrown = error;
+        }
+
+        expect(thrown).toBeInstanceOf(ValidationError);
+        expect((thrown as ValidationError).details).toHaveProperty(
+          'input',
+          mockExpectedError.details.input
+        );
+        expect((thrown as ValidationError).context).toEqual(
+          mockExpectedError.context
+        );
+
+        expect(loggerSpyInfo).toHaveBeenCalledTimes(1);
+        expect(loggerSpyInfo).toHaveBeenCalledWith(
+          `getByUserDefinedIdentification: ${JSON.stringify(dto)}`
+        );
+        expect(loggerSpyError).toHaveBeenCalledTimes(1);
+      }
+    );
   });
 
   describe('deleteById', () => {

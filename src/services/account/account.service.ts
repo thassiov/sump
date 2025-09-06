@@ -7,8 +7,10 @@ import { formatZodError } from '../../lib/utils/formatters';
 import { ITenant } from '../tenant/types/tenant.type';
 import { accountSchema, IAccount } from './types/account.type';
 import {
+  accountUserDefinedIdentificationSchema,
   createAccountDtoSchema,
   createAccountNoInternalPropertiesDtoSchema,
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountEmailDto,
@@ -116,6 +118,35 @@ export class AccountService extends BaseService implements IAccountService {
     }
 
     return this.accountRepository.getById(id);
+  }
+
+  async getByUserDefinedIdentification(
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  ): Promise<IGetAccountDto[] | undefined> {
+    this.logger.info(
+      `getByUserDefinedIdentification: ${JSON.stringify(accountUserDefinedIdentification)}`
+    );
+
+    const isUDIValid = accountUserDefinedIdentificationSchema.safeParse(
+      accountUserDefinedIdentification
+    );
+
+    if (!isUDIValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { ...accountUserDefinedIdentification },
+          errors: formatZodError(isUDIValid.error.issues),
+        },
+        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return await this.accountRepository.getByUserDefinedIdentification(
+      accountUserDefinedIdentification
+    );
   }
 
   async deleteById(id: IAccount['id']): Promise<boolean> {

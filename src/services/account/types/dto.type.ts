@@ -32,6 +32,37 @@ const createAccountNoInternalPropertiesDtoSchema = z
     updatedAt: true,
   });
 
+const accountUserDefinedIdentificationSchema = z
+  .strictObject(accountSchema.shape)
+  .pick({
+    email: true,
+    phone: true,
+    username: true,
+  })
+  .partial({
+    email: true,
+    username: true,
+  })
+  .refine(
+    (val) => {
+      const values = Object.values(val);
+
+      // @NOTE: I don't like the way I coded this, but it works well.
+      //  it checks for falsy values in the object, like properties with 'undefined' as their value
+      return !values.some((value) => !value);
+    },
+    {
+      message: 'values cannot be undefined',
+    }
+  )
+  .refine((val) => Object.keys(val).length, {
+    message: 'payload cannot be empty',
+  });
+
+type IAccountUserDefinedIdentification = z.infer<
+  typeof accountUserDefinedIdentificationSchema
+>;
+
 const getAccountDtoSchema = accountSchema.pick({
   id: true,
   email: true,
@@ -83,6 +114,7 @@ type IUpdateAccountAllowedDtos =
   | IUpdateAccountUsernameDto;
 
 export type {
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountAllowedDtos,
@@ -93,6 +125,7 @@ export type {
 };
 
 export {
+  accountUserDefinedIdentificationSchema,
   createAccountDtoSchema,
   createAccountNoInternalPropertiesDtoSchema,
   getAccountDtoSchema,

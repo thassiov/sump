@@ -12,7 +12,7 @@ const accountSchema = z.object({
   phone: z.string().check(z.e164()).optional(),
   phoneVerified: z.boolean().default(false),
   name: z.string().min(3).max(100),
-  username: z.string().max(20),
+  username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()).optional(),
   tenantId: z.uuid(),
   roles: z
