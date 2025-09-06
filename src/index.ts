@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { BusinessService } from './business/business.service';
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
 import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
@@ -18,10 +19,12 @@ async function bootstrap(sumpConfig?: object) {
   if (config.service) {
     logger.info(`Setting up service ${config.service} as a http service`);
 
-    logger.info('Fetching databaseClient instance');
+    logger.info(
+      `Fetching databaseClient instance for ${config.service} service`
+    );
     const databaseClient = getDatabaseClient(config.database);
 
-    logger.info('Creating service instance');
+    logger.info(`Creating ${config.service} service instance`);
     const serviceInstance = createServiceInstance(config.service, {
       databaseClient,
     });
@@ -39,6 +42,33 @@ async function bootstrap(sumpConfig?: object) {
     startServer();
   } else {
     console.log('the things from the main service');
+    const databaseClient = getDatabaseClient(config.database);
+
+    const accountRepository = new services.account.repository(databaseClient);
+    const accountService = new services.account.service(accountRepository);
+
+    const tenantRepository = new services.tenant.repository(databaseClient);
+    const tenantService = new services.tenant.service(tenantRepository);
+
+    const tenantEnvironmentRepository =
+      new services.tenantEnvironment.repository(databaseClient);
+    const tenantEnvironmentService = new services.tenantEnvironment.service(
+      tenantEnvironmentRepository
+    );
+
+    const tenantEnvironmentAccountRepository =
+      new services.tenantEnvironmentAccount.repository(databaseClient);
+    const tenantEnvironmentAccountService =
+      new services.tenantEnvironmentAccount.service(
+        tenantEnvironmentAccountRepository
+      );
+
+    const businessService = new BusinessService({
+      account: accountService,
+      tenant: tenantService,
+      tenantEnvironment: tenantEnvironmentService,
+      tenantEnvironmentAccount: tenantEnvironmentAccountService,
+    });
   }
 }
 

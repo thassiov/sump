@@ -1,3 +1,3 @@
-function createNewTenant() {}
+import { createNewTenantUseCase } from './create-new-tenant.use-case';
 
-export { createNewTenant };
+export { createNewTenantUseCase };
