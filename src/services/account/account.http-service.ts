@@ -1,8 +1,13 @@
 import { BaseHttpService } from '../../base-classes';
+import { contexts } from '../../lib/contexts';
+import { ValidationError } from '../../lib/errors';
+import { formatZodError } from '../../lib/utils/formatters';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../tenant/types/dto.type';
 import { ITenant } from '../tenant/types/tenant.type';
 import { IAccount } from './types/account.type';
 import {
+  accountUserDefinedIdentificationSchema,
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountEmailDto,
@@ -29,6 +34,30 @@ class AccountHttpService extends BaseHttpService implements IAccountService {
   async getById(id: IAccount['id']): Promise<IGetAccountDto | undefined> {
     const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.get<IGetAccountDto | undefined>(url);
+  }
+
+  async getByUserDefinedIdentification(
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  ): Promise<IGetAccountDto[] | undefined> {
+    const isUDIValid = accountUserDefinedIdentificationSchema.safeParse(
+      accountUserDefinedIdentification
+    );
+
+    if (!isUDIValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { ...accountUserDefinedIdentification },
+          errors: formatZodError(isUDIValid.error.issues),
+        },
+        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    const url = `${this.serviceUrl}/?${new URLSearchParams(accountUserDefinedIdentification as Record<string, string>).toString()}`;
+    return await this.httpClient.get<IGetAccountDto[] | undefined>(url);
   }
 
   async deleteById(id: IAccount['id']): Promise<boolean> {

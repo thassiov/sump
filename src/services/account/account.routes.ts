@@ -17,6 +17,11 @@ const router = express.Router();
 function makeServiceEndpoints(accountService: AccountService): express.Router {
   router.post('/v1/accounts/', makeCreateEndpointFactory(accountService));
 
+  router.get(
+    '/v1/accounts/',
+    makeGetByUserDefinedIdentificationEndpointFactory(accountService)
+  );
+
   router.get('/v1/accounts/:id', makeGetByIdEndpointFactory(accountService));
 
   router.patch(
@@ -75,6 +80,29 @@ function makeGetByIdEndpointFactory(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
     const account = await accountService.getById(id);
+
+    if (!account) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ account });
+    return;
+  };
+}
+
+function makeGetByUserDefinedIdentificationEndpointFactory(
+  accountService: AccountService
+): EndpointHandler {
+  return async function makeGetByUserDefinedIdentificationEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const userDefinedIdentification = req.query;
+    const account = await accountService.getByUserDefinedIdentification(
+      userDefinedIdentification
+    );
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
