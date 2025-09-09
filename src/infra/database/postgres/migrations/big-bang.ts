@@ -12,6 +12,7 @@ const ON_UPDATE_TIMESTAMP_FUNCTION = `
 $$ language 'plpgsql';
 `;
 
+// must be set with/after the `createTable` calls so we can use the `updatedAt` timestamp
 function onUpdateTrigger(table: string) {
   return `
     CREATE TRIGGER ${table}_updated_at
@@ -28,18 +29,97 @@ async function up(knex: Knex) {
   await knex.raw(ON_UPDATE_TIMESTAMP_FUNCTION);
 
   await knex.schema.createTable(
-    internalConfigs.repository.account.tableName,
+    internalConfigs.repository.tenant.tableName,
     function (table) {
-      console.log('lets go');
-      table.uuid('id').defaultTo(knex.fn.uuid()).primary().unique();
-      table.string('email').notNullable().unique();
-      table.string('fullName').notNullable();
-      table.index(['id'], 'idxId');
+      table
+        .uuid('id')
+        .defaultTo(knex.fn.uuid())
+        .primary()
+        .unique()
+        .index('idxId');
+      table.string('name').notNullable();
+      table.json('customProperties').notNullable();
       table.timestamps(true, true);
     }
   );
-  // must be set with the create table so we can use the updated at timestamp
+  await knex.raw(onUpdateTrigger(internalConfigs.repository.tenant.tableName));
+
+  await knex.schema.createTable(
+    internalConfigs.repository.account.tableName,
+    function (table) {
+      table
+        .uuid('id')
+        .defaultTo(knex.fn.uuid())
+        .primary()
+        .unique()
+        .index('idxId');
+      table.string('email').notNullable().unique();
+      table.boolean('emailVerified').notNullable().defaultTo(false);
+      table.string('phone').notNullable().unique();
+      table.boolean('phoneVerified').notNullable().defaultTo(false);
+      table.string('username').notNullable().unique();
+      table.string('name').notNullable();
+      table.string('avatarUrl').notNullable();
+      table.json('roles').notNullable();
+      table
+        .foreign('tenantId')
+        .references(`${internalConfigs.repository.tenant.tableName}.id`);
+      table.timestamps(true, true);
+    }
+  );
   await knex.raw(onUpdateTrigger(internalConfigs.repository.account.tableName));
+
+  await knex.schema.createTable(
+    internalConfigs.repository.tenantEnvironment.tableName,
+    function (table) {
+      table
+        .uuid('id')
+        .defaultTo(knex.fn.uuid())
+        .primary()
+        .unique()
+        .index('idxId');
+      table.string('name').notNullable();
+      table.json('customProperties').notNullable();
+      table
+        .foreign('tenantId')
+        .references(`${internalConfigs.repository.tenant.tableName}.id`);
+      table.timestamps(true, true);
+    }
+  );
+  await knex.raw(
+    onUpdateTrigger(internalConfigs.repository.tenantEnvironment.tableName)
+  );
+
+  await knex.schema.createTable(
+    internalConfigs.repository.tenantEnvironmentAccount.tableName,
+    function (table) {
+      table
+        .uuid('id')
+        .defaultTo(knex.fn.uuid())
+        .primary()
+        .unique()
+        .index('idxId');
+      table.string('email').notNullable().unique();
+      table.boolean('emailVerified').notNullable().defaultTo(false);
+      table.string('phone').notNullable().unique();
+      table.boolean('phoneVerified').notNullable().defaultTo(false);
+      table.string('username').notNullable().unique();
+      table.string('name').notNullable();
+      table.string('avatarUrl').notNullable();
+      table.json('customProperties').notNullable();
+      table
+        .foreign('tenantEnvironmentId')
+        .references(
+          `${internalConfigs.repository.tenantEnvironment.tableName}.id`
+        );
+      table.timestamps(true, true);
+    }
+  );
+  await knex.raw(
+    onUpdateTrigger(
+      internalConfigs.repository.tenantEnvironmentAccount.tableName
+    )
+  );
 }
 
 async function down(knex: Knex) {

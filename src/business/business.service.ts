@@ -1,72 +1,103 @@
+import express from 'express';
 import { BaseService } from '../base-classes';
-import { IAccountService } from '../services/account/types/service.type';
-import { ITenantEnvironmentAccountService } from '../services/tenant-environment-account/types/service.type';
-import { ITenantEnvironmentService } from '../services/tenant-environment/types/service.type';
-import { ITenantService } from '../services/tenant/types/service.type';
+import { setupExpressRestApi } from '../infra/rest-api/express';
+import { RestApiConfig } from '../lib/types';
 import { tenants } from './tenants';
-
-type ServiceRecord = {
-  account: IAccountService;
-  tenant: ITenantService;
-  tenantEnvironment: ITenantEnvironmentService;
-  tenantEnvironmentAccount: ITenantEnvironmentAccountService;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BindFirst<F> = F extends (dep: any, ...rest: infer R) => infer Ret
-  ? (...rest: R) => Ret
-  : never;
-
-type UseCaseRecordDefinition<T> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [K in keyof T]: T[K] extends (...args: any[]) => any
-    ? BindFirst<T[K]>
-    : never;
-};
-
-type UseCaseRecord = {
-  tenants: UseCaseRecordDefinition<typeof tenants>;
-  accounts: Record<string, unknown>;
-  tenantEnvironments: Record<string, unknown>;
-  tenantEnvironmentAccounts: Record<string, unknown>;
-};
+import { ServiceRecord, UseCaseRecord } from './types/business.type';
 
 class BusinessService extends BaseService {
   private serviceRecord: ServiceRecord;
-  useCaseRecord: UseCaseRecord = {} as UseCaseRecord;
+  private useCaseRecord = {} as UseCaseRecord;
+  private httpServerRouter: express.Router;
+  private httpServer?: () => void;
 
-  constructor(services: ServiceRecord) {
+  constructor(services: ServiceRecord, restApi?: RestApiConfig) {
     super('business-service');
+    this.httpServerRouter = express.Router();
     this.serviceRecord = services;
-    this.setupUseCases();
+    this.setupUseCases(!!restApi);
+
+    if (restApi) {
+      this.httpServer = setupExpressRestApi([this.httpServerRouter], {
+        port: 8080,
+      });
+    }
+
     Object.freeze(this.useCaseRecord);
   }
 
   /**
    * `Parameters` [https://www.typescriptlang.org/docs/handbook/utility-types.html#parameterstype]
    * SO question [https://stackoverflow.com/a/51851844]
+   *
+   * @NOTE: this function is poo poo
    */
-  private setupUseCases(): void {
+  private setupUseCases(setupRouter = false): void {
     const useCaseDomains = [{ tenants }];
+    const httpRouters: Record<string, express.Router[]> = {};
 
-    useCaseDomains.forEach((useCaseDomain) => {
-      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-      const useCaseDomainName = Object.keys(
-        useCaseDomain
-      )[0] as keyof UseCaseRecord;
+    useCaseDomains.forEach((domain) => {
+      const domainName = Object.keys(domain)[0] as keyof typeof domain;
+      const useCaseNames = Object.keys(
+        domain[domainName]
+      ) as (keyof (typeof domain)[typeof domainName])[];
 
-      const useCaseFns = Object.entries(
-        useCaseDomain[useCaseDomainName as keyof typeof useCaseDomain]
-      ).map(([useCaseName, useCaseFn]) => {
+      httpRouters[domainName] = [];
+
+      useCaseNames.forEach((useCaseName) => {
+        const useCaseFn = domain[domainName][useCaseName].service;
+        const useCaseHttpEndpointController =
+          domain[domainName][useCaseName].endpoint;
+
         type UseCaseArgument = Parameters<typeof useCaseFn>[1];
-        return [
-          [useCaseName],
-          async (dto: UseCaseArgument) => useCaseFn(this.serviceRecord, dto),
-        ];
+        const useCaseFnCaller = async (dto: UseCaseArgument) =>
+          useCaseFn(this.serviceRecord, dto);
+
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        if (!this.useCaseRecord[domainName]) {
+          this.useCaseRecord[domainName] = {};
+        }
+
+        this.useCaseRecord[domainName][useCaseName] = useCaseFnCaller;
+
+        if (setupRouter) {
+          const useCaseRouter = useCaseHttpEndpointController(useCaseFnCaller);
+          httpRouters[domainName]?.push(useCaseRouter);
+        }
+      });
+    });
+
+    if (setupRouter) {
+      httpRouters['tenants']?.forEach((router) => {
+        this.httpServerRouter.use('/tenants', router);
       });
 
-      this.useCaseRecord[useCaseDomainName] = Object.fromEntries(useCaseFns);
-    });
+      httpRouters['accounts']?.forEach((router) => {
+        this.httpServerRouter.use('/tenants/:tenantId/accounts', router);
+      });
+
+      httpRouters['tenantEnvironments']?.forEach((router) => {
+        this.httpServerRouter.use(
+          '/tenants/:tenantId/tenantEnvironments',
+          router
+        );
+      });
+
+      httpRouters['tenantEnvironmentAccounts']?.forEach((router) => {
+        this.httpServerRouter.use(
+          '/tenantEnvironments/:tenantEnvironment/tenantEnvironmentAccounts',
+          router
+        );
+      });
+    }
+  }
+
+  listen(): void {
+    if (this.httpServer) {
+      this.httpServer();
+    } else {
+      this.logger.warn('Http server is not setup.');
+    }
   }
 }
 

@@ -6,6 +6,9 @@
   "scripts": {
     "dev:start": "ts-node ./src/index.ts",
     "dev:watch": "nodemon",
+    "dev:container:watch": "docker compose up --build --watch",
+    "dev:container:start": "docker compose up --build",
+    "dev:container:down": "docker compose down",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "build": "rimraf ./build && tsc",

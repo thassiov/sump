@@ -1,11 +1,9 @@
-import { Router } from 'express';
-
 import { BusinessService } from './business/business.service';
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
 import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
 import { setupLogger } from './lib/logger/logger';
-import { CreateServiceInstanceOptions, SumpConfig } from './lib/types';
+import { SumpConfig } from './lib/types';
 import * as services from './services';
 
 const logger = setupLogger('sump-bootstrap');
@@ -24,16 +22,18 @@ async function bootstrap(sumpConfig?: object) {
     );
     const databaseClient = getDatabaseClient(config.database);
 
-    logger.info(`Creating ${config.service} service instance`);
-    const serviceInstance = createServiceInstance(config.service, {
-      databaseClient,
-    });
-
-    logger.info('Setting up service endpoints');
-    const router = setupServiceEndpoints(
-      serviceInstance,
-      services[config.service].endpoints
+    logger.info(`Creating ${config.service} repository instance`);
+    const serviceRepository = new services[config.service].repository(
+      databaseClient
     );
+
+    logger.info(`Creating ${config.service} service instance`);
+    const serviceInstance = new services[config.service].service(
+      serviceRepository
+    );
+
+    logger.info('Setting up service http endpoints');
+    const router = services[config.service].endpoints(serviceInstance);
 
     logger.info('Setting up rest api server');
     const startServer = setupExpressRestApi([router], config.restApi);
@@ -41,8 +41,10 @@ async function bootstrap(sumpConfig?: object) {
     logger.info('Starting server');
     startServer();
   } else {
-    console.log('the things from the main service');
+    logger.info('Fetching databaseClient instance for the main service');
     const databaseClient = getDatabaseClient(config.database);
+
+    logger.info("Creating internal service's instances");
 
     const accountRepository = new services.account.repository(databaseClient);
     const accountService = new services.account.service(accountRepository);
@@ -63,64 +65,21 @@ async function bootstrap(sumpConfig?: object) {
         tenantEnvironmentAccountRepository
       );
 
-    const businessService = new BusinessService({
-      account: accountService,
-      tenant: tenantService,
-      tenantEnvironment: tenantEnvironmentService,
-      tenantEnvironmentAccount: tenantEnvironmentAccountService,
-    });
+    logger.info("Creating main service's instance");
+    const businessService = new BusinessService(
+      {
+        account: accountService,
+        tenant: tenantService,
+        tenantEnvironment: tenantEnvironmentService,
+        tenantEnvironmentAccount: tenantEnvironmentAccountService,
+      },
+      config.restApi
+    );
+
+    logger.info('Starting server');
+    businessService.listen();
   }
 }
-
-// @FIX: this types are all wrong, but ill fix it later with some 'typeof baseservice/baserepository'
-//  and changes in the base clases themselves
-function createServiceInstance(
-  serviceName: keyof typeof services,
-  configs: CreateServiceInstanceOptions
-) {
-  if (configs.databaseClient) {
-    const serviceRepository = new services[serviceName].repository(
-      configs.databaseClient
-    );
-    const serviceInstance = new services.account.service(serviceRepository);
-    return serviceInstance;
-  } else {
-    logger.error(
-      'No config passed when creating service instance. Exiting...:',
-      serviceName
-    );
-    process.exit(1);
-  }
-}
-
-// @FIX: this 'any stuff needs to be handled'
-function setupServiceEndpoints(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  serviceInstance: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  serviceEndpointFactory: any
-): Router {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return serviceEndpointFactory(serviceInstance);
-}
-
-// function createHttpServiceInstance(
-//   serviceName: keyof typeof services,
-//   configs: CreateServiceInstanceOptions
-// ) {
-//   if (configs.url) {
-//     const httpServiceInstance = new services[serviceName].httpService(
-//       configs.url
-//     );
-//     return httpServiceInstance;
-//   } else {
-//     logger.error(
-//       'No config passed when creating http service instance. Exiting...:',
-//       serviceName
-//     );
-//     process.exit(1);
-//   }
-// }
 
 (async () => {
   await bootstrap();
