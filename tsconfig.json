@@ -1,8 +1,7 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es6",
     "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "rootDir": ".",
@@ -11,7 +10,6 @@
   },
   "exclude": [
     "eslint.config.mjs",
-    "esbuild.config.mjs",
     "jest.config.mjs",
     "coverage/"
   ]

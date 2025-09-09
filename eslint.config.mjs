@@ -1,15 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// @ts-check
-
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-// @ts-expect-error i dont know how to fix it yet
 import eslintJest from 'eslint-plugin-jest';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
+  {
+    ignores: [
+      'dist/**/*.ts',
+      'dist/**',
+      '**/*.mjs',
+      'eslint.config.mjs',
+      '**/*.js',
+    ],
+  },
   {
     languageOptions: {
       parserOptions: {
