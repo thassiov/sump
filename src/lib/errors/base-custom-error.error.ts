@@ -8,7 +8,7 @@ export type ErrorOpts = {
 
 export class BaseCustomError extends Error {
   details?: Record<string, unknown>;
-  override cause?: Error;
+  cause?: Error;
   context?: keyof typeof contexts;
 
   constructor(message: string, opts?: ErrorOpts) {

@@ -846,7 +846,7 @@ describe('account.service', () => {
 
           const result = await accountService.updateNonSensitivePropertiesById(
             mockAccountId,
-            mockUpdateAccountDto as IUpdateAccountNonSensitivePropertiesDto
+            mockUpdateAccountDto
           );
 
           expect(result).toEqual(mockUpdateAccountResult);
