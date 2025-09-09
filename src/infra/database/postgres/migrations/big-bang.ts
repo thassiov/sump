@@ -36,7 +36,7 @@ async function up(knex: Knex) {
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('idxId');
+        .index('tenantIdx');
       table.string('name').notNullable();
       table.json('customProperties').notNullable();
       table.timestamps(true, true);
@@ -52,7 +52,7 @@ async function up(knex: Knex) {
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('idxId');
+        .index('accountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
       table.string('phone').notNullable().unique();
@@ -61,6 +61,7 @@ async function up(knex: Knex) {
       table.string('name').notNullable();
       table.string('avatarUrl').notNullable();
       table.json('roles').notNullable();
+      table.uuid('tenantId');
       table
         .foreign('tenantId')
         .references(`${internalConfigs.repository.tenant.tableName}.id`);
@@ -77,9 +78,10 @@ async function up(knex: Knex) {
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('idxId');
+        .index('tenantEnvironmentIdx');
       table.string('name').notNullable();
       table.json('customProperties').notNullable();
+      table.uuid('tenantId');
       table
         .foreign('tenantId')
         .references(`${internalConfigs.repository.tenant.tableName}.id`);
@@ -98,7 +100,7 @@ async function up(knex: Knex) {
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('idxId');
+        .index('tenantEnvironmentAccountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
       table.string('phone').notNullable().unique();
@@ -107,6 +109,7 @@ async function up(knex: Knex) {
       table.string('name').notNullable();
       table.string('avatarUrl').notNullable();
       table.json('customProperties').notNullable();
+      table.uuid('tenantEnvironmentId');
       table
         .foreign('tenantEnvironmentId')
         .references(
