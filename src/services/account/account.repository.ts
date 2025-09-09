@@ -32,7 +32,10 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
-      const [result] = await this.sendInsertReturningIdQuery(dto, transaction);
+      const [result] = await this.sendInsertReturningIdQuery(
+        { ...dto, roles: JSON.stringify(dto.roles) },
+        transaction
+      );
 
       if (!result) {
         throw new NotExpectedError({
