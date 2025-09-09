@@ -64,7 +64,7 @@ class TenantEnvironmentRepository
     }
   }
 
-  async getById(id: string): Promise<ITenantEnvironment | undefined> {
+  async getById(id: string): Promise<IGetTenantEnvironmentDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
