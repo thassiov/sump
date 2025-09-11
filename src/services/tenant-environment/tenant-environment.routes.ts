@@ -102,7 +102,6 @@ function makeGetByTenantIdEndpointFactory(
     req: Request,
     res: Response
   ): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tenantId = req.query['tenantId'] as string;
     const tenant = await tenantEnvironmentService.getByTenantId(tenantId);
 
