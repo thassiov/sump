@@ -125,6 +125,31 @@ export class TenantEnvironmentService
     return this.tenantEnvironmentRepository.getById(id);
   }
 
+  async getByTenantId(
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    this.logger.info(`getByTenantId: ${tenantId}`);
+
+    const isIdValid = tenantEnvironmentSchema
+      .pick({ tenantId: true })
+      .safeParse({ tenantId });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { tenantId },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context: contexts.TENANT_ENVIRONMENT_GET_BY_TENANT_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.tenantEnvironmentRepository.getByTenantId(tenantId);
+  }
+
   async deleteById(id: ITenantEnvironment['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 

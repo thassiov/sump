@@ -22,6 +22,11 @@ function makeServiceEndpoints(
   );
 
   router.get(
+    '/v1/environments/',
+    makeGetByTenantIdEndpointFactory(tenantEnvironmentService)
+  );
+
+  router.get(
     '/v1/environments/:id',
     makeGetByIdEndpointFactory(tenantEnvironmentService)
   );
@@ -82,6 +87,27 @@ function makeGetByIdEndpointFactory(
 
     if (!tenant) {
       res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ tenant });
+    return;
+  };
+}
+
+function makeGetByTenantIdEndpointFactory(
+  tenantEnvironmentService: TenantEnvironmentService
+): EndpointHandler {
+  return async function makeGetByTenantIdEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const tenantId = req.query['tenantId'] as string;
+    const tenant = await tenantEnvironmentService.getByTenantId(tenantId);
+
+    if (!tenant) {
+      res.status(StatusCodes.OK).json([]);
       return;
     }
 

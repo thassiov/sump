@@ -51,6 +51,8 @@ class BusinessService extends BaseService {
 
         type UseCaseArgument = Parameters<typeof useCaseFn>[1];
         const useCaseFnCaller = async (dto: UseCaseArgument) =>
+          // @FIXME: I believe this entire method is not typed right.
+          //  @ts-expect-error the dto have a union type right now. i need to be generic in this case
           useCaseFn(this.serviceRecord, dto);
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -61,6 +63,8 @@ class BusinessService extends BaseService {
         this.useCaseRecord[domainName][useCaseName] = useCaseFnCaller;
 
         if (setupRouter) {
+          // @FIXME: the useCaseFnCaller works fine, but the types are not good
+          //  @ts-expect-error this is a result of the union thing from above
           const useCaseRouter = useCaseHttpEndpointController(useCaseFnCaller);
           httpRouters[domainName]?.push(useCaseRouter);
         }

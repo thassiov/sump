@@ -14,6 +14,9 @@ type ITenantEnvironmentRepository = {
   getById(
     id: ITenantEnvironment['id']
   ): Promise<IGetTenantEnvironmentDto | undefined>;
+  getByTenantId(
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto[] | undefined>;
   deleteById(id: ITenantEnvironment['id']): Promise<boolean>;
   updateById(
     id: ITenantEnvironment['id'],

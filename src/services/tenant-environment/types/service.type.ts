@@ -16,6 +16,9 @@ export type ITenantEnvironmentService = {
   getById: (
     id: ITenantEnvironment['id']
   ) => Promise<IGetTenantEnvironmentDto | undefined>;
+  getByTenantId: (
+    tenantId: ITenantEnvironment['tenantId']
+  ) => Promise<IGetTenantEnvironmentDto[] | undefined>;
   deleteById: (id: ITenantEnvironment['id']) => Promise<boolean>;
   updateNonSensitivePropertiesById: (
     id: ITenantEnvironment['id'],

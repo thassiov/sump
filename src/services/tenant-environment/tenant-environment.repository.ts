@@ -80,6 +80,24 @@ class TenantEnvironmentRepository
     }
   }
 
+  async getByTenantId(
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    try {
+      return await this.sendFindByTenantIdQuery(tenantId);
+    } catch (error) {
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.TENANT_ENVIRONMENT_GET_BY_TENANT_ID,
+        details: {
+          input: { tenantId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   async updateById(
     id: ITenantEnvironment['id'],
     dto: IUpdateTenantEnvironmentAllowedDtos
@@ -216,7 +234,22 @@ class TenantEnvironmentRepository
   ): Promise<IGetTenantEnvironmentDto | undefined> {
     return await this.dbClient<IGetTenantEnvironmentDto>(this.tableName)
       .where('id', id)
+      .select('id', 'name', 'tenantId', 'customProperties')
       .first();
+  }
+
+  private async sendFindByTenantIdQuery(
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    const result = await this.dbClient<IGetTenantEnvironmentDto>(this.tableName)
+      .where('tenantId', tenantId)
+      .select('id', 'name', 'tenantId', 'customProperties');
+
+    if (!result.length) {
+      return;
+    }
+
+    return result;
   }
 
   private async sendUpdateByIdQuery(

@@ -33,6 +33,15 @@ class TenantEnvironmentHttpService
     return await this.httpClient.get<IGetTenantEnvironmentDto | undefined>(url);
   }
 
+  async getByTenantId(
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    const url = `${this.serviceUrl}?tenantId=${tenantId}`;
+    return await this.httpClient.get<IGetTenantEnvironmentDto[] | undefined>(
+      url
+    );
+  }
+
   async deleteById(id: ITenantEnvironment['id']): Promise<boolean> {
     const url = `${this.serviceUrl}/${id}`;
     return await this.httpClient.delete<boolean>(url);
