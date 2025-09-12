@@ -250,8 +250,13 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     jsonPath: string
   ): Promise<void> {
     await this.dbClient(this.tableName)
-      .where('id', id)
-      .jsonRemove('customProperties', `$.${jsonPath}`);
+      .update({
+        customProperties: this.dbClient.jsonRemove(
+          'customProperties',
+          `$.${jsonPath}`
+        ),
+      })
+      .where('id', id);
   }
 }
 

@@ -165,6 +165,7 @@ function makeDeleteCustomPropertyByIdEndpointFactory(
 }
 
 export {
+  makeDeleteCustomPropertyByIdEndpointFactory,
   makeServiceEndpoints,
   makeSetCustomPropertyByIdEndpointFactory,
   makeUpdateNonSensitivePropertiesByIdEndpointFactory,
