@@ -64,7 +64,10 @@ async function up(knex: Knex) {
       table.uuid('tenantId');
       table
         .foreign('tenantId')
-        .references(`${internalConfigs.repository.tenant.tableName}.id`);
+        .references('id')
+        .inTable(internalConfigs.repository.tenant.tableName)
+        .onDelete('CASCADE');
+
       table.timestamps(true, true);
     }
   );
@@ -84,7 +87,9 @@ async function up(knex: Knex) {
       table.uuid('tenantId');
       table
         .foreign('tenantId')
-        .references(`${internalConfigs.repository.tenant.tableName}.id`);
+        .references('id')
+        .inTable(internalConfigs.repository.tenant.tableName)
+        .onDelete('CASCADE');
       table.timestamps(true, true);
     }
   );
@@ -112,9 +117,9 @@ async function up(knex: Knex) {
       table.uuid('tenantEnvironmentId');
       table
         .foreign('tenantEnvironmentId')
-        .references(
-          `${internalConfigs.repository.tenantEnvironment.tableName}.id`
-        );
+        .references('id')
+        .inTable(internalConfigs.repository.tenantEnvironment.tableName)
+        .onDelete('CASCADE');
       table.timestamps(true, true);
     }
   );

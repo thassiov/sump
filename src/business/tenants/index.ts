@@ -2,6 +2,7 @@ import {
   createNewTenantUseCase,
   createNewTenantUseCaseEndpoint,
 } from './create-new-tenant';
+import { deleteByIdUseCase, deleteByIdUseCaseEndpoint } from './delete-by-id';
 import {
   deleteCustomPropertyByIdUseCase,
   deleteCustomPropertyByIdUseCaseEndpoint,
@@ -39,5 +40,9 @@ export const tenants = {
   deleteCustomPropertyByIdUseCase: {
     service: deleteCustomPropertyByIdUseCase,
     endpoint: deleteCustomPropertyByIdUseCaseEndpoint,
+  },
+  deleteByIdUseCase: {
+    service: deleteByIdUseCase,
+    endpoint: deleteByIdUseCaseEndpoint,
   },
 };
