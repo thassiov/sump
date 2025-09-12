@@ -38,7 +38,7 @@ async function up(knex: Knex) {
         .unique()
         .index('tenantIdx');
       table.string('name').notNullable();
-      table.json('customProperties').notNullable();
+      table.jsonb('customProperties').notNullable();
       table.timestamps(true, true);
     }
   );

@@ -235,8 +235,14 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
     const key = Object.keys(customProperty)[0] as string;
 
     await this.dbClient(this.tableName)
-      .where('id', id)
-      .jsonSet('customProperties', `$.${key}`, customProperty);
+      .update({
+        customProperties: this.dbClient.jsonSet(
+          'customProperties',
+          `$.${key}`,
+          customProperty[key]
+        ),
+      })
+      .where('id', id);
   }
 
   private async sendDeleteJsonDataOnPathById(
