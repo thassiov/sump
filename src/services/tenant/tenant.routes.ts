@@ -2,17 +2,17 @@ import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 // import { setupLogger } from '../../lib/logger/logger';
 import { EndpointHandler } from '../../lib/types';
-import { TenantService } from './tenant.service';
 import {
   ICreateTenantDto,
   ITenantCustomPropertiesOperationDtoSchema,
   IUpdateTenantNonSensitivePropertiesDto,
 } from './types/dto.type';
+import { ITenantService } from './types/service.type';
 
 const router = express.Router();
 // const logger = setupLogger('enpoint-v1-accounts');
 
-function makeServiceEndpoints(tenantService: TenantService): express.Router {
+function makeServiceEndpoints(tenantService: ITenantService): express.Router {
   router.post('/v1/tenants/', makeCreateEndpointFactory(tenantService));
 
   router.get('/v1/tenants/:id', makeGetByIdEndpointFactory(tenantService));
@@ -41,7 +41,7 @@ function makeServiceEndpoints(tenantService: TenantService): express.Router {
 }
 
 function makeCreateEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeCreateEndpoint(
     req: Request,
@@ -55,7 +55,7 @@ function makeCreateEndpointFactory(
 }
 
 function makeGetByIdEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeGetByIdEndpoint(
     req: Request,
@@ -76,7 +76,7 @@ function makeGetByIdEndpointFactory(
 }
 
 function makeUpdateNonSensitivePropertiesByIdEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeUpdateNonSensitivePropertiesByIdEndpoint(
     req: Request,
@@ -101,7 +101,7 @@ function makeUpdateNonSensitivePropertiesByIdEndpointFactory(
 }
 
 function makeDeleteByIdEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeDeleteByIdEndpoint(
     req: Request,
@@ -118,7 +118,7 @@ function makeDeleteByIdEndpointFactory(
 }
 
 function makeSetCustomPropertyByIdEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeSetCustomPropertyByIdEndpoint(
     req: Request,
@@ -140,7 +140,7 @@ function makeSetCustomPropertyByIdEndpointFactory(
 }
 
 function makeDeleteCustomPropertyByIdEndpointFactory(
-  tenantService: TenantService
+  tenantService: ITenantService
 ): EndpointHandler {
   return async function makeDeleteCustomPropertyByIdEndpoint(
     req: Request,
@@ -164,4 +164,7 @@ function makeDeleteCustomPropertyByIdEndpointFactory(
   };
 }
 
-export { makeServiceEndpoints };
+export {
+  makeServiceEndpoints,
+  makeUpdateNonSensitivePropertiesByIdEndpointFactory,
+};

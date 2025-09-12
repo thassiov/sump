@@ -6,6 +6,10 @@ import {
   getTenantByIdUseCase,
   getTenantByIdUseCaseEndpoint,
 } from './get-tenant-by-id';
+import {
+  updateNonSensitivePropertiesByIdUseCase,
+  updateNonSensitivePropertiesByIdUseCaseEndpoint,
+} from './update-non-sensitive-properties-by-id';
 
 export const tenants = {
   createNewTenantUseCase: {
@@ -15,5 +19,9 @@ export const tenants = {
   getTenantByIdUseCase: {
     service: getTenantByIdUseCase,
     endpoint: getTenantByIdUseCaseEndpoint,
+  },
+  updateNonSensitivePropertiesByIdUseCase: {
+    service: updateNonSensitivePropertiesByIdUseCase,
+    endpoint: updateNonSensitivePropertiesByIdUseCaseEndpoint,
   },
 };

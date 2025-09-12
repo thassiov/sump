@@ -3,7 +3,11 @@ import { BaseService } from '../base-classes';
 import { setupExpressRestApi } from '../infra/rest-api/express';
 import { RestApiConfig } from '../lib/types';
 import { tenants } from './tenants';
-import { ServiceRecord, UseCaseRecord } from './types/business.type';
+import {
+  ServiceRecord,
+  UseCaseCaller,
+  UseCaseRecord,
+} from './types/business.type';
 
 class BusinessService extends BaseService {
   private serviceRecord: ServiceRecord;
@@ -49,11 +53,11 @@ class BusinessService extends BaseService {
         const useCaseHttpEndpointController =
           domain[domainName][useCaseName].endpoint;
 
-        type UseCaseArgument = Parameters<typeof useCaseFn>[1];
-        const useCaseFnCaller = async (dto: UseCaseArgument) =>
+        type UseCaseArguments = Parameters<UseCaseCaller<typeof useCaseFn>>;
+        const useCaseFnCaller = async (...dto: UseCaseArguments) =>
           // @FIXME: I believe this entire method is not typed right.
           //  @ts-expect-error the dto have a union type right now. i need to be generic in this case
-          useCaseFn(this.serviceRecord, dto);
+          useCaseFn(this.serviceRecord, ...dto);
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         if (!this.useCaseRecord[domainName]) {
