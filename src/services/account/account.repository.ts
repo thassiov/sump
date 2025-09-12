@@ -99,6 +99,24 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
+  async getByTenantId(
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined> {
+    try {
+      return await this.sendFindByTenantIdQuery(tenantId);
+    } catch (error) {
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.ACCOUNT_GET_BY_TENANT_ID,
+        details: {
+          input: { tenantId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   async getByUserDefinedIdentification(
     dto: IAccountUserDefinedIdentification
   ): Promise<IGetAccountDto[] | undefined> {
@@ -203,7 +221,34 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   ): Promise<IGetAccountDto | undefined> {
     return await this.dbClient<IGetAccountDto>(this.tableName)
       .where('id', id)
+      .select(
+        'id',
+        'name',
+        'username',
+        'phone',
+        'email',
+        'roles',
+        'tenantId',
+        'avatarUrl'
+      )
       .first();
+  }
+
+  private async sendFindByTenantIdQuery(
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined> {
+    return await this.dbClient<IGetAccountDto[]>(this.tableName)
+      .where('tenantId', tenantId)
+      .select(
+        'id',
+        'name',
+        'username',
+        'phone',
+        'email',
+        'roles',
+        'tenantId',
+        'avatarUrl'
+      );
   }
 
   private async sendFindByUserDefinedIdentificationQuery(

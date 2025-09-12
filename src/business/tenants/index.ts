@@ -8,6 +8,10 @@ import {
   deleteCustomPropertyByIdUseCaseEndpoint,
 } from './delete-custom-property-by-id';
 import {
+  getAccountsByTenantIdUseCase,
+  getAccountsByTenantIdUseCaseEndpoint,
+} from './get-accounts-by-tenant-id';
+import {
   getTenantByIdUseCase,
   getTenantByIdUseCaseEndpoint,
 } from './get-tenant-by-id';
@@ -44,5 +48,9 @@ export const tenants = {
   deleteByIdUseCase: {
     service: deleteByIdUseCase,
     endpoint: deleteByIdUseCaseEndpoint,
+  },
+  getAccountsByTenantIdUseCase: {
+    service: getAccountsByTenantIdUseCase,
+    endpoint: getAccountsByTenantIdUseCaseEndpoint,
   },
 };

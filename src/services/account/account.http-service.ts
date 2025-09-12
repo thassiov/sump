@@ -36,6 +36,13 @@ class AccountHttpService extends BaseHttpService implements IAccountService {
     return await this.httpClient.get<IGetAccountDto | undefined>(url);
   }
 
+  async getByTenantId(
+    id: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined> {
+    const url = `${this.serviceUrl}/${id}/accounts`;
+    return await this.httpClient.get<IGetAccountDto[] | undefined>(url);
+  }
+
   async getByUserDefinedIdentification(
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ): Promise<IGetAccountDto[] | undefined> {

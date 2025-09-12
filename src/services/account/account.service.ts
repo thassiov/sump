@@ -120,6 +120,30 @@ export class AccountService extends BaseService implements IAccountService {
     return this.accountRepository.getById(id);
   }
 
+  async getByTenantId(
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined> {
+    this.logger.info(`getByTenantId: ${tenantId}`);
+    const isIdValid = accountSchema
+      .pick({ tenantId: true })
+      .safeParse({ tenantId });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { tenantId },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context: contexts.ACCOUNT_GET_BY_TENANT_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.accountRepository.getByTenantId(tenantId);
+  }
+
   async getByUserDefinedIdentification(
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ): Promise<IGetAccountDto[] | undefined> {

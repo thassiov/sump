@@ -18,6 +18,9 @@ export type IAccountService = {
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (id: IAccount['id']) => Promise<IGetAccountDto | undefined>;
+  getByTenantId: (
+    tenantId: IAccount['tenantId']
+  ) => Promise<IGetAccountDto[] | undefined>;
   getByUserDefinedIdentification: (
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ) => Promise<IGetAccountDto[] | undefined>;

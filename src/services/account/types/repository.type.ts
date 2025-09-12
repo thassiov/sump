@@ -13,6 +13,9 @@ type IAccountRepository = {
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById(id: IAccount['id']): Promise<IGetAccountDto | undefined>;
+  getByTenantId(
+    id: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined>;
   getByUserDefinedIdentification: (
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ) => Promise<IGetAccountDto[] | undefined>;
