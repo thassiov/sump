@@ -2,6 +2,7 @@ import express from 'express';
 import { BaseService } from '../base-classes';
 import { setupExpressRestApi } from '../infra/rest-api/express';
 import { RestApiConfig } from '../lib/types';
+import { accounts } from './accounts';
 import { tenants } from './tenants';
 import {
   ServiceRecord,
@@ -34,42 +35,46 @@ class BusinessService extends BaseService {
    * `Parameters` [https://www.typescriptlang.org/docs/handbook/utility-types.html#parameterstype]
    * SO question [https://stackoverflow.com/a/51851844]
    *
-   * @NOTE: this function is poo poo
+   * @FIXME: the type of this function should be called 'type IThisIsAllGarbage'
    */
   private setupUseCases(setupRouter = false): void {
-    const useCaseDomains = [{ tenants }];
+    const useCaseDomains = [{ tenants }, { accounts }];
     const httpRouters: Record<string, express.Router[]> = {};
 
     useCaseDomains.forEach((domain) => {
       const domainName = Object.keys(domain)[0] as keyof typeof domain;
       const useCaseNames = Object.keys(
+        // @ts-expect-error @FIXME:  the typing of this entire method is messed up. The logic works alright but I have no types here atm
         domain[domainName]
       ) as (keyof (typeof domain)[typeof domainName])[];
 
       httpRouters[domainName] = [];
 
       useCaseNames.forEach((useCaseName) => {
+        // @ts-expect-error @FIXME:  the typing of this entire method is messed up. The logic works alright but I have no types here atm
         const useCaseFn = domain[domainName][useCaseName].service;
         const useCaseHttpEndpointController =
+          // @ts-expect-error @FIXME:  the typing of this entire method is messed up. The logic works alright but I have no types here atm
           domain[domainName][useCaseName].endpoint;
 
         type UseCaseArguments = Parameters<UseCaseCaller<typeof useCaseFn>>;
-        const useCaseFnCaller = async (...dto: UseCaseArguments) =>
-          // @FIXME: I believe this entire method is not typed right.
-          //  @ts-expect-error the dto have a union type right now. i need to be generic in this case
-          useCaseFn(this.serviceRecord, ...dto);
+        const useCaseFnCaller = async (
+          ...dto: UseCaseArguments
+          // eslint-disable-next-line @typescript-eslint/require-await
+        ): Promise<unknown> => useCaseFn(this.serviceRecord, ...dto);
 
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!this.useCaseRecord[domainName]) {
+          // @ts-expect-error @FIXME:  the typing of this entire method is messed up. The logic works alright but I have no types here atm
           this.useCaseRecord[domainName] = {};
         }
 
+        // @ts-expect-error @FIXME:  the typing of this entire method is messed up. The logic works alright but I have no types here atm
         this.useCaseRecord[domainName][useCaseName] = useCaseFnCaller;
 
         if (setupRouter) {
-          // @FIXME: the useCaseFnCaller works fine, but the types are not good
-          //  @ts-expect-error this is a result of the union thing from above
           const useCaseRouter = useCaseHttpEndpointController(useCaseFnCaller);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           httpRouters[domainName]?.push(useCaseRouter);
         }
       });

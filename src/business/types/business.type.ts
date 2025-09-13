@@ -2,6 +2,7 @@ import { IAccountService } from '../../services/account/types/service.type';
 import { ITenantEnvironmentAccountService } from '../../services/tenant-environment-account/types/service.type';
 import { ITenantEnvironmentService } from '../../services/tenant-environment/types/service.type';
 import { ITenantService } from '../../services/tenant/types/service.type';
+import { accounts } from '../accounts';
 import { tenants } from '../tenants';
 
 // @FIXME: these types make me feel icky
@@ -26,8 +27,8 @@ type UseCaseRecordDefinition<T> = {
 };
 
 type UseCaseRecord = {
-  tenants: UseCaseRecordDefinition<typeof tenants.useCases>;
-  accounts: Record<string, unknown>;
+  tenants: UseCaseRecordDefinition<typeof tenants>;
+  accounts: UseCaseRecordDefinition<typeof accounts>;
   tenantEnvironments: Record<string, unknown>;
   tenantEnvironmentAccounts: Record<string, unknown>;
 };
