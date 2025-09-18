@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { IAccount } from './account.type';
 import {
+  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -26,7 +27,8 @@ type IAccountRepository = {
   deleteById(id: IAccount['id']): Promise<boolean>;
   updateById(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos
+    dto: IUpdateAccountAllowedDtos,
+    optionalQueryFilters?: IAccountOptionalQueryFilters
   ): Promise<boolean>;
 };
 

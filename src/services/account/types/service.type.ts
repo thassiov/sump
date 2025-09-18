@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { ITenant } from '../../tenant/types/tenant.type';
 import { IAccount } from './account.type';
 import {
+  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -31,7 +32,8 @@ export type IAccountService = {
   deleteById: (id: IAccount['id']) => Promise<boolean>;
   updateNonSensitivePropertiesById: (
     id: IAccount['id'],
-    dto: IUpdateAccountNonSensitivePropertiesDto
+    dto: IUpdateAccountNonSensitivePropertiesDto,
+    optionalQueryFilters?: IAccountOptionalQueryFilters
   ) => Promise<boolean>;
   updateEmailById: (
     id: IAccount['id'],

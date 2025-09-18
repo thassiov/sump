@@ -7,9 +7,11 @@ import { formatZodError } from '../../lib/utils/formatters';
 import { ITenant } from '../tenant/types/tenant.type';
 import { accountSchema, IAccount } from './types/account.type';
 import {
+  accountOptionalQueryFiltersSchema,
   accountUserDefinedIdentificationSchema,
   createAccountDtoSchema,
   createAccountNoInternalPropertiesDtoSchema,
+  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -245,7 +247,8 @@ export class AccountService extends BaseService implements IAccountService {
    * */
   async updateNonSensitivePropertiesById(
     id: IAccount['id'],
-    dto: IUpdateAccountNonSensitivePropertiesDto
+    dto: IUpdateAccountNonSensitivePropertiesDto,
+    optionalQueryFilters?: IAccountOptionalQueryFilters
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
@@ -280,7 +283,25 @@ export class AccountService extends BaseService implements IAccountService {
       throw errorInstance;
     }
 
-    return this.accountRepository.updateById(id, dto);
+    if (optionalQueryFilters) {
+      const areOptionalQueryFiltersValid =
+        accountOptionalQueryFiltersSchema.safeParse(optionalQueryFilters);
+
+      if (!areOptionalQueryFiltersValid.success) {
+        const errorInstance = new ValidationError({
+          details: {
+            input: { ...optionalQueryFilters },
+            errors: formatZodError(areOptionalQueryFiltersValid.error.issues),
+          },
+          context: contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
+        });
+
+        this.logger.error(errorInstance);
+        throw errorInstance;
+      }
+    }
+
+    return this.accountRepository.updateById(id, dto, optionalQueryFilters);
   }
 
   async updateEmailById(

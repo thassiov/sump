@@ -75,6 +75,20 @@ const getAccountDtoSchema = accountSchema.pick({
 });
 type IGetAccountDto = z.infer<typeof getAccountDtoSchema>;
 
+const accountOptionalQueryFiltersSchema = getAccountDtoSchema
+  .omit({
+    id: true,
+    roles: true,
+  })
+  .partial()
+  .refine((val) => Object.keys(val).length, {
+    message: 'payload cannot be empty',
+  });
+
+type IAccountOptionalQueryFilters = z.infer<
+  typeof accountOptionalQueryFiltersSchema
+>;
+
 const updateAccountNonSensitivePropertiesDtoSchema = z
   .strictObject(accountSchema.shape)
   .pick({
@@ -114,6 +128,7 @@ type IUpdateAccountAllowedDtos =
   | IUpdateAccountUsernameDto;
 
 export type {
+  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -125,6 +140,7 @@ export type {
 };
 
 export {
+  accountOptionalQueryFiltersSchema,
   accountUserDefinedIdentificationSchema,
   createAccountDtoSchema,
   createAccountNoInternalPropertiesDtoSchema,

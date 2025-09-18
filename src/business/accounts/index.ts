@@ -4,6 +4,10 @@ import {
   getAccountByIdAndTenantIdUseCase,
   getAccountByIdAndTenantIdUseCaseEndpoint,
 } from './get-account-by-id-and-tenant-id';
+import {
+  updateNonSensitivePropertiesByIdAndTenantIdUseCase,
+  updateNonSensitivePropertiesByIdAndTenantIdUseCaseEndpoint,
+} from './update-non-sensitive-properties-by-id-and-tenant-id';
 
 export const accounts = {
   createAccountUseCase: {
@@ -13,5 +17,9 @@ export const accounts = {
   getAccountByIdAndTenantIdUseCase: {
     service: getAccountByIdAndTenantIdUseCase,
     endpoint: getAccountByIdAndTenantIdUseCaseEndpoint,
+  },
+  updateNonSensitivePropertiesByIdAndTenantIdUseCase: {
+    service: updateNonSensitivePropertiesByIdAndTenantIdUseCase,
+    endpoint: updateNonSensitivePropertiesByIdAndTenantIdUseCaseEndpoint,
   },
 };

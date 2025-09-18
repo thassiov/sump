@@ -13,6 +13,7 @@ import {
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { IAccount } from './types/account.type';
 import {
+  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -159,10 +160,15 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
   async updateById(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos
+    dto: IUpdateAccountAllowedDtos,
+    optionalQueryFilters?: IAccountOptionalQueryFilters
   ): Promise<boolean> {
     try {
-      const result = await this.sendUpdateByIdQuery(id, dto);
+      const result = await this.sendUpdateByIdQuery(
+        id,
+        dto,
+        optionalQueryFilters ?? undefined
+      );
 
       if (result === 0) {
         throw new NotFoundError({
@@ -318,9 +324,16 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
   private async sendUpdateByIdQuery(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos
+    dto: IUpdateAccountAllowedDtos,
+    optionalQueryFilters?: IAccountOptionalQueryFilters
   ): Promise<number> {
-    return await this.dbClient(this.tableName).where('id', id).update(dto);
+    const query = this.dbClient(this.tableName).where({ id }).update(dto);
+
+    if (optionalQueryFilters) {
+      query.andWhere(optionalQueryFilters);
+    }
+
+    return query;
   }
 
   private async sendDeleteByIdQuery(id: IAccount['id']): Promise<number> {
