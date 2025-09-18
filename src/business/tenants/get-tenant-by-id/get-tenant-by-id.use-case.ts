@@ -6,11 +6,11 @@ import {
   ITenant,
   tenantSchema,
 } from '../../../services/tenant/types/tenant.type';
-import { CreateNewTenantServices } from '../create-new-tenant/types/use-case.type';
 import { GetTenantByIdUseCaseResultDto } from './types/dto.type';
+import { GetTenantByIdServices } from './types/use-case.type';
 
 async function getTenantByIdUseCase(
-  services: CreateNewTenantServices,
+  services: GetTenantByIdServices,
   id: ITenant['id']
 ): Promise<GetTenantByIdUseCaseResultDto> {
   const logger = setupLogger('get-tenant-by-id-use-case');
