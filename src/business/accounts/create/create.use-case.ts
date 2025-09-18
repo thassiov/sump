@@ -20,6 +20,9 @@ async function createAccountUseCase(
     });
   }
 
+  // @TODO: add a `canCreateAccount` for cheking for a previously registered token, email, phone
+  //  this must be paired with a `inviteAccount` functionality as well to send an invitation
+
   return services.account.create(tenantId, dto);
 }
 

@@ -41,6 +41,7 @@ class BusinessService extends BaseService {
     const useCaseDomains = [{ tenants }, { accounts }];
     const httpRouters: Record<string, express.Router[]> = {};
 
+    // @TODO: move to its own function/module
     useCaseDomains.forEach((domain) => {
       const domainName = Object.keys(domain)[0] as keyof typeof domain;
       const useCaseNames = Object.keys(
@@ -80,6 +81,7 @@ class BusinessService extends BaseService {
       });
     });
 
+    // @TODO: move to its own function/module
     if (setupRouter) {
       httpRouters['tenants']?.forEach((router) => {
         this.httpServerRouter.use('/tenants', router);
