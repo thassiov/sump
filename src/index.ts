@@ -83,4 +83,6 @@ async function bootstrap(sumpConfig?: object) {
 
 (async () => {
   await bootstrap();
-})().catch(logger.error);
+})().catch((e: unknown) => {
+  logger.error((e as Error).toString(), (e as Error).stack);
+});

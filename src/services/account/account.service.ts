@@ -144,6 +144,52 @@ export class AccountService extends BaseService implements IAccountService {
     return this.accountRepository.getByTenantId(tenantId);
   }
 
+  async getByAccountIdAndTenantId(
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto | undefined> {
+    this.logger.info(`getByAccountIdAndTenantId: ${accountId} ${tenantId}`);
+
+    const isTenantIdValid = accountSchema
+      .pick({ tenantId: true })
+      .safeParse({ tenantId });
+
+    if (!isTenantIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { tenantId },
+          errors: formatZodError(isTenantIdValid.error.issues),
+        },
+        context: contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    const isAccountIdValid = accountSchema
+      .pick({ id: true })
+      .safeParse({ id: accountId });
+
+    if (!isAccountIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { accountId },
+          errors: formatZodError(isAccountIdValid.error.issues),
+        },
+        context: contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.accountRepository.getByAccountIdAndTenantId(
+      accountId,
+      tenantId
+    );
+  }
+
   async getByUserDefinedIdentification(
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ): Promise<IGetAccountDto[] | undefined> {

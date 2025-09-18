@@ -21,6 +21,10 @@ export type IAccountService = {
   getByTenantId: (
     tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto[] | undefined>;
+  getByAccountIdAndTenantId: (
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ) => Promise<IGetAccountDto | undefined>;
   getByUserDefinedIdentification: (
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ) => Promise<IGetAccountDto[] | undefined>;

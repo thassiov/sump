@@ -1,3 +1,3 @@
-import { logger } from './logger';
+import { setupLogger } from './logger';
 
-export { logger };
+export { setupLogger };

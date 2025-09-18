@@ -79,7 +79,16 @@ function makeGetByIdEndpointFactory(
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const id = req.params['id']!;
-    const account = await accountService.getById(id);
+
+    const tenantId = req.query['tenantId'] as string;
+
+    let account;
+
+    if (tenantId) {
+      account = await accountService.getByAccountIdAndTenantId(id, tenantId);
+    }
+
+    account = await accountService.getById(id);
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
