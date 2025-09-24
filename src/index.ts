@@ -1,4 +1,3 @@
-import { BusinessService } from './business/business.service';
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
 import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
@@ -66,18 +65,8 @@ async function bootstrap(sumpConfig?: object) {
       );
 
     logger.info("Creating main service's instance");
-    const businessService = new BusinessService(
-      {
-        account: accountService,
-        tenant: tenantService,
-        tenantEnvironment: tenantEnvironmentService,
-        tenantEnvironmentAccount: tenantEnvironmentAccountService,
-      },
-      config.restApi
-    );
 
     logger.info('Starting server');
-    businessService.listen();
   }
 }
 
