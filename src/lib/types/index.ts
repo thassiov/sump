@@ -1,22 +1,12 @@
 import { Request, Response } from 'express';
 import { Knex } from 'knex';
 import z from 'zod';
-
-import { BaseRepository, BaseService } from '../../base-classes';
-import { BaseHttpService } from '../../base-classes/http-service.base-class';
+import { BaseHttpService, BaseRepository, BaseService } from '../base-classes';
 
 const idSchema = z.uuid();
 
 const restApiConfigSchema = z.object({
   port: z.number(),
-});
-
-const externalServiceSchema = z.object({
-  url: z.string(),
-});
-
-const externalServicesRecordSchema = z.object({
-  account: externalServiceSchema.optional(),
 });
 
 const databaseConfigSchema = z.object({
@@ -28,8 +18,6 @@ const databaseConfigSchema = z.object({
 });
 
 const sumpConfigSchema = z.object({
-  service: z.enum(['account']).optional(),
-  externalServices: externalServicesRecordSchema.optional(),
   database: databaseConfigSchema,
   restApi: restApiConfigSchema,
 });
@@ -49,9 +37,11 @@ type ServiceModule = {
 
 type EndpointHandler = (req: Request, res: Response) => Promise<void>;
 
+type UseCaseServices = Record<string, BaseService>;
+
 type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
 
-export { sumpConfigSchema, idSchema };
+export { idSchema, sumpConfigSchema };
 
 export type {
   CreateServiceInstanceOptions,
@@ -60,4 +50,5 @@ export type {
   RestApiConfig,
   ServiceModule,
   SumpConfig,
+  UseCaseServices,
 };

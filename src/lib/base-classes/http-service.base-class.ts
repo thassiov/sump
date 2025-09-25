@@ -1,4 +1,4 @@
-import { httpClient, HttpClient } from '../lib/utils/http-client';
+import { httpClient, HttpClient } from '../utils/http-client';
 import { BaseService } from './service.base-class';
 
 // @FIX: http services need to translate errors into native errors.

@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { BaseService } from '../../base-classes';
+import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
@@ -11,10 +11,10 @@ import {
   IUpdateTenantNonSensitivePropertiesDto,
   tenantCustomPropertiesOperationDtoSchema,
   updateTenantNonSensitivePropertiesDtoSchema,
-} from './types/dto.type';
-import { ITenantRepository } from './types/repository.type';
-import { ITenantService } from './types/service.type';
-import { ITenant, tenantSchema } from './types/tenant.type';
+} from '../types/tenant/dto.type';
+import { ITenantRepository } from '../types/tenant/repository.type';
+import { ITenantService } from '../types/tenant/service.type';
+import { ITenant, tenantSchema } from '../types/tenant/tenant.type';
 
 export class TenantService extends BaseService implements ITenantService {
   constructor(private readonly tenantRepository: ITenantRepository) {

@@ -1,5 +1,5 @@
 import z from 'zod';
-import { accountSchema } from './account.type';
+import { accountSchema, IAccount } from './account.type';
 
 // @TODO: this schema might need to be reviewed at some point. it seems wrong
 const createAccountDtoSchema = accountSchema
@@ -127,7 +127,14 @@ type IUpdateAccountAllowedDtos =
   | IUpdateAccountPhoneDto
   | IUpdateAccountUsernameDto;
 
+type CreateNewAccountUseCaseDtoResult = IAccount['id'];
+type DeleteAccountByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto =
+  boolean;
+
 export type {
+  CreateNewAccountUseCaseDtoResult,
+  DeleteAccountByIdAndTenantIdUseCaseResultDto,
   IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
@@ -137,6 +144,7 @@ export type {
   IUpdateAccountNonSensitivePropertiesDto,
   IUpdateAccountPhoneDto,
   IUpdateAccountUsernameDto,
+  UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
 };
 
 export {

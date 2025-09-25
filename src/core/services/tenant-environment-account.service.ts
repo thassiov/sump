@@ -1,10 +1,9 @@
 import { Knex } from 'knex';
-import { BaseService } from '../../base-classes';
+import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
-import { ITenantEnvironment } from '../tenant-environment/types/tenant-environment.type';
 import {
   createTenantEnvironmentAccountNoInternalPropertiesDtoSchema,
   ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
@@ -18,13 +17,14 @@ import {
   updateTenantEnvironmentAccountNonSensitivePropertiesDtoSchema,
   updateTenantEnvironmentAccountPhoneDtoSchema,
   updateTenantEnvironmentAccountUsernameDtoSchema,
-} from './types/dto.type';
-import { ITenantEnvironmentAccountRepository } from './types/repository.type';
-import { ITenantEnvironmentAccountService } from './types/service.type';
+} from '../types/tenant-environment-account/dto.type';
+import { ITenantEnvironmentAccountRepository } from '../types/tenant-environment-account/repository.type';
+import { ITenantEnvironmentAccountService } from '../types/tenant-environment-account/service.type';
 import {
   ITenantEnvironmentAccount,
   tenantEnvironmentAccountSchema,
-} from './types/tenant-environment-account.type';
+} from '../types/tenant-environment-account/tenant-environment-account.type';
+import { ITenantEnvironment } from '../types/tenant-environment/tenant-environment.type';
 
 export class TenantEnvironmentAccountService
   extends BaseService

@@ -1,5 +1,4 @@
 import { Knex } from 'knex';
-import { ITenant } from '../../tenant/types/tenant.type';
 import { IAccount } from './account.type';
 import {
   IAccountOptionalQueryFilters,
@@ -14,7 +13,7 @@ import {
 
 export type IAccountService = {
   create: (
-    tenantId: ITenant['id'],
+    tenantId: IAccount['tenantId'],
     dto: ICreateAccountDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
@@ -30,6 +29,10 @@ export type IAccountService = {
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ) => Promise<IGetAccountDto[] | undefined>;
   deleteById: (id: IAccount['id']) => Promise<boolean>;
+  deleteByIdAndTenantId: (
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ) => Promise<boolean>;
   updateNonSensitivePropertiesById: (
     id: IAccount['id'],
     dto: IUpdateAccountNonSensitivePropertiesDto,

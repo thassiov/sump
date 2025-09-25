@@ -25,6 +25,10 @@ type IAccountRepository = {
     accountUserDefinedIdentification: IAccountUserDefinedIdentification
   ) => Promise<IGetAccountDto[] | undefined>;
   deleteById(id: IAccount['id']): Promise<boolean>;
+  deleteByIdAndTenantId: (
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ) => Promise<boolean>;
   updateById(
     id: IAccount['id'],
     dto: IUpdateAccountAllowedDtos,

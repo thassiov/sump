@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
-import { BaseRepository } from '../../base-classes';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
+import { BaseRepository } from '../../lib/base-classes';
 import { internalConfigs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import {
@@ -13,9 +13,9 @@ import {
   ICreateTenantEnvironmentDto,
   IGetTenantEnvironmentDto,
   IUpdateTenantEnvironmentAllowedDtos,
-} from './types/dto.type';
-import { ITenantEnvironmentRepository } from './types/repository.type';
-import { ITenantEnvironment } from './types/tenant-environment.type';
+} from '../types/tenant-environment/dto.type';
+import { ITenantEnvironmentRepository } from '../types/tenant-environment/repository.type';
+import { ITenantEnvironment } from '../types/tenant-environment/tenant-environment.type';
 
 class TenantEnvironmentRepository
   extends BaseRepository

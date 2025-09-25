@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 import { DatabaseError } from 'pg';
-import { BaseRepository } from '../../base-classes';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
+import { BaseRepository } from '../../lib/base-classes';
 import { internalConfigs } from '../../lib/config';
 import { contexts } from '../../lib/contexts';
 import {
@@ -11,15 +11,15 @@ import {
   UnexpectedError,
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { IAccount } from './types/account.type';
+import { IAccount } from '../types/account/account.type';
 import {
   IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
   IUpdateAccountAllowedDtos,
-} from './types/dto.type';
-import { IAccountRepository } from './types/repository.type';
+} from '../types/account/dto.type';
+import { IAccountRepository } from '../types/account/repository.type';
 
 class AccountRepository extends BaseRepository implements IAccountRepository {
   private tableName: string;
@@ -228,6 +228,41 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
+  async deleteByIdAndTenantId(
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<boolean> {
+    try {
+      const result = await this.sendDeleteByIdAndTenantIdQuery(id, tenantId);
+
+      if (result === 0) {
+        throw new NotFoundError({
+          // @TODO: add a 'delete account by id and tenant id' context here
+          // context: contexts.ACCOUNT_DELETE_BY_ID,
+          details: {
+            input: { id },
+          },
+        });
+      }
+
+      return true;
+    } catch (error) {
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        // context: contexts.ACCOUNT_DELETE_BY_ID,
+        details: {
+          input: { id },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   private async sendInsertReturningIdQuery(
     payload: object,
     transaction?: Knex.Transaction
@@ -338,6 +373,13 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
   private async sendDeleteByIdQuery(id: IAccount['id']): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
+  }
+
+  private async sendDeleteByIdAndTenantIdQuery(
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<number> {
+    return await this.dbClient(this.tableName).where({ id, tenantId }).del();
   }
 }
 

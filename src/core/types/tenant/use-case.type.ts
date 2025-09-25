@@ -1,20 +1,11 @@
-import { IAccountService } from '../../../../services/account/types/service.type';
-import { ITenantEnvironmentService } from '../../../../services/tenant-environment/types/service.type';
-import { ITenantService } from '../../../../services/tenant/types/service.type';
-import {
-  CreateNewTenantUseCaseDto,
-  CreateNewTenantUseCaseResultDto,
-} from './dto.type';
+import { IAccountService } from '../account/service.type';
+import { ITenantEnvironmentService } from '../tenant-environment/service.type';
+import { ITenantService } from './service.type';
 
-type CreateNewTenantServices = {
+type TenantUseCaseServices = {
   account: IAccountService;
   tenant: ITenantService;
   tenantEnvironment: ITenantEnvironmentService;
 };
 
-type CreateNewTenantUseCase = (
-  services: CreateNewTenantServices,
-  createNewTenantDto: CreateNewTenantUseCaseDto
-) => Promise<CreateNewTenantUseCaseResultDto>;
-
-export type { CreateNewTenantServices, CreateNewTenantUseCase };
+export type { TenantUseCaseServices };

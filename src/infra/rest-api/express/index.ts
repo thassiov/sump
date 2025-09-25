@@ -11,10 +11,7 @@ import {
 } from '../../../lib/errors';
 import { RestApiConfig } from '../../../lib/types';
 
-function setupExpressRestApi(
-  routers: express.Router[],
-  restApi: RestApiConfig
-) {
+function setupExpressRestApi(router: express.Router, restApi: RestApiConfig) {
   const api = express();
 
   api.use(helmet());
@@ -35,7 +32,7 @@ function setupExpressRestApi(
   api.use(express.json());
   api.use(express.urlencoded({ extended: true }));
 
-  routers.forEach((router) => api.use(router));
+  api.use(router);
 
   api.use(errorHandler);
 

@@ -1,4 +1,4 @@
-import { setupLogger } from '../lib/logger/logger';
+import { setupLogger } from '../logger';
 
 class BaseRepository {
   protected logger;

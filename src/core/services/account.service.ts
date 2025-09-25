@@ -1,11 +1,10 @@
 import { Knex } from 'knex';
-import { BaseService } from '../../base-classes';
+import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
-import { ITenant } from '../tenant/types/tenant.type';
-import { accountSchema, IAccount } from './types/account.type';
+import { accountSchema, IAccount } from '../types/account/account.type';
 import {
   accountOptionalQueryFiltersSchema,
   accountUserDefinedIdentificationSchema,
@@ -23,9 +22,10 @@ import {
   updateAccountNonSensitivePropertiesDtoSchema,
   updateAccountPhoneDtoSchema,
   updateAccountUsernameDtoSchema,
-} from './types/dto.type';
-import { IAccountRepository } from './types/repository.type';
-import { IAccountService } from './types/service.type';
+} from '../types/account/dto.type';
+import { IAccountRepository } from '../types/account/repository.type';
+import { IAccountService } from '../types/account/service.type';
+import { ITenant } from '../types/tenant/tenant.type';
 
 export class AccountService extends BaseService implements IAccountService {
   constructor(private readonly accountRepository: IAccountRepository) {
@@ -239,6 +239,29 @@ export class AccountService extends BaseService implements IAccountService {
     }
 
     return this.accountRepository.deleteById(id);
+  }
+
+  async deleteByIdAndTenantId(
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<boolean> {
+    this.logger.info(`deleteById: ${id}`);
+    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { id },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context: contexts.ACCOUNT_DELETE_BY_ID,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+
+    return this.accountRepository.deleteByIdAndTenantId(id, tenantId);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { setupLogger } from '../logger/logger';
+import { setupLogger } from '../logger';
 import { SumpConfig, sumpConfigSchema } from '../types';
 import { parseCliFlags } from '../utils/cli-args-reader';
 import { formatZodError } from '../utils/formatters';

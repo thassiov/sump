@@ -1,5 +1,11 @@
-import { BaseService } from './service.base-class';
+import { setupLogger } from '../logger';
 
-class BaseUseCase extends BaseService {}
+class BaseUseCase {
+  protected logger;
+
+  constructor(moduleName: string) {
+    this.logger = setupLogger(moduleName);
+  }
+}
 
 export { BaseUseCase };

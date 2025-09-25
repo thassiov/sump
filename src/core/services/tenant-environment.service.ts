@@ -1,10 +1,9 @@
 import { Knex } from 'knex';
-import { BaseService } from '../../base-classes';
+import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
-import { ITenant } from '../tenant/types/tenant.type';
 import {
   createTenantEnvironmentDtoSchema,
   createTenantEnvironmentNoInternalPropertiesDtoSchema,
@@ -13,13 +12,14 @@ import {
   IUpdateTenantEnvironmentNonSensitivePropertiesDto,
   tenantEnvironmentCustomPropertiesOperationDtoSchema,
   updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
-} from './types/dto.type';
-import { ITenantEnvironmentRepository } from './types/repository.type';
-import { ITenantEnvironmentService } from './types/service.type';
+} from '../types/tenant-environment/dto.type';
+import { ITenantEnvironmentRepository } from '../types/tenant-environment/repository.type';
+import { ITenantEnvironmentService } from '../types/tenant-environment/service.type';
 import {
   ITenantEnvironment,
   tenantEnvironmentSchema,
-} from './types/tenant-environment.type';
+} from '../types/tenant-environment/tenant-environment.type';
+import { ITenant } from '../types/tenant/tenant.type';
 
 export class TenantEnvironmentService
   extends BaseService

@@ -1,4 +1,4 @@
-import { setupLogger } from '../lib/logger/logger';
+import { setupLogger } from '../logger';
 import { BaseRepository } from './repository.base-class';
 
 class BaseService {
