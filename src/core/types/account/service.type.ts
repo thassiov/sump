@@ -28,6 +28,9 @@ export type IAccountService = {
     accountUserDefinedIdentification: IAccountUserDefinedIdentification,
     tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto[] | undefined>;
+  getByUserDefinedIdentification: (
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  ) => Promise<IGetAccountDto[] | undefined>;
   deleteById: (id: IAccount['id']) => Promise<boolean>;
   deleteByIdAndTenantId: (
     id: IAccount['id'],

@@ -77,6 +77,18 @@ export class AccountService extends BaseService implements IAccountService {
     );
   }
 
+  async getByUserDefinedIdentification(
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  ): Promise<IGetAccountDto[] | undefined> {
+    this.logger.info(
+      `getByUserDefinedIdentification: ${JSON.stringify(accountUserDefinedIdentification)}`
+    );
+
+    return await this.accountRepository.getByUserDefinedIdentification(
+      accountUserDefinedIdentification
+    );
+  }
+
   async deleteById(id: IAccount['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 

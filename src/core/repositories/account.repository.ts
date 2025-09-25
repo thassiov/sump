@@ -161,6 +161,24 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
+  async getByUserDefinedIdentification(
+    dto: IAccountUserDefinedIdentification
+  ): Promise<IGetAccountDto[] | undefined> {
+    try {
+      return await this.sendFindByUserDefinedIdentificationQuery(dto);
+    } catch (error) {
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        details: {
+          input: { ...dto },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   async updateByIdAndTenantId(
     id: IAccount['id'],
     tenantId: IAccount['tenantId'],
@@ -377,6 +395,31 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     });
 
     query.andWhere({ tenantId });
+
+    const result = await query;
+
+    if (!result.length) {
+      return;
+    }
+
+    return result;
+  }
+
+  private async sendFindByUserDefinedIdentificationQuery(
+    dto: IAccountUserDefinedIdentification
+  ): Promise<IGetAccountDto[] | undefined> {
+    let query = this.dbClient<IGetAccountDto>(this.tableName);
+
+    const wheres = Object.entries(dto) as [string, string][];
+
+    wheres.forEach(([key, value], index: number) => {
+      if (index === 0) {
+        query = query.where(key, value);
+        return;
+      }
+      query = query.orWhere(key, value);
+      return;
+    });
 
     const result = await query;
 
