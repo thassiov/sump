@@ -53,4 +53,8 @@ export type IAccountService = {
     tenantId: IAccount['tenantId'],
     dto: IUpdateAccountPhoneDto
   ) => Promise<boolean>;
+  canAccountBeDeleted(
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<boolean>;
 };

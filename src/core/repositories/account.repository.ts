@@ -11,7 +11,7 @@ import {
   UnexpectedError,
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { IAccount } from '../types/account/account.type';
+import { IAccount, IAccountRole } from '../types/account/account.type';
 import {
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
@@ -266,6 +266,29 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
+  async getAccountsByRoleAndByTenantId(
+    tenantId: IAccount['tenantId'],
+    role: IAccountRole
+  ): Promise<IGetAccountDto[]> {
+    try {
+      return await this.sendGetAccountsByRoleAndTenantIdQuery(tenantId, role);
+    } catch (error) {
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        // context: contexts.ACCOUNT_DELETE_BY_ID,
+        details: {
+          input: { tenantId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   private async sendInsertReturningIdQuery(
     payload: object,
     transaction?: Knex.Transaction
@@ -332,7 +355,8 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
         'roles',
         'tenantId',
         'avatarUrl'
-      );
+      )
+      .first();
   }
 
   private async sendFindByUserDefinedIdentificationAndTenantIdQuery(
@@ -380,6 +404,25 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     tenantId: IAccount['tenantId']
   ): Promise<number> {
     return await this.dbClient(this.tableName).where({ id, tenantId }).del();
+  }
+
+  private async sendGetAccountsByRoleAndTenantIdQuery(
+    tenantId: IAccount['tenantId'],
+    role: IAccountRole
+  ): Promise<IGetAccountDto[]> {
+    return this.dbClient<IGetAccountDto>(this.tableName)
+      .whereRaw(`roles @> ?`, [JSON.stringify(role)])
+      .andWhere({ tenantId })
+      .select(
+        'id',
+        'name',
+        'username',
+        'phone',
+        'email',
+        'roles',
+        'tenantId',
+        'avatarUrl'
+      );
   }
 }
 

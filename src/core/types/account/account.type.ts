@@ -1,9 +1,12 @@
 import z from 'zod';
 
-// @NOTE: I chatgptd this thing.
-//  It should match: 'owner', 'admin', 'admin|<uuid>', 'user', 'user|<uuid>'
-const roleRegex =
-  /^(owner|(admin|user)(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})?)$/;
+const accountRoleListSchema = z.enum(['owner', 'admin', 'user']);
+const accountRoleTargetListSchema = z.enum(['tenant', 'environment']);
+const accountRoleSchema = z.object({
+  role: accountRoleListSchema,
+  target: accountRoleTargetListSchema,
+  targetId: z.uuid(),
+});
 
 const accountSchema = z.object({
   id: z.uuid(),
@@ -15,19 +18,13 @@ const accountSchema = z.object({
   username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()).optional(),
   tenantId: z.uuid(),
-  roles: z
-    .array(
-      z.string().refine((val) => roleRegex.test(val), {
-        message: 'Invalid role format',
-      })
-    )
-    .min(0)
-    .max(1),
+  roles: z.array(accountRoleSchema).min(1).max(1),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 type IAccount = z.infer<typeof accountSchema>;
+type IAccountRole = z.infer<typeof accountRoleSchema>;
 
-export { accountSchema };
-export type { IAccount };
+export { accountRoleSchema, accountSchema };
+export type { IAccount, IAccountRole };

@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
-import { IAccount } from '../types/account/account.type';
+import { IAccount, IAccountRole } from '../types/account/account.type';
 import {
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
@@ -134,5 +134,32 @@ export class AccountService extends BaseService implements IAccountService {
     this.logger.info(`updatePhoneById: ${id}`);
 
     return this.accountRepository.updateByIdAndTenantId(id, tenantId, dto);
+  }
+
+  async canAccountBeDeleted(
+    id: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<boolean> {
+    this.logger.info(`doesAccountHasRole: ${id}`);
+
+    const tenantOwnerRole = {
+      role: 'owner',
+      target: 'tenant',
+      targetId: tenantId,
+    } as IAccountRole;
+
+    const accounts =
+      await this.accountRepository.getAccountsByRoleAndByTenantId(
+        tenantId,
+        tenantOwnerRole
+      );
+
+    const isOwner = accounts.find((account) => account.id === id);
+
+    if (isOwner && accounts.length === 0) {
+      return false;
+    }
+
+    return true;
   }
 }

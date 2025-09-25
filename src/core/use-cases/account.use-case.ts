@@ -62,6 +62,15 @@ class AccountUseCase extends BaseUseCase {
     this.validateAccountId(accountId, contexts.ACCOUNT_DELETE_BY_ID);
     this.validateTenantId(tenantId, contexts.ACCOUNT_DELETE_BY_ID);
 
+    const canBeDeleted = await this.services.account.canAccountBeDeleted(
+      accountId,
+      tenantId
+    );
+
+    if (!canBeDeleted) {
+      throw new ValidationError();
+    }
+
     return this.services.account.deleteByIdAndTenantId(accountId, tenantId);
   }
 

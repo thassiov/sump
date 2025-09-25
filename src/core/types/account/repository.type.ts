@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { IAccount } from './account.type';
+import { IAccount, IAccountRole } from './account.type';
 import {
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
@@ -34,6 +34,10 @@ type IAccountRepository = {
     tenantId: IAccount['tenantId'],
     dto: IUpdateAccountAllowedDtos
   ): Promise<boolean>;
+  getAccountsByRoleAndByTenantId(
+    tenantId: IAccount['tenantId'],
+    role: IAccountRole
+  ): Promise<IGetAccountDto[]>;
 };
 
 export type { IAccountRepository };
