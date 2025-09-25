@@ -2,8 +2,7 @@ import express from 'express';
 
 import { repositories, services, useCases } from './core';
 import { getDatabaseClient } from './infra/database/postgres/lib/connection-client';
-import { makeAccountUseCaseEndpoints } from './infra/rest-api/endpoints/account.endpoint';
-import { makeTenantUseCaseEndpoints } from './infra/rest-api/endpoints/tenant.endpoint';
+import * as endpointFactories from './infra/rest-api/endpoints/';
 import { setupExpressRestApi } from './infra/rest-api/express';
 import { configLoader } from './lib/config';
 import { setupLogger } from './lib/logger/logger';
@@ -52,12 +51,25 @@ async function bootstrap(sumpConfig?: object) {
     tenant: tenantService,
   });
 
-  logger.info('Setting up rest api');
+  const tenantEnvironmentUseCases = new useCases.TenantEnvironmentUseCase({
+    tenantEnvironment: tenantEnvironmentService,
+  });
+
+  logger.info('Setting up rest api endpoints');
   const baseRouter = express.Router();
-  baseRouter.use('/', makeTenantUseCaseEndpoints(tenantUseCases));
+  baseRouter.use(
+    '/',
+    endpointFactories.makeTenantUseCaseEndpoints(tenantUseCases)
+  );
   baseRouter.use(
     '/tenants/:tenantId',
-    makeAccountUseCaseEndpoints(accountUseCases)
+    endpointFactories.makeAccountUseCaseEndpoints(accountUseCases)
+  );
+  baseRouter.use(
+    '/tenants/:tenantId',
+    endpointFactories.makeTenantEnvironmentUseCaseEndpoints(
+      tenantEnvironmentUseCases
+    )
   );
 
   const startServer = setupExpressRestApi(baseRouter, config.restApi);

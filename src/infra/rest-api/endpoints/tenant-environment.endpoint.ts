@@ -1,0 +1,165 @@
+/* eslint-disable @typescript-eslint/non-nullable-type-assertion-style */
+import express, { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import {
+  ICreateTenantEnvironmentDto,
+  ITenantEnvironmentCustomPropertiesOperationDtoSchema,
+  IUpdateTenantEnvironmentNonSensitivePropertiesDto,
+} from '../../../core/types/tenant-environment/dto.type';
+import { TenantEnvironmentUseCase } from '../../../core/use-cases/tenant-environment.use-case';
+import { EndpointHandler } from '../../../lib/types';
+
+const router = express.Router({ mergeParams: true });
+
+function makeTenantEnvironmentUseCaseEndpoints(
+  useCase: TenantEnvironmentUseCase
+): express.Router {
+  router.post(
+    '/tenant-environments',
+    createNewEnvironmentUseCaseEndpointFactory(useCase.createNewEnvironment)
+  );
+
+  router.get(
+    '/tenant-environments/:environmentId',
+    getEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
+      useCase.getEnvironmentByIdAndTenantId
+    )
+  );
+
+  router.delete(
+    '/tenant-environments/:environmentId',
+    deleteEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
+      useCase.deleteEnvironmentByIdAndTenantId
+    )
+  );
+
+  router.patch(
+    '/tenant-environments/:environmentId',
+    updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
+      useCase.updateEnvironmentNonSensitivePropertiesByIdAndTenantId
+    )
+  );
+
+  router.patch(
+    '/tenant-environments/:environmentId/custom-property',
+    setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
+      useCase.setEnvironmentCustomPropertyByIdAndTenantId
+    )
+  );
+
+  router.delete(
+    '/tenant-environments/:environmentId/custom-property',
+    deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
+      useCase.deleteEnvironmentCustomPropertyByIdAndTenantId
+    )
+  );
+
+  return router;
+}
+
+function createNewEnvironmentUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['createNewEnvironment']
+): EndpointHandler {
+  return async function createNewEnvironmentUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const dto = req.body as ICreateTenantEnvironmentDto;
+    const result = await useCase(tenantId, dto);
+
+    res.status(StatusCodes.CREATED).json(result);
+    return;
+  };
+}
+
+function getEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['getEnvironmentByIdAndTenantId']
+): EndpointHandler {
+  return async function getEnvironmentByIdAndTenantIdUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const environmentId = req.params['environmentId'] as string;
+    const environment = await useCase(environmentId, tenantId);
+
+    if (!environment) {
+      res.status(StatusCodes.NOT_FOUND).send();
+      return;
+    }
+
+    res.status(StatusCodes.OK).json(environment);
+    return;
+  };
+}
+
+function deleteEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['deleteEnvironmentByIdAndTenantId']
+): EndpointHandler {
+  return async function deleteEnvironmentByIdAndTenantIdUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const environmentId = req.params['environmentId'] as string;
+    await useCase(environmentId, tenantId);
+
+    res.status(StatusCodes.NO_CONTENT).send();
+    return;
+  };
+}
+
+function updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['updateEnvironmentNonSensitivePropertiesByIdAndTenantId']
+): EndpointHandler {
+  return async function updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const environmentId = req.params['environmentId'] as string;
+    const dto = req.body as IUpdateTenantEnvironmentNonSensitivePropertiesDto;
+    await useCase(environmentId, tenantId, dto);
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['setEnvironmentCustomPropertyByIdAndTenantId']
+): EndpointHandler {
+  return async function setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const environmentId = req.params['environmentId'] as string;
+    const dto =
+      req.body as ITenantEnvironmentCustomPropertiesOperationDtoSchema;
+    await useCase(environmentId, tenantId, dto);
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+function deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
+  useCase: TenantEnvironmentUseCase['deleteEnvironmentCustomPropertyByIdAndTenantId']
+): EndpointHandler {
+  return async function deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpoint(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const tenantId = req.params['tenantId'] as string;
+    const environmentId = req.params['environmentId'] as string;
+    const payload = req.body as { customProperty: string };
+    await useCase(environmentId, tenantId, payload.customProperty);
+
+    res.status(StatusCodes.OK).send();
+    return;
+  };
+}
+
+export { makeTenantEnvironmentUseCaseEndpoints };
