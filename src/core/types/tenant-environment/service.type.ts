@@ -1,5 +1,4 @@
 import { Knex } from 'knex';
-import { ITenant } from '../../tenant/types/tenant.type';
 import {
   ICreateTenantEnvironmentNoInternalPropertiesDto,
   IGetTenantEnvironmentDto,
@@ -9,27 +8,38 @@ import { ITenantEnvironment } from './tenant-environment.type';
 
 export type ITenantEnvironmentService = {
   create: (
-    tenantId: ITenant['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     dto: ICreateTenantEnvironmentNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (
     id: ITenantEnvironment['id']
   ) => Promise<IGetTenantEnvironmentDto | undefined>;
+  getByIdAndTenantId: (
+    id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId']
+  ) => Promise<IGetTenantEnvironmentDto | undefined>;
   getByTenantId: (
     tenantId: ITenantEnvironment['tenantId']
   ) => Promise<IGetTenantEnvironmentDto[] | undefined>;
   deleteById: (id: ITenantEnvironment['id']) => Promise<boolean>;
-  updateNonSensitivePropertiesById: (
+  deleteByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId']
+  ) => Promise<boolean>;
+  updateNonSensitivePropertiesByIdAndTenantId: (
+    id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     dto: IUpdateTenantEnvironmentNonSensitivePropertiesDto
   ) => Promise<boolean>;
-  setCustomPropertyById: (
+  setCustomPropertyByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     customProperty: ITenantEnvironment['customProperties']
   ) => Promise<boolean>;
-  deleteCustomPropertyById: (
+  deleteCustomPropertyByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     customPropertyKey: string
   ) => Promise<boolean>;
 };

@@ -14,24 +14,33 @@ type ITenantEnvironmentRepository = {
   getById(
     id: ITenantEnvironment['id']
   ): Promise<IGetTenantEnvironmentDto | undefined>;
+  getByIdAndTenantId(
+    id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId']
+  ): Promise<IGetTenantEnvironmentDto | undefined>;
   getByTenantId(
     tenantId: ITenantEnvironment['tenantId']
   ): Promise<IGetTenantEnvironmentDto[] | undefined>;
   deleteById(id: ITenantEnvironment['id']): Promise<boolean>;
-  updateById(
+  deleteByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId']
+  ) => Promise<boolean>;
+  updateByIdAndTenantId(
+    id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     dto: IUpdateTenantEnvironmentAllowedDtos
   ): Promise<boolean>;
-
-  setCustomPropertyById(
+  setCustomPropertyByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     customProperty: ITenantEnvironment['customProperties']
-  ): Promise<boolean>;
-
-  deleteCustomPropertyById(
+  ) => Promise<boolean>;
+  deleteCustomPropertyByIdAndTenantId: (
     id: ITenantEnvironment['id'],
+    tenantId: ITenantEnvironment['tenantId'],
     customPropertyKey: string
-  ): Promise<boolean>;
+  ) => Promise<boolean>;
 };
 
 export type { ITenantEnvironmentRepository };

@@ -1,5 +1,8 @@
 import z from 'zod';
-import { tenantEnvironmentSchema } from './tenant-environment.type';
+import {
+  ITenantEnvironment,
+  tenantEnvironmentSchema,
+} from './tenant-environment.type';
 
 const createTenantEnvironmentDtoSchema = tenantEnvironmentSchema.pick({
   name: true,
@@ -59,13 +62,24 @@ type ITenantEnvironmentCustomPropertiesOperationDtoSchema = z.infer<
 type IUpdateTenantEnvironmentAllowedDtos =
   IUpdateTenantEnvironmentNonSensitivePropertiesDto;
 
+type CreateNewTenantEnvironmentUseCaseDtoResult = ITenantEnvironment['id'];
+type DeleteTenantEnvironmentUseCaseDtoResult = boolean;
+type UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult = boolean;
+type SetTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
+type DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
+
 export type {
+  CreateNewTenantEnvironmentUseCaseDtoResult,
+  DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult,
+  DeleteTenantEnvironmentUseCaseDtoResult,
   ICreateTenantEnvironmentDto,
   ICreateTenantEnvironmentNoInternalPropertiesDto,
   IGetTenantEnvironmentDto,
   ITenantEnvironmentCustomPropertiesOperationDtoSchema,
   IUpdateTenantEnvironmentAllowedDtos,
   IUpdateTenantEnvironmentNonSensitivePropertiesDto,
+  SetTenantEnvironmentCustomPropertiesUseCaseDtoResult,
+  UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult,
 };
 
 export {
