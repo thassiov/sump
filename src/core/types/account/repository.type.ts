@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 import { IAccount } from './account.type';
 import {
-  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -21,18 +20,19 @@ type IAccountRepository = {
     accountId: IAccount['id'],
     tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto | undefined>;
-  getByUserDefinedIdentification: (
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  getByUserDefinedIdentificationAndTenantId: (
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto[] | undefined>;
   deleteById(id: IAccount['id']): Promise<boolean>;
   deleteByIdAndTenantId: (
     id: IAccount['id'],
     tenantId: IAccount['tenantId']
   ) => Promise<boolean>;
-  updateById(
+  updateByIdAndTenantId(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos,
-    optionalQueryFilters?: IAccountOptionalQueryFilters
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountAllowedDtos
   ): Promise<boolean>;
 };
 

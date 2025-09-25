@@ -13,7 +13,6 @@ import {
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { IAccount } from '../types/account/account.type';
 import {
-  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -140,17 +139,21 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async getByUserDefinedIdentification(
-    dto: IAccountUserDefinedIdentification
+  async getByUserDefinedIdentificationAndTenantId(
+    dto: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
   ): Promise<IGetAccountDto[] | undefined> {
     try {
-      return await this.sendFindByUserDefinedIdentificationQuery(dto);
+      return await this.sendFindByUserDefinedIdentificationAndTenantIdQuery(
+        dto,
+        tenantId
+      );
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
         context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
         details: {
-          input: { ...dto },
+          input: { ...dto, tenantId },
         },
       });
 
@@ -158,16 +161,16 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async updateById(
+  async updateByIdAndTenantId(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos,
-    optionalQueryFilters?: IAccountOptionalQueryFilters
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountAllowedDtos
   ): Promise<boolean> {
     try {
-      const result = await this.sendUpdateByIdQuery(
+      const result = await this.sendUpdateByIdAndTenantIdQuery(
         id,
-        dto,
-        optionalQueryFilters ?? undefined
+        tenantId,
+        dto
       );
 
       if (result === 0) {
@@ -332,8 +335,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       );
   }
 
-  private async sendFindByUserDefinedIdentificationQuery(
-    dto: IAccountUserDefinedIdentification
+  private async sendFindByUserDefinedIdentificationAndTenantIdQuery(
+    dto: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
   ): Promise<IGetAccountDto[] | undefined> {
     let query = this.dbClient<IGetAccountDto>(this.tableName);
 
@@ -348,6 +352,8 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       return;
     });
 
+    query.andWhere({ tenantId });
+
     const result = await query;
 
     if (!result.length) {
@@ -357,18 +363,12 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     return result;
   }
 
-  private async sendUpdateByIdQuery(
+  private async sendUpdateByIdAndTenantIdQuery(
     id: IAccount['id'],
-    dto: IUpdateAccountAllowedDtos,
-    optionalQueryFilters?: IAccountOptionalQueryFilters
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountAllowedDtos
   ): Promise<number> {
-    const query = this.dbClient(this.tableName).where({ id }).update(dto);
-
-    if (optionalQueryFilters) {
-      query.andWhere(optionalQueryFilters);
-    }
-
-    return query;
+    return this.dbClient(this.tableName).where({ id, tenantId }).update(dto);
   }
 
   private async sendDeleteByIdQuery(id: IAccount['id']): Promise<number> {

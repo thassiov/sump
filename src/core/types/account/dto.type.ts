@@ -131,6 +131,9 @@ type CreateNewAccountUseCaseDtoResult = IAccount['id'];
 type DeleteAccountByIdAndTenantIdUseCaseResultDto = boolean;
 type UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto =
   boolean;
+type UpdateAccountEmailByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto = boolean;
 
 export type {
   CreateNewAccountUseCaseDtoResult,
@@ -144,7 +147,10 @@ export type {
   IUpdateAccountNonSensitivePropertiesDto,
   IUpdateAccountPhoneDto,
   IUpdateAccountUsernameDto,
+  UpdateAccountEmailByIdAndTenantIdUseCaseResultDto,
   UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
+  UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto,
+  UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto,
 };
 
 export {

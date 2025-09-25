@@ -1,16 +1,7 @@
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
-import { contexts } from '../../lib/contexts';
-import { UnexpectedError, ValidationError } from '../../lib/errors';
-import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { formatZodError } from '../../lib/utils/formatters';
-import { accountSchema, IAccount } from '../types/account/account.type';
+import { IAccount } from '../types/account/account.type';
 import {
-  accountOptionalQueryFiltersSchema,
-  accountUserDefinedIdentificationSchema,
-  createAccountDtoSchema,
-  createAccountNoInternalPropertiesDtoSchema,
-  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -18,10 +9,6 @@ import {
   IUpdateAccountNonSensitivePropertiesDto,
   IUpdateAccountPhoneDto,
   IUpdateAccountUsernameDto,
-  updateAccountEmailDtoSchema,
-  updateAccountNonSensitivePropertiesDtoSchema,
-  updateAccountPhoneDtoSchema,
-  updateAccountUsernameDtoSchema,
 } from '../types/account/dto.type';
 import { IAccountRepository } from '../types/account/repository.type';
 import { IAccountService } from '../types/account/service.type';
@@ -40,84 +27,18 @@ export class AccountService extends BaseService implements IAccountService {
   ): Promise<string> {
     this.logger.info(`create account for tenant ${tenantId}`);
 
-    const isTenantIdValid = createAccountDtoSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
+    const accountId = await this.accountRepository.create(
+      { ...dto, tenantId },
+      transaction
+    );
 
-    if (!isTenantIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isTenantIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_CREATE,
-      });
+    this.logger.info(`new account created: ${accountId}`);
 
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const validationResult =
-      createAccountNoInternalPropertiesDtoSchema.safeParse(dto);
-
-    if (!validationResult.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: dto,
-          errors: formatZodError(validationResult.error.issues),
-        },
-        context: contexts.ACCOUNT_CREATE,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    try {
-      const accountId = await this.accountRepository.create(
-        { ...dto, tenantId },
-        transaction
-      );
-
-      this.logger.info(`new account created: ${accountId}`);
-
-      return accountId;
-    } catch (error) {
-      if (error instanceof BaseCustomError) {
-        this.logger.error(error);
-        throw error;
-      }
-
-      const errorInstance = new UnexpectedError({
-        details: {
-          input: dto,
-        },
-        cause: error as Error,
-        context: contexts.ACCOUNT_CREATE,
-      });
-
-      this.logger.error(errorInstance);
-
-      throw errorInstance;
-    }
+    return accountId;
   }
 
   async getById(id: IAccount['id']): Promise<IGetAccountDto | undefined> {
     this.logger.info(`getById: ${id}`);
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_GET_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
 
     return this.accountRepository.getById(id);
   }
@@ -126,22 +47,6 @@ export class AccountService extends BaseService implements IAccountService {
     tenantId: IAccount['tenantId']
   ): Promise<IGetAccountDto[] | undefined> {
     this.logger.info(`getByTenantId: ${tenantId}`);
-    const isIdValid = accountSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_GET_BY_TENANT_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
 
     return this.accountRepository.getByTenantId(tenantId);
   }
@@ -152,91 +57,28 @@ export class AccountService extends BaseService implements IAccountService {
   ): Promise<IGetAccountDto | undefined> {
     this.logger.info(`getByAccountIdAndTenantId: ${accountId} ${tenantId}`);
 
-    const isTenantIdValid = accountSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
-
-    if (!isTenantIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isTenantIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isAccountIdValid = accountSchema
-      .pick({ id: true })
-      .safeParse({ id: accountId });
-
-    if (!isAccountIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { accountId },
-          errors: formatZodError(isAccountIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
     return this.accountRepository.getByAccountIdAndTenantId(
       accountId,
       tenantId
     );
   }
 
-  async getByUserDefinedIdentification(
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  async getByUserDefinedIdentificationAndTenantId(
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
   ): Promise<IGetAccountDto[] | undefined> {
     this.logger.info(
       `getByUserDefinedIdentification: ${JSON.stringify(accountUserDefinedIdentification)}`
     );
 
-    const isUDIValid = accountUserDefinedIdentificationSchema.safeParse(
-      accountUserDefinedIdentification
-    );
-
-    if (!isUDIValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { ...accountUserDefinedIdentification },
-          errors: formatZodError(isUDIValid.error.issues),
-        },
-        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    return await this.accountRepository.getByUserDefinedIdentification(
-      accountUserDefinedIdentification
+    return await this.accountRepository.getByUserDefinedIdentificationAndTenantId(
+      accountUserDefinedIdentification,
+      tenantId
     );
   }
 
   async deleteById(id: IAccount['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_DELETE_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
 
     return this.accountRepository.deleteById(id);
   }
@@ -246,20 +88,6 @@ export class AccountService extends BaseService implements IAccountService {
     tenantId: IAccount['tenantId']
   ): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_DELETE_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
 
     return this.accountRepository.deleteByIdAndTenantId(id, tenantId);
   }
@@ -268,178 +96,43 @@ export class AccountService extends BaseService implements IAccountService {
    * this method must be used for *non sensitive properties* only
    * the other properties must have their own methods, with their own specific validations
    * */
-  async updateNonSensitivePropertiesById(
+  async updateNonSensitivePropertiesByIdAndTenantId(
     id: IAccount['id'],
-    dto: IUpdateAccountNonSensitivePropertiesDto,
-    optionalQueryFilters?: IAccountOptionalQueryFilters
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountNonSensitivePropertiesDto
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isPayloadValid =
-      updateAccountNonSensitivePropertiesDtoSchema.safeParse(dto);
-
-    if (!isPayloadValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { ...dto },
-          errors: formatZodError(isPayloadValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    if (optionalQueryFilters) {
-      const areOptionalQueryFiltersValid =
-        accountOptionalQueryFiltersSchema.safeParse(optionalQueryFilters);
-
-      if (!areOptionalQueryFiltersValid.success) {
-        const errorInstance = new ValidationError({
-          details: {
-            input: { ...optionalQueryFilters },
-            errors: formatZodError(areOptionalQueryFiltersValid.error.issues),
-          },
-          context: contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
-        });
-
-        this.logger.error(errorInstance);
-        throw errorInstance;
-      }
-    }
-
-    return this.accountRepository.updateById(id, dto, optionalQueryFilters);
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, dto);
   }
 
-  async updateEmailById(
+  async updateEmailByIdAndTenantId(
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountEmailDto
   ): Promise<boolean> {
     this.logger.info(`updateEmailById: ${id}`);
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
 
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_EMAIL_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isPayloadValid = updateAccountEmailDtoSchema.safeParse(dto);
-
-    if (!isPayloadValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { ...dto },
-          errors: formatZodError(isPayloadValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_EMAIL_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    return this.accountRepository.updateById(id, dto);
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, dto);
   }
 
-  async updateUsernameById(
+  async updateUsernameByIdAndTenantId(
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountUsernameDto
   ): Promise<boolean> {
     this.logger.info(`updateUsernameById: ${id}`);
 
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_USERNAME_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isPayloadValid = updateAccountUsernameDtoSchema.safeParse(dto);
-
-    if (!isPayloadValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { ...dto },
-          errors: formatZodError(isPayloadValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_USERNAME_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    return this.accountRepository.updateById(id, dto);
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, dto);
   }
 
-  async updatePhoneById(
+  async updatePhoneByIdAndTenantId(
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountPhoneDto
   ): Promise<boolean> {
     this.logger.info(`updatePhoneById: ${id}`);
 
-    const isIdValid = accountSchema.pick({ id: true }).safeParse({ id });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { id },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_PHONE_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isPayloadValid = updateAccountPhoneDtoSchema.safeParse(dto);
-
-    if (!isPayloadValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { ...dto },
-          errors: formatZodError(isPayloadValid.error.issues),
-        },
-        context: contexts.ACCOUNT_UPDATE_PHONE_BY_ID,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    return this.accountRepository.updateById(id, dto);
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, dto);
   }
 }

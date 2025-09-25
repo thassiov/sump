@@ -1,13 +1,25 @@
+import z from 'zod';
 import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { NotFoundError, ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
 import { accountSchema, IAccount } from '../types/account/account.type';
 import {
+  createAccountDtoSchema,
   CreateNewAccountUseCaseDtoResult,
   DeleteAccountByIdAndTenantIdUseCaseResultDto,
+  IAccountUserDefinedIdentification,
   ICreateAccountDto,
+  IGetAccountDto,
+  IUpdateAccountEmailDto,
+  IUpdateAccountPhoneDto,
+  IUpdateAccountUsernameDto,
+  UpdateAccountEmailByIdAndTenantIdUseCaseResultDto,
   UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
+  updateAccountNonSensitivePropertiesDtoSchema,
+  UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto,
+  UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto,
+  updateAccountUsernameDtoSchema,
 } from '../types/account/dto.type';
 import { AccountUseCaseServices } from '../types/account/use-case.type';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../types/tenant/dto.type';
@@ -23,22 +35,8 @@ class AccountUseCase extends BaseUseCase {
     tenantId: IAccount['tenantId'],
     dto: ICreateAccountDto
   ): Promise<CreateNewAccountUseCaseDtoResult> {
-    const isIdValid = accountSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        context: contexts.ACCOUNT_CREATE,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
+    this.validateTenantId(tenantId, contexts.ACCOUNT_CREATE);
+    this.validateDto(dto, createAccountDtoSchema, contexts.ACCOUNT_CREATE);
 
     const tenant = await this.services.tenant.getById(tenantId);
 
@@ -61,41 +59,9 @@ class AccountUseCase extends BaseUseCase {
     accountId: IAccount['id'],
     tenantId: IAccount['tenantId']
   ): Promise<DeleteAccountByIdAndTenantIdUseCaseResultDto> {
-    const isIdValid = accountSchema
-      .pick({ id: true })
-      .safeParse({ id: accountId });
+    this.validateAccountId(accountId, contexts.ACCOUNT_DELETE_BY_ID);
+    this.validateTenantId(tenantId, contexts.ACCOUNT_DELETE_BY_ID);
 
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { accountId },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        // @TODO: add a 'delete account by id and tenant id' context
-        // context: contexts.deleteacc,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isTenantIdValid = accountSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
-
-    if (!isTenantIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isTenantIdValid.error.issues),
-        },
-        // @TODO: add a 'delete account by id and tenant id' context
-        // context: contexts.deleteacc,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
     return this.services.account.deleteByIdAndTenantId(accountId, tenantId);
   }
 
@@ -104,41 +70,19 @@ class AccountUseCase extends BaseUseCase {
     tenantId: IAccount['tenantId'],
     dto: IUpdateTenantNonSensitivePropertiesDto
   ): Promise<UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto> {
-    const isIdValid = accountSchema
-      .pick({ id: true })
-      .safeParse({ id: accountId });
-
-    if (!isIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { accountId },
-          errors: formatZodError(isIdValid.error.issues),
-        },
-        // @TODO: add a 'delete account by id and tenant id' context
-        // context: contexts.deleteacc,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
-
-    const isTenantIdValid = accountSchema
-      .pick({ tenantId: true })
-      .safeParse({ tenantId });
-
-    if (!isTenantIdValid.success) {
-      const errorInstance = new ValidationError({
-        details: {
-          input: { tenantId },
-          errors: formatZodError(isTenantIdValid.error.issues),
-        },
-        // @TODO: add a 'delete account by id and tenant id' context
-        // context: contexts.deleteacc,
-      });
-
-      this.logger.error(errorInstance);
-      throw errorInstance;
-    }
+    this.validateAccountId(
+      accountId,
+      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+    );
+    this.validateTenantId(
+      tenantId,
+      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+    );
+    this.validateDto(
+      dto,
+      updateAccountNonSensitivePropertiesDtoSchema,
+      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+    );
 
     const tenant = await this.services.tenant.getById(tenantId);
 
@@ -151,13 +95,173 @@ class AccountUseCase extends BaseUseCase {
       });
     }
 
-    return this.services.account.updateNonSensitivePropertiesById(
+    return this.services.account.updateNonSensitivePropertiesByIdAndTenantId(
       accountId,
-      dto,
-      {
-        tenantId: tenantId,
-      }
+      tenantId,
+      dto
     );
+  }
+
+  async getAccountByIdAndTenantId(
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto | undefined> {
+    this.validateAccountId(
+      accountId,
+      contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
+    );
+    this.validateTenantId(
+      tenantId,
+      contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
+    );
+
+    return this.services.account.getByAccountIdAndTenantId(accountId, tenantId);
+  }
+
+  async getAccountByUserDefinedIdentificationAndTenantId(
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
+  ): Promise<IGetAccountDto[] | undefined> {
+    this.validateDto(
+      accountUserDefinedIdentification,
+      updateAccountUsernameDtoSchema,
+      contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
+    );
+
+    this.validateTenantId(
+      tenantId,
+      contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
+    );
+
+    return this.services.account.getByUserDefinedIdentificationAndTenantId(
+      accountUserDefinedIdentification,
+      tenantId
+    );
+  }
+
+  async updateAccountEmailByIdAndTenantId(
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountEmailDto
+  ): Promise<UpdateAccountEmailByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
+    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
+    this.validateDto(
+      dto,
+      updateAccountUsernameDtoSchema,
+      contexts.ACCOUNT_UPDATE_EMAIL_BY_ID
+    );
+
+    return this.services.account.updateEmailByIdAndTenantId(
+      accountId,
+      tenantId,
+      dto
+    );
+  }
+
+  async updateAccountPhoneByIdAndTenantId(
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountPhoneDto
+  ): Promise<UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
+    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
+    this.validateDto(
+      dto,
+      updateAccountUsernameDtoSchema,
+      contexts.ACCOUNT_UPDATE_PHONE_BY_ID
+    );
+
+    return this.services.account.updatePhoneByIdAndTenantId(
+      accountId,
+      tenantId,
+      dto
+    );
+  }
+
+  async updateAccountUsernameByIdAndTenantId(
+    accountId: IAccount['id'],
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountUsernameDto
+  ): Promise<UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
+    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
+    this.validateDto(
+      dto,
+      updateAccountUsernameDtoSchema,
+      contexts.ACCOUNT_UPDATE_USERNAME_BY_ID
+    );
+
+    return this.services.account.updateUsernameByIdAndTenantId(
+      accountId,
+      tenantId,
+      dto
+    );
+  }
+
+  private validateAccountId(
+    accountId: unknown,
+    context: keyof typeof contexts
+  ): void {
+    const isIdValid = accountSchema
+      .pick({ id: true })
+      .safeParse({ id: accountId });
+
+    if (!isIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { accountId },
+          errors: formatZodError(isIdValid.error.issues),
+        },
+        context,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+  }
+
+  private validateTenantId(
+    tenantId: unknown,
+    context: keyof typeof contexts
+  ): void {
+    const isTenantIdValid = accountSchema
+      .pick({ tenantId: true })
+      .safeParse({ tenantId });
+
+    if (!isTenantIdValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: { tenantId },
+          errors: formatZodError(isTenantIdValid.error.issues),
+        },
+        context,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
+  }
+
+  private validateDto(
+    dto: unknown,
+    schema: z.ZodType,
+    context: keyof typeof contexts
+  ): void {
+    const isDtoValid = schema.safeParse(dto);
+
+    if (!isDtoValid.success) {
+      const errorInstance = new ValidationError({
+        details: {
+          input: dto,
+          errors: formatZodError(isDtoValid.error.issues),
+        },
+        context,
+      });
+
+      this.logger.error(errorInstance);
+      throw errorInstance;
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 import { IAccount } from './account.type';
 import {
-  IAccountOptionalQueryFilters,
   IAccountUserDefinedIdentification,
   ICreateAccountDto,
   IGetAccountDto,
@@ -25,29 +24,33 @@ export type IAccountService = {
     accountId: IAccount['id'],
     tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto | undefined>;
-  getByUserDefinedIdentification: (
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification
+  getByUserDefinedIdentificationAndTenantId: (
+    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
+    tenantId: IAccount['tenantId']
   ) => Promise<IGetAccountDto[] | undefined>;
   deleteById: (id: IAccount['id']) => Promise<boolean>;
   deleteByIdAndTenantId: (
     id: IAccount['id'],
     tenantId: IAccount['tenantId']
   ) => Promise<boolean>;
-  updateNonSensitivePropertiesById: (
+  updateNonSensitivePropertiesByIdAndTenantId: (
     id: IAccount['id'],
-    dto: IUpdateAccountNonSensitivePropertiesDto,
-    optionalQueryFilters?: IAccountOptionalQueryFilters
+    tenantId: IAccount['tenantId'],
+    dto: IUpdateAccountNonSensitivePropertiesDto
   ) => Promise<boolean>;
-  updateEmailById: (
+  updateEmailByIdAndTenantId: (
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountEmailDto
   ) => Promise<boolean>;
-  updateUsernameById: (
+  updateUsernameByIdAndTenantId: (
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountUsernameDto
   ) => Promise<boolean>;
-  updatePhoneById: (
+  updatePhoneByIdAndTenantId: (
     id: IAccount['id'],
+    tenantId: IAccount['tenantId'],
     dto: IUpdateAccountPhoneDto
   ) => Promise<boolean>;
 };
