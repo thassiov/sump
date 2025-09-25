@@ -32,12 +32,12 @@ async function bootstrap(sumpConfig?: object) {
     tenantEnvironmentRepository
   );
 
-  // const tenantEnvironmentAccountRepository =
-  //   new repositories.TenantEnvironmentAccountRepository(databaseClient);
-  // const tenantEnvironmentAccountService =
-  //   new services.TenantEnvironmentAccountService(
-  //     tenantEnvironmentAccountRepository
-  //   );
+  const tenantEnvironmentAccountRepository =
+    new repositories.TenantEnvironmentAccountRepository(databaseClient);
+  const tenantEnvironmentAccountService =
+    new services.TenantEnvironmentAccountService(
+      tenantEnvironmentAccountRepository
+    );
 
   logger.info('Setting up use cases');
   const tenantUseCases = new useCases.TenantUseCase({
@@ -55,6 +55,11 @@ async function bootstrap(sumpConfig?: object) {
     tenantEnvironment: tenantEnvironmentService,
   });
 
+  const tenantEnvironmentAccountUseCases =
+    new useCases.TenantEnvironmentAccountUseCase({
+      tenantEnvironmentAccount: tenantEnvironmentAccountService,
+    });
+
   logger.info('Setting up rest api endpoints');
   const baseRouter = express.Router();
   baseRouter.use(
@@ -69,6 +74,13 @@ async function bootstrap(sumpConfig?: object) {
     '/tenants/:tenantId',
     endpointFactories.makeTenantEnvironmentUseCaseEndpoints(
       tenantEnvironmentUseCases
+    )
+  );
+
+  baseRouter.use(
+    '/tenant-environments/:tenantEnvironmentId',
+    endpointFactories.makeTenantEnvironmentAccountUseCaseEndpoints(
+      tenantEnvironmentAccountUseCases
     )
   );
 

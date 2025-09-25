@@ -1,6 +1,9 @@
 // @NOTE: I know the names in the file are becoming a little crazy.
 import z from 'zod';
-import { tenantEnvironmentAccountSchema } from './tenant-environment-account.type';
+import {
+  ITenantEnvironmentAccount,
+  tenantEnvironmentAccountSchema,
+} from './tenant-environment-account.type';
 
 const createTenantEnvironmentAccountDtoSchema = z
   .strictObject(tenantEnvironmentAccountSchema.shape)
@@ -99,7 +102,11 @@ type IUpdateTenantEnvironmentAccountAllowedDtos =
   | IUpdateTenantEnvironmentAccountPhoneDto
   | IUpdateTenantEnvironmentAccountUsernameDto;
 
+type CreateNewTenantEnvironmentAccountUseCaseDtoResult =
+  ITenantEnvironmentAccount['id'];
+
 export type {
+  CreateNewTenantEnvironmentAccountUseCaseDtoResult,
   ICreateTenantEnvironmentAccountDto,
   ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
   IGetTenantEnvironmentAccountDto,

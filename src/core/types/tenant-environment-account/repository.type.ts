@@ -14,21 +14,30 @@ type ITenantEnvironmentAccountRepository = {
   getById(
     id: ITenantEnvironmentAccount['id']
   ): Promise<IGetTenantEnvironmentAccountDto | undefined>;
-  deleteById(id: ITenantEnvironmentAccount['id']): Promise<boolean>;
-  updateById(
+  getByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+  ) => Promise<IGetTenantEnvironmentAccountDto | undefined>;
+  deleteById(id: ITenantEnvironmentAccount['id']): Promise<boolean>;
+  deleteByIdAndTenantEnvironmentId: (
+    id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+  ) => Promise<boolean>;
+  updateByIdAndTenantEnvironmentId(
+    id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: IUpdateTenantEnvironmentAccountAllowedDtos
   ): Promise<boolean>;
-
-  setCustomPropertyById(
+  setCustomPropertyByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     customProperty: ITenantEnvironmentAccount['customProperties']
-  ): Promise<boolean>;
-
-  deleteCustomPropertyById(
+  ) => Promise<boolean>;
+  deleteCustomPropertyByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     customPropertyKey: string
-  ): Promise<boolean>;
+  ) => Promise<boolean>;
 };
 
 export type { ITenantEnvironmentAccountRepository };

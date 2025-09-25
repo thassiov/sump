@@ -1,5 +1,4 @@
 import { Knex } from 'knex';
-import { ITenantEnvironment } from '../../tenant-environment/types/tenant-environment.type';
 import {
   ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
   IGetTenantEnvironmentAccountDto,
@@ -12,36 +11,50 @@ import { ITenantEnvironmentAccount } from './tenant-environment-account.type';
 
 export type ITenantEnvironmentAccountService = {
   create: (
-    tenantEnvironmentId: ITenantEnvironment['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (
     id: ITenantEnvironmentAccount['id']
   ) => Promise<IGetTenantEnvironmentAccountDto | undefined>;
-  deleteById: (id: ITenantEnvironmentAccount['id']) => Promise<boolean>;
-  updateNonSensitivePropertiesById: (
+  getByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+  ) => Promise<IGetTenantEnvironmentAccountDto | undefined>;
+  deleteById: (id: ITenantEnvironmentAccount['id']) => Promise<boolean>;
+  deleteByIdAndTenantEnvironmentId: (
+    id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+  ) => Promise<boolean>;
+  updateNonSensitivePropertiesByIdAndTenantEnvironmentId: (
+    id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto
   ) => Promise<boolean>;
-  updateEmailById: (
+  updateEmailByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: IUpdateTenantEnvironmentAccountEmailDto
   ) => Promise<boolean>;
-  updateUsernameById: (
+  updateUsernameByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: IUpdateTenantEnvironmentAccountUsernameDto
   ) => Promise<boolean>;
-  updatePhoneById: (
+  updatePhoneByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     dto: IUpdateTenantEnvironmentAccountPhoneDto
   ) => Promise<boolean>;
-  setCustomPropertyById: (
+  setCustomPropertyByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     customProperty: ITenantEnvironmentAccount['customProperties']
   ) => Promise<boolean>;
-  deleteCustomPropertyById: (
+  deleteCustomPropertyByIdAndTenantEnvironmentId: (
     id: ITenantEnvironmentAccount['id'],
+    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
     customPropertyKey: string
   ) => Promise<boolean>;
 };
