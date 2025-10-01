@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { randomUUID } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
+import fs from 'fs/promises';
 import helmet from 'helmet';
 import { StatusCodes } from 'http-status-codes';
+import path from 'path';
 import pinoHttp from 'pino-http';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yaml';
 import {
   ConflictError,
   NotFoundError,
@@ -11,7 +16,10 @@ import {
 } from '../../../lib/errors';
 import { RestApiConfig } from '../../../lib/types';
 
-function setupExpressRestApi(router: express.Router, restApi: RestApiConfig) {
+async function setupExpressRestApi(
+  router: express.Router,
+  restApi: RestApiConfig
+) {
   const api = express();
 
   api.use(helmet());
@@ -32,7 +40,17 @@ function setupExpressRestApi(router: express.Router, restApi: RestApiConfig) {
   api.use(express.json());
   api.use(express.urlencoded({ extended: true }));
 
-  api.use(router);
+  api.use('/api', router);
+  const openApiDefinitionFile = path.resolve(
+    __dirname,
+    '../endpoints/openapi.yaml'
+  );
+  const openApiDefinitionYaml = await fs.readFile(openApiDefinitionFile, {
+    encoding: 'utf8',
+  });
+  const openApiDefinitionJson = await yaml.parse(openApiDefinitionYaml);
+  api.use('/api-docs', swaggerUi.serve);
+  api.router.get('/api-docs', swaggerUi.setup(openApiDefinitionJson));
 
   api.use(errorHandler);
 

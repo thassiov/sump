@@ -15,40 +15,40 @@ function makeTenantEnvironmentUseCaseEndpoints(
   useCase: TenantEnvironmentUseCase
 ): express.Router {
   router.post(
-    '/tenant-environments',
+    '/environments',
     createNewEnvironmentUseCaseEndpointFactory(useCase.createNewEnvironment)
   );
 
   router.get(
-    '/tenant-environments/:environmentId',
+    '/environments/:environmentId',
     getEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
       useCase.getEnvironmentByIdAndTenantId
     )
   );
 
   router.delete(
-    '/tenant-environments/:environmentId',
+    '/environments/:environmentId',
     deleteEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
       useCase.deleteEnvironmentByIdAndTenantId
     )
   );
 
   router.patch(
-    '/tenant-environments/:environmentId',
+    '/environments/:environmentId',
     updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
       useCase.updateEnvironmentNonSensitivePropertiesByIdAndTenantId
     )
   );
 
   router.patch(
-    '/tenant-environments/:environmentId/custom-property',
+    '/environments/:environmentId/custom-property',
     setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
       useCase.setEnvironmentCustomPropertyByIdAndTenantId
     )
   );
 
   router.delete(
-    '/tenant-environments/:environmentId/custom-property',
+    '/environments/:environmentId/custom-property',
     deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
       useCase.deleteEnvironmentCustomPropertyByIdAndTenantId
     )

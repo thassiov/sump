@@ -63,28 +63,28 @@ async function bootstrap(sumpConfig?: object) {
   logger.info('Setting up rest api endpoints');
   const baseRouter = express.Router();
   baseRouter.use(
-    '/',
+    '/v1',
     endpointFactories.makeTenantUseCaseEndpoints(tenantUseCases)
   );
   baseRouter.use(
-    '/tenants/:tenantId',
+    '/v1/tenants/:tenantId',
     endpointFactories.makeAccountUseCaseEndpoints(accountUseCases)
   );
   baseRouter.use(
-    '/tenants/:tenantId',
+    '/v1/tenants/:tenantId',
     endpointFactories.makeTenantEnvironmentUseCaseEndpoints(
       tenantEnvironmentUseCases
     )
   );
 
   baseRouter.use(
-    '/tenant-environments/:tenantEnvironmentId',
+    '/v1/tenant-environments/:tenantEnvironmentId',
     endpointFactories.makeTenantEnvironmentAccountUseCaseEndpoints(
       tenantEnvironmentAccountUseCases
     )
   );
 
-  const startServer = setupExpressRestApi(baseRouter, config.restApi);
+  const startServer = await setupExpressRestApi(baseRouter, config.restApi);
 
   logger.info('Starting rest api server');
   startServer();

@@ -8,7 +8,7 @@ import {
   IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
-} from '../../../core/types/tenant-environment-account/dto.type';
+} from '../../../core/types/account/dto.type';
 import { TenantEnvironmentAccountUseCase } from '../../../core/use-cases';
 import { EndpointHandler } from '../../../lib/types';
 
@@ -18,61 +18,61 @@ function makeTenantEnvironmentAccountUseCaseEndpoints(
   useCase: TenantEnvironmentAccountUseCase
 ): express.Router {
   router.post(
-    '/tenant-environment-accounts',
+    '/accounts',
     createNewAccountUseCaseEndpointFactory(useCase.createNewAccount)
   );
 
   router.get(
-    '/tenant-environment-accounts/:environmentAccountId',
+    '/accounts/:environmentAccountId',
     getAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.getAccountByIdAndTenantEnvironmentId
     )
   );
 
   router.delete(
-    '/tenant-environment-accounts/:environmentAccountId',
+    '/accounts/:environmentAccountId',
     deleteAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.deleteAccountByIdAndTenantEnvironmentId
     )
   );
 
   router.patch(
-    '/tenant-environment-accounts/:environmentAccountId',
+    '/accounts/:environmentAccountId',
     updateAccountNonSensitivePropertiesByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId
     )
   );
 
   router.patch(
-    '/tenant-environment-accounts/:environmentAccountId/email',
+    '/accounts/:environmentAccountId/email',
     updateAccountEmailByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.updateAccountEmailByIdAndTenantEnvironmentId
     )
   );
 
   router.patch(
-    '/tenant-environment-accounts/:environmentAccountId/phone',
+    '/accounts/:environmentAccountId/phone',
     updateAccountPhoneByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.updateAccountPhoneByIdAndTenantEnvironmentId
     )
   );
 
   router.patch(
-    '/tenant-environment-accounts/:environmentAccountId/username',
+    '/accounts/:environmentAccountId/username',
     updateAccountUsernameByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.updateAccountUsernameByIdAndTenantEnvironmentId
     )
   );
 
   router.patch(
-    '/tenant-environment-accounts/:environmentAccountId/custom-property',
+    '/accounts/:environmentAccountId/custom-property',
     setAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.setAccountCustomPropertyByIdAndTenantEnvironmentId
     )
   );
 
   router.delete(
-    '/tenant-environment-accounts/:environmentAccountId/custom-property',
+    '/accounts/:environmentAccountId/custom-property',
     deleteAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpointFactory(
       useCase.deleteAccountCustomPropertyByIdAndTenantEnvironmentId
     )
