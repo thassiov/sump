@@ -8,7 +8,7 @@ import {
   IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
-} from '../../../core/types/account/dto.type';
+} from '../../../core/types/tenant-environment-account/dto.type';
 import { TenantEnvironmentAccountUseCase } from '../../../core/use-cases';
 import { EndpointHandler } from '../../../lib/types';
 

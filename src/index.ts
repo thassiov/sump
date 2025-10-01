@@ -78,7 +78,7 @@ async function bootstrap(sumpConfig?: object) {
   );
 
   baseRouter.use(
-    '/v1/tenant-environments/:tenantEnvironmentId',
+    '/v1/environments/:tenantEnvironmentId',
     endpointFactories.makeTenantEnvironmentAccountUseCaseEndpoints(
       tenantEnvironmentAccountUseCases
     )
