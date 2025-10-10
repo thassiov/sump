@@ -113,7 +113,8 @@ curl --location 'http://localhost:8080/api/v1/environments/<UUID>/accounts' \
 ## Reference 
 
 [OpenAPI Reference](./src/infra/rest-api/endpoints/openapi.yaml)
-[Old docs](/docs/img/readme.md)
+
+[Details about the entities](/docs/img/readme.md)
 
 ### License
 [MIT](./LICENSE), of course.
