@@ -68,7 +68,7 @@ There are 4 main components in this system:
 
 Together they look like this:
 
-![sump entities](./docs/img/sump-entities.png)
+![sump entities](./sump-entities.png)
 
 - A tenant can have multiple accounts for management purposes;
 - A tenant can have multiple environments;
@@ -85,7 +85,7 @@ The typical use for a identity/user management platform, and what `sump` is iten
 
 You can start the service by having a config file to set the service up running `npm start`. 
 
-![sump as a restful service monolith](./docs/img/sump-monolith.png)
+![sump as a restful service monolith](./sump-monolith.png)
 
 ##### Sump as microservices
 
@@ -93,7 +93,7 @@ Theres a docker-compose file that describes how to make each internal service o 
 
 It would look like this:
 
-![sump as microservices](./docs/img/sump-microservices.png)
+![sump as microservices](./sump-microservices.png)
 
 Each internal service has ways to communicate with the main service through rest calls
 
@@ -101,7 +101,7 @@ Each internal service has ways to communicate with the main service through rest
 
 You import sump and create a new instance of the service by passing the appropriate config options
 
-![sump as npm dependency](./docs/img/sump-npm-dependency.png)
+![sump as npm dependency](./sump-npm-dependency.png)
 
 Depending on the configuration you passed to the instance, you could also use some of the internal services as microservices (eg. having the `tenant-environment-account.service` as a REST service while the others remain in the same node process).
 
