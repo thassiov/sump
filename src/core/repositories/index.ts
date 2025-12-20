@@ -1,11 +1,11 @@
-import { AccountRepository } from './account.repository';
-import { TenantEnvironmentAccountRepository } from './tenant-environment-account.repository';
-import { TenantEnvironmentRepository } from './tenant-environment.repository';
+import { EnvironmentAccountRepository } from './environment-account.repository';
+import { EnvironmentRepository } from './environment.repository';
+import { TenantAccountRepository } from './tenant-account.repository';
 import { TenantRepository } from './tenant.repository';
 
 export {
-  AccountRepository,
-  TenantEnvironmentAccountRepository,
-  TenantEnvironmentRepository,
+  EnvironmentAccountRepository,
+  EnvironmentRepository,
+  TenantAccountRepository,
   TenantRepository,
 };

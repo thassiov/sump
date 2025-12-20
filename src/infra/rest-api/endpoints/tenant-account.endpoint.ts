@@ -9,15 +9,15 @@ import {
   IUpdateAccountUsernameDto,
 } from '../../../core/types/account/dto.type';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../../../core/types/tenant/dto.type';
-import { AccountUseCase } from '../../../core/use-cases';
+import { TenantAccountUseCase } from '../../../core/use-cases';
 import { EndpointHandler } from '../../../lib/types';
 
 const router = express.Router({ mergeParams: true });
 
-function makeAccountUseCaseEndpoints(useCase: AccountUseCase): express.Router {
+function makeTenantTenantAccountUseCaseEndpoints(useCase: TenantAccountUseCase): express.Router {
   router.post(
     '/accounts',
-    createNewAccountUseCaseEndpointFactory(useCase.createNewAccount)
+    createNewTenantAccountUseCaseEndpointFactory(useCase.createNewAccount)
   );
 
   router.delete(
@@ -71,10 +71,10 @@ function makeAccountUseCaseEndpoints(useCase: AccountUseCase): express.Router {
   return router;
 }
 
-function createNewAccountUseCaseEndpointFactory(
-  useCase: AccountUseCase['createNewAccount']
+function createNewTenantAccountUseCaseEndpointFactory(
+  useCase: TenantAccountUseCase['createNewAccount']
 ): EndpointHandler {
-  return async function createNewAccountUseCaseEndpoint(
+  return async function createNewTenantAccountUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
@@ -88,7 +88,7 @@ function createNewAccountUseCaseEndpointFactory(
 }
 
 function deleteAccountByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['deleteAccountByIdAndTenantId']
+  useCase: TenantAccountUseCase['deleteAccountByIdAndTenantId']
 ): EndpointHandler {
   return async function deleteAccountByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -104,7 +104,7 @@ function deleteAccountByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function updateNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['updateNonSensitivePropertiesByIdAndTenantId']
+  useCase: TenantAccountUseCase['updateNonSensitivePropertiesByIdAndTenantId']
 ): EndpointHandler {
   return async function updateNonSensitivePropertiesByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -121,7 +121,7 @@ function updateNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function updateAccountEmailByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['updateAccountEmailByIdAndTenantId']
+  useCase: TenantAccountUseCase['updateAccountEmailByIdAndTenantId']
 ): EndpointHandler {
   return async function updateAccountEmailByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -138,7 +138,7 @@ function updateAccountEmailByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function updateAccountPhoneByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['updateAccountPhoneByIdAndTenantId']
+  useCase: TenantAccountUseCase['updateAccountPhoneByIdAndTenantId']
 ): EndpointHandler {
   return async function updateAccountPhoneByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -155,7 +155,7 @@ function updateAccountPhoneByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function updateAccountUsernameByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['updateAccountUsernameByIdAndTenantId']
+  useCase: TenantAccountUseCase['updateAccountUsernameByIdAndTenantId']
 ): EndpointHandler {
   return async function updateAccountUsernameByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -172,7 +172,7 @@ function updateAccountUsernameByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function getAccountByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['getAccountByIdAndTenantId']
+  useCase: TenantAccountUseCase['getAccountByIdAndTenantId']
 ): EndpointHandler {
   return async function getAccountByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -193,7 +193,7 @@ function getAccountByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function getAccountByUserDefinedIdentificationAndTenantIdUseCaseEndpointFactory(
-  useCase: AccountUseCase['getAccountByUserDefinedIdentificationAndTenantId']
+  useCase: TenantAccountUseCase['getAccountByUserDefinedIdentificationAndTenantId']
 ): EndpointHandler {
   return async function getAccountByUserDefinedIdentificationAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -214,4 +214,4 @@ function getAccountByUserDefinedIdentificationAndTenantIdUseCaseEndpointFactory(
   };
 }
 
-export { makeAccountUseCaseEndpoints };
+export { makeTenantTenantAccountUseCaseEndpoints };

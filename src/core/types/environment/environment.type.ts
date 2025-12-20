@@ -2,7 +2,7 @@ import z from 'zod';
 
 const customPropertySchema = z.record(z.string(), z.json());
 
-const tenantEnvironmentSchema = z.object({
+const environmentSchema = z.object({
   id: z.uuid(),
   name: z.string().min(2),
   tenantId: z.uuid(),
@@ -11,7 +11,7 @@ const tenantEnvironmentSchema = z.object({
   updatedAt: z.date(),
 });
 
-type ITenantEnvironment = z.infer<typeof tenantEnvironmentSchema>;
+type IEnvironment = z.infer<typeof environmentSchema>;
 
-export { tenantEnvironmentSchema };
-export type { ITenantEnvironment };
+export { environmentSchema };
+export type { IEnvironment };

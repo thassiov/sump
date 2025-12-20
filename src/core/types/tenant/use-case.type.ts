@@ -1,11 +1,11 @@
-import { IAccountService } from '../account/service.type';
-import { ITenantEnvironmentService } from '../tenant-environment/service.type';
+import { ITenantAccountService } from '../tenant-account/service.type';
+import { IEnvironmentService } from '../environment/service.type';
 import { ITenantService } from './service.type';
 
 type TenantUseCaseServices = {
-  account: IAccountService;
+  tenantAccount: ITenantAccountService;
   tenant: ITenantService;
-  tenantEnvironment: ITenantEnvironmentService;
+  environment: IEnvironmentService;
 };
 
 export type { TenantUseCaseServices };

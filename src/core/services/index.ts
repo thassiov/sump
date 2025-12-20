@@ -1,11 +1,11 @@
-import { AccountService } from './account.service';
-import { TenantEnvironmentAccountService } from './tenant-environment-account.service';
-import { TenantEnvironmentService } from './tenant-environment.service';
+import { EnvironmentAccountService } from './environment-account.service';
+import { EnvironmentService } from './environment.service';
+import { TenantAccountService } from './tenant-account.service';
 import { TenantService } from './tenant.service';
 
 export {
-  AccountService,
-  TenantEnvironmentAccountService,
-  TenantEnvironmentService,
+  EnvironmentAccountService,
+  EnvironmentService,
+  TenantAccountService,
   TenantService,
 };

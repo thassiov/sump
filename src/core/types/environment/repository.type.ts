@@ -1,46 +1,46 @@
 import { Knex } from 'knex';
 import {
-  ICreateTenantEnvironmentDto,
-  IGetTenantEnvironmentDto,
-  IUpdateTenantEnvironmentAllowedDtos,
+  ICreateEnvironmentDto,
+  IGetEnvironmentDto,
+  IUpdateEnvironmentAllowedDtos,
 } from './dto.type';
-import { ITenantEnvironment } from './tenant-environment.type';
+import { IEnvironment } from './environment.type';
 
-type ITenantEnvironmentRepository = {
+type IEnvironmentRepository = {
   create: (
-    dto: ICreateTenantEnvironmentDto,
+    dto: ICreateEnvironmentDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById(
-    id: ITenantEnvironment['id']
-  ): Promise<IGetTenantEnvironmentDto | undefined>;
+    id: IEnvironment['id']
+  ): Promise<IGetEnvironmentDto | undefined>;
   getByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto | undefined>;
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto | undefined>;
   getByTenantId(
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto[] | undefined>;
-  deleteById(id: ITenantEnvironment['id']): Promise<boolean>;
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto[] | undefined>;
+  deleteById(id: IEnvironment['id']): Promise<boolean>;
   deleteByIdAndTenantId: (
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
   ) => Promise<boolean>;
   updateByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    dto: IUpdateTenantEnvironmentAllowedDtos
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    dto: IUpdateEnvironmentAllowedDtos
   ): Promise<boolean>;
   setCustomPropertyByIdAndTenantId: (
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    customProperty: ITenantEnvironment['customProperties']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    customProperty: IEnvironment['customProperties']
   ) => Promise<boolean>;
   deleteCustomPropertyByIdAndTenantId: (
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
     customPropertyKey: string
   ) => Promise<boolean>;
 };
 
-export type { ITenantEnvironmentRepository };
+export type { IEnvironmentRepository };

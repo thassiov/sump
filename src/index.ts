@@ -20,44 +20,44 @@ async function bootstrap(sumpConfig?: object) {
 
   logger.info("Creating internal service's instances");
 
-  const accountRepository = new repositories.AccountRepository(databaseClient);
-  const accountService = new services.AccountService(accountRepository);
+  const tenantAccountRepository = new repositories.TenantAccountRepository(databaseClient);
+  const tenantAccountService = new services.TenantAccountService(tenantAccountRepository);
 
   const tenantRepository = new repositories.TenantRepository(databaseClient);
   const tenantService = new services.TenantService(tenantRepository);
 
-  const tenantEnvironmentRepository =
-    new repositories.TenantEnvironmentRepository(databaseClient);
-  const tenantEnvironmentService = new services.TenantEnvironmentService(
-    tenantEnvironmentRepository
+  const environmentRepository =
+    new repositories.EnvironmentRepository(databaseClient);
+  const environmentService = new services.EnvironmentService(
+    environmentRepository
   );
 
-  const tenantEnvironmentAccountRepository =
-    new repositories.TenantEnvironmentAccountRepository(databaseClient);
-  const tenantEnvironmentAccountService =
-    new services.TenantEnvironmentAccountService(
-      tenantEnvironmentAccountRepository
+  const environmentAccountRepository =
+    new repositories.EnvironmentAccountRepository(databaseClient);
+  const environmentAccountService =
+    new services.EnvironmentAccountService(
+      environmentAccountRepository
     );
 
   logger.info('Setting up use cases');
   const tenantUseCases = new useCases.TenantUseCase({
-    account: accountService,
+    tenantAccount: tenantAccountService,
     tenant: tenantService,
-    tenantEnvironment: tenantEnvironmentService,
+    environment: environmentService,
   });
 
-  const accountUseCases = new useCases.AccountUseCase({
-    account: accountService,
+  const tenantAccountUseCases = new useCases.TenantAccountUseCase({
+    tenantAccount: tenantAccountService,
     tenant: tenantService,
   });
 
-  const tenantEnvironmentUseCases = new useCases.TenantEnvironmentUseCase({
-    tenantEnvironment: tenantEnvironmentService,
+  const environmentUseCases = new useCases.EnvironmentUseCase({
+    environment: environmentService,
   });
 
-  const tenantEnvironmentAccountUseCases =
-    new useCases.TenantEnvironmentAccountUseCase({
-      tenantEnvironmentAccount: tenantEnvironmentAccountService,
+  const environmentAccountUseCases =
+    new useCases.EnvironmentAccountUseCase({
+      environmentAccount: environmentAccountService,
     });
 
   logger.info('Setting up rest api endpoints');
@@ -68,19 +68,19 @@ async function bootstrap(sumpConfig?: object) {
   );
   baseRouter.use(
     '/v1/tenants/:tenantId',
-    endpointFactories.makeAccountUseCaseEndpoints(accountUseCases)
+    endpointFactories.makeTenantAccountUseCaseEndpoints(tenantAccountUseCases)
   );
   baseRouter.use(
     '/v1/tenants/:tenantId',
-    endpointFactories.makeTenantEnvironmentUseCaseEndpoints(
-      tenantEnvironmentUseCases
+    endpointFactories.makeEnvironmentUseCaseEndpoints(
+      environmentUseCases
     )
   );
 
   baseRouter.use(
-    '/v1/environments/:tenantEnvironmentId',
-    endpointFactories.makeTenantEnvironmentAccountUseCaseEndpoints(
-      tenantEnvironmentAccountUseCases
+    '/v1/environments/:environmentId',
+    endpointFactories.makeEnvironmentAccountUseCaseEndpoints(
+      environmentAccountUseCases
     )
   );
 

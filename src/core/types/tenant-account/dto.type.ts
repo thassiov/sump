@@ -1,8 +1,8 @@
 import z from 'zod';
-import { accountSchema, IAccount } from './account.type';
+import { tenantAccountSchema, ITenantAccount } from './tenant-account.type';
 
 // @TODO: this schema might need to be reviewed at some point. it seems wrong
-const createAccountDtoSchema = accountSchema
+const createTenantAccountDtoSchema = tenantAccountSchema
   .pick({
     email: true,
     phone: true,
@@ -18,11 +18,11 @@ const createAccountDtoSchema = accountSchema
     tenantId: true, // this will be added by the service method, but is needed in the type
     roles: true, // this will be added by the service method, but is needed in the type
   });
-type ICreateAccountDto = z.infer<typeof createAccountDtoSchema>;
+type ICreateTenantAccountDto = z.infer<typeof createTenantAccountDtoSchema>;
 
 // @FIXME: this is dumb. fix it with `pick` instead
-const createAccountNoInternalPropertiesDtoSchema = z
-  .strictObject(accountSchema.shape)
+const createTenantAccountNoInternalPropertiesDtoSchema = z
+  .strictObject(tenantAccountSchema.shape)
   .omit({
     id: true,
     phoneVerified: true,
@@ -32,8 +32,8 @@ const createAccountNoInternalPropertiesDtoSchema = z
     updatedAt: true,
   });
 
-const accountUserDefinedIdentificationSchema = z
-  .strictObject(accountSchema.shape)
+const tenantAccountUserDefinedIdentificationSchema = z
+  .strictObject(tenantAccountSchema.shape)
   .pick({
     email: true,
     phone: true,
@@ -59,11 +59,11 @@ const accountUserDefinedIdentificationSchema = z
     message: 'payload cannot be empty',
   });
 
-type IAccountUserDefinedIdentification = z.infer<
-  typeof accountUserDefinedIdentificationSchema
+type ITenantAccountUserDefinedIdentification = z.infer<
+  typeof tenantAccountUserDefinedIdentificationSchema
 >;
 
-const getAccountDtoSchema = accountSchema.pick({
+const getTenantAccountDtoSchema = tenantAccountSchema.pick({
   id: true,
   email: true,
   phone: true,
@@ -73,9 +73,9 @@ const getAccountDtoSchema = accountSchema.pick({
   tenantId: true,
   roles: true,
 });
-type IGetAccountDto = z.infer<typeof getAccountDtoSchema>;
+type IGetTenantAccountDto = z.infer<typeof getTenantAccountDtoSchema>;
 
-const accountOptionalQueryFiltersSchema = getAccountDtoSchema
+const tenantAccountOptionalQueryFiltersSchema = getTenantAccountDtoSchema
   .omit({
     id: true,
     roles: true,
@@ -85,12 +85,12 @@ const accountOptionalQueryFiltersSchema = getAccountDtoSchema
     message: 'payload cannot be empty',
   });
 
-type IAccountOptionalQueryFilters = z.infer<
-  typeof accountOptionalQueryFiltersSchema
+type ITenantAccountOptionalQueryFilters = z.infer<
+  typeof tenantAccountOptionalQueryFiltersSchema
 >;
 
-const updateAccountNonSensitivePropertiesDtoSchema = z
-  .strictObject(accountSchema.shape)
+const updateTenantAccountNonSensitivePropertiesDtoSchema = z
+  .strictObject(tenantAccountSchema.shape)
   .pick({
     avatarUrl: true,
     name: true,
@@ -102,65 +102,65 @@ const updateAccountNonSensitivePropertiesDtoSchema = z
     message: 'payload cannot be empty',
   });
 
-type IUpdateAccountNonSensitivePropertiesDto = z.infer<
-  typeof updateAccountNonSensitivePropertiesDtoSchema
+type IUpdateTenantAccountNonSensitivePropertiesDto = z.infer<
+  typeof updateTenantAccountNonSensitivePropertiesDtoSchema
 >;
 
-const updateAccountEmailDtoSchema = accountSchema
+const updateTenantAccountEmailDtoSchema = tenantAccountSchema
   .pick({ email: true })
   .required();
-type IUpdateAccountEmailDto = z.infer<typeof updateAccountEmailDtoSchema>;
+type IUpdateTenantAccountEmailDto = z.infer<typeof updateTenantAccountEmailDtoSchema>;
 
-const updateAccountPhoneDtoSchema = accountSchema
+const updateTenantAccountPhoneDtoSchema = tenantAccountSchema
   .pick({ phone: true })
   .required();
-type IUpdateAccountPhoneDto = z.infer<typeof updateAccountPhoneDtoSchema>;
+type IUpdateTenantAccountPhoneDto = z.infer<typeof updateTenantAccountPhoneDtoSchema>;
 
-const updateAccountUsernameDtoSchema = accountSchema
+const updateTenantAccountUsernameDtoSchema = tenantAccountSchema
   .pick({ username: true })
   .required();
-type IUpdateAccountUsernameDto = z.infer<typeof updateAccountUsernameDtoSchema>;
+type IUpdateTenantAccountUsernameDto = z.infer<typeof updateTenantAccountUsernameDtoSchema>;
 
-type IUpdateAccountAllowedDtos =
-  | IUpdateAccountNonSensitivePropertiesDto
-  | IUpdateAccountEmailDto
-  | IUpdateAccountPhoneDto
-  | IUpdateAccountUsernameDto;
+type IUpdateTenantAccountAllowedDtos =
+  | IUpdateTenantAccountNonSensitivePropertiesDto
+  | IUpdateTenantAccountEmailDto
+  | IUpdateTenantAccountPhoneDto
+  | IUpdateTenantAccountUsernameDto;
 
-type CreateNewAccountUseCaseDtoResult = IAccount['id'];
-type DeleteAccountByIdAndTenantIdUseCaseResultDto = boolean;
-type UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto =
+type CreateNewTenantAccountUseCaseDtoResult = ITenantAccount['id'];
+type DeleteTenantAccountByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateTenantAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto =
   boolean;
-type UpdateAccountEmailByIdAndTenantIdUseCaseResultDto = boolean;
-type UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto = boolean;
-type UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateTenantAccountEmailByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateTenantAccountPhoneByIdAndTenantIdUseCaseResultDto = boolean;
+type UpdateTenantAccountUsernameByIdAndTenantIdUseCaseResultDto = boolean;
 
 export type {
-  CreateNewAccountUseCaseDtoResult,
-  DeleteAccountByIdAndTenantIdUseCaseResultDto,
-  IAccountOptionalQueryFilters,
-  IAccountUserDefinedIdentification,
-  ICreateAccountDto,
-  IGetAccountDto,
-  IUpdateAccountAllowedDtos,
-  IUpdateAccountEmailDto,
-  IUpdateAccountNonSensitivePropertiesDto,
-  IUpdateAccountPhoneDto,
-  IUpdateAccountUsernameDto,
-  UpdateAccountEmailByIdAndTenantIdUseCaseResultDto,
-  UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
-  UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto,
-  UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto,
+  CreateNewTenantAccountUseCaseDtoResult,
+  DeleteTenantAccountByIdAndTenantIdUseCaseResultDto,
+  ITenantAccountOptionalQueryFilters,
+  ITenantAccountUserDefinedIdentification,
+  ICreateTenantAccountDto,
+  IGetTenantAccountDto,
+  IUpdateTenantAccountAllowedDtos,
+  IUpdateTenantAccountEmailDto,
+  IUpdateTenantAccountNonSensitivePropertiesDto,
+  IUpdateTenantAccountPhoneDto,
+  IUpdateTenantAccountUsernameDto,
+  UpdateTenantAccountEmailByIdAndTenantIdUseCaseResultDto,
+  UpdateTenantAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
+  UpdateTenantAccountPhoneByIdAndTenantIdUseCaseResultDto,
+  UpdateTenantAccountUsernameByIdAndTenantIdUseCaseResultDto,
 };
 
 export {
-  accountOptionalQueryFiltersSchema,
-  accountUserDefinedIdentificationSchema,
-  createAccountDtoSchema,
-  createAccountNoInternalPropertiesDtoSchema,
-  getAccountDtoSchema,
-  updateAccountEmailDtoSchema,
-  updateAccountNonSensitivePropertiesDtoSchema,
-  updateAccountPhoneDtoSchema,
-  updateAccountUsernameDtoSchema,
+  tenantAccountOptionalQueryFiltersSchema,
+  tenantAccountUserDefinedIdentificationSchema,
+  createTenantAccountDtoSchema,
+  createTenantAccountNoInternalPropertiesDtoSchema,
+  getTenantAccountDtoSchema,
+  updateTenantAccountEmailDtoSchema,
+  updateTenantAccountNonSensitivePropertiesDtoSchema,
+  updateTenantAccountPhoneDtoSchema,
+  updateTenantAccountUsernameDtoSchema,
 };

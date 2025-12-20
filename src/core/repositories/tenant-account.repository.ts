@@ -11,24 +11,24 @@ import {
   UnexpectedError,
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
-import { IAccount, IAccountRole } from '../types/account/account.type';
+import { ITenantAccount, ITenantAccountRole } from '../types/tenant-account/tenant-account.type';
 import {
-  IAccountUserDefinedIdentification,
-  ICreateAccountDto,
-  IGetAccountDto,
-  IUpdateAccountAllowedDtos,
-} from '../types/account/dto.type';
-import { IAccountRepository } from '../types/account/repository.type';
+  ITenantAccountUserDefinedIdentification,
+  ICreateTenantAccountDto,
+  IGetTenantAccountDto,
+  IUpdateTenantAccountAllowedDtos,
+} from '../types/tenant-account/dto.type';
+import { ITenantAccountRepository } from '../types/tenant-account/repository.type';
 
-class AccountRepository extends BaseRepository implements IAccountRepository {
+class TenantAccountRepository extends BaseRepository implements ITenantAccountRepository {
   private tableName: string;
   constructor(private readonly dbClient: Knex) {
-    super('account-repository');
-    this.tableName = internalConfigs.repository.account.tableName;
+    super('tenant-account-repository');
+    this.tableName = internalConfigs.repository.tenantAccount.tableName;
   }
 
   async create(
-    dto: ICreateAccountDto,
+    dto: ICreateTenantAccountDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
@@ -39,7 +39,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       if (!result) {
         throw new NotExpectedError({
-          context: contexts.ACCOUNT_CREATE,
+          context: contexts.TENANT_ACCOUNT_CREATE,
           details: {
             input: { ...dto },
             output: result,
@@ -60,7 +60,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
         if (error.detail!.endsWith('already exists.')) {
           const conflictError = new ConflictError({
             cause: error as Error,
-            context: contexts.ACCOUNT_CREATE,
+            context: contexts.TENANT_ACCOUNT_CREATE,
             details: {
               input: { ...dto },
               message: 'User identification already in use',
@@ -73,7 +73,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_CREATE,
+        context: contexts.TENANT_ACCOUNT_CREATE,
         details: {
           input: { ...dto },
         },
@@ -83,13 +83,13 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async getById(id: IAccount['id']): Promise<IGetAccountDto | undefined> {
+  async getById(id: ITenantAccount['id']): Promise<IGetTenantAccountDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_GET_BY_ID,
+        context: contexts.TENANT_ACCOUNT_GET_BY_ID,
         details: {
           input: { id },
         },
@@ -100,14 +100,14 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async getByTenantId(
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     try {
       return await this.sendFindByTenantIdQuery(tenantId);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_GET_BY_TENANT_ID,
+        context: contexts.TENANT_ACCOUNT_GET_BY_TENANT_ID,
         details: {
           input: { tenantId },
         },
@@ -118,9 +118,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async getByAccountIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto | undefined> {
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto | undefined> {
     try {
       return await this.sendFindByAccountIdAndTenantIdQuery(
         accountId,
@@ -129,7 +129,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
+        context: contexts.TENANT_ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID,
         details: {
           input: { accountId, tenantId },
         },
@@ -140,9 +140,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async getByUserDefinedIdentificationAndTenantId(
-    dto: IAccountUserDefinedIdentification,
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
+    dto: ITenantAccountUserDefinedIdentification,
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     try {
       return await this.sendFindByUserDefinedIdentificationAndTenantIdQuery(
         dto,
@@ -151,7 +151,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        context: contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
         details: {
           input: { ...dto, tenantId },
         },
@@ -162,14 +162,14 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async getByUserDefinedIdentification(
-    dto: IAccountUserDefinedIdentification
-  ): Promise<IGetAccountDto[] | undefined> {
+    dto: ITenantAccountUserDefinedIdentification
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     try {
       return await this.sendFindByUserDefinedIdentificationQuery(dto);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        context: contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
         details: {
           input: { ...dto },
         },
@@ -180,9 +180,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async updateByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountAllowedDtos
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountAllowedDtos
   ): Promise<boolean> {
     try {
       const result = await this.sendUpdateByIdAndTenantIdQuery(
@@ -193,7 +193,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.ACCOUNT_UPDATE_BY_ID,
+          context: contexts.TENANT_ACCOUNT_UPDATE_BY_ID,
           details: {
             input: { id, ...dto },
           },
@@ -208,7 +208,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_UPDATE_BY_ID,
+        context: contexts.TENANT_ACCOUNT_UPDATE_BY_ID,
         details: {
           input: { id, ...dto },
         },
@@ -218,13 +218,13 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
     }
   }
 
-  async deleteById(id: IAccount['id']): Promise<boolean> {
+  async deleteById(id: ITenantAccount['id']): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdQuery(id);
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.ACCOUNT_DELETE_BY_ID,
+          context: contexts.TENANT_ACCOUNT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -239,7 +239,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.ACCOUNT_DELETE_BY_ID,
+        context: contexts.TENANT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -250,8 +250,8 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async deleteByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdAndTenantIdQuery(id, tenantId);
@@ -259,7 +259,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
       if (result === 0) {
         throw new NotFoundError({
           // @TODO: add a 'delete account by id and tenant id' context here
-          // context: contexts.ACCOUNT_DELETE_BY_ID,
+          // context: contexts.TENANT_ACCOUNT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -274,7 +274,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        // context: contexts.ACCOUNT_DELETE_BY_ID,
+        // context: contexts.TENANT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -285,9 +285,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   async getAccountsByRoleAndByTenantId(
-    tenantId: IAccount['tenantId'],
-    role: IAccountRole
-  ): Promise<IGetAccountDto[]> {
+    tenantId: ITenantAccount['tenantId'],
+    role: ITenantAccountRole
+  ): Promise<IGetTenantAccountDto[]> {
     try {
       return await this.sendGetAccountsByRoleAndTenantIdQuery(tenantId, role);
     } catch (error) {
@@ -297,7 +297,7 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        // context: contexts.ACCOUNT_DELETE_BY_ID,
+        // context: contexts.TENANT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { tenantId },
         },
@@ -324,9 +324,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendFindByIdQuery(
-    id: IAccount['id']
-  ): Promise<IGetAccountDto | undefined> {
-    return await this.dbClient<IGetAccountDto>(this.tableName)
+    id: ITenantAccount['id']
+  ): Promise<IGetTenantAccountDto | undefined> {
+    return await this.dbClient<IGetTenantAccountDto>(this.tableName)
       .where('id', id)
       .select(
         'id',
@@ -342,9 +342,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendFindByTenantIdQuery(
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
-    return await this.dbClient<IGetAccountDto[]>(this.tableName)
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
+    return await this.dbClient<IGetTenantAccountDto[]>(this.tableName)
       .where('tenantId', tenantId)
       .select(
         'id',
@@ -359,10 +359,10 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendFindByAccountIdAndTenantIdQuery(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto | undefined> {
-    return await this.dbClient<IGetAccountDto>(this.tableName)
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto | undefined> {
+    return await this.dbClient<IGetTenantAccountDto>(this.tableName)
       .where({ tenantId, id: accountId })
       .select(
         'id',
@@ -378,10 +378,10 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendFindByUserDefinedIdentificationAndTenantIdQuery(
-    dto: IAccountUserDefinedIdentification,
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
-    let query = this.dbClient<IGetAccountDto>(this.tableName);
+    dto: ITenantAccountUserDefinedIdentification,
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
+    let query = this.dbClient<IGetTenantAccountDto>(this.tableName);
 
     const wheres = Object.entries(dto) as [string, string][];
 
@@ -406,9 +406,9 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendFindByUserDefinedIdentificationQuery(
-    dto: IAccountUserDefinedIdentification
-  ): Promise<IGetAccountDto[] | undefined> {
-    let query = this.dbClient<IGetAccountDto>(this.tableName);
+    dto: ITenantAccountUserDefinedIdentification
+  ): Promise<IGetTenantAccountDto[] | undefined> {
+    let query = this.dbClient<IGetTenantAccountDto>(this.tableName);
 
     const wheres = Object.entries(dto) as [string, string][];
 
@@ -431,29 +431,29 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 
   private async sendUpdateByIdAndTenantIdQuery(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountAllowedDtos
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountAllowedDtos
   ): Promise<number> {
     return this.dbClient(this.tableName).where({ id, tenantId }).update(dto);
   }
 
-  private async sendDeleteByIdQuery(id: IAccount['id']): Promise<number> {
+  private async sendDeleteByIdQuery(id: ITenantAccount['id']): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
   }
 
   private async sendDeleteByIdAndTenantIdQuery(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<number> {
     return await this.dbClient(this.tableName).where({ id, tenantId }).del();
   }
 
   private async sendGetAccountsByRoleAndTenantIdQuery(
-    tenantId: IAccount['tenantId'],
-    role: IAccountRole
-  ): Promise<IGetAccountDto[]> {
-    return this.dbClient<IGetAccountDto>(this.tableName)
+    tenantId: ITenantAccount['tenantId'],
+    role: ITenantAccountRole
+  ): Promise<IGetTenantAccountDto[]> {
+    return this.dbClient<IGetTenantAccountDto>(this.tableName)
       .whereRaw(`roles @> ?`, [JSON.stringify(role)])
       .andWhere({ tenantId })
       .select(
@@ -469,4 +469,4 @@ class AccountRepository extends BaseRepository implements IAccountRepository {
   }
 }
 
-export { AccountRepository };
+export { TenantAccountRepository };

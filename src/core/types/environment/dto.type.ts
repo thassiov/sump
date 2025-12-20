@@ -1,21 +1,21 @@
 import z from 'zod';
 import {
-  ITenantEnvironment,
-  tenantEnvironmentSchema,
-} from './tenant-environment.type';
+  IEnvironment,
+  environmentSchema,
+} from './environment.type';
 
-const createTenantEnvironmentDtoSchema = tenantEnvironmentSchema.pick({
+const createEnvironmentDtoSchema = environmentSchema.pick({
   name: true,
   tenantId: true,
   customProperties: true,
 });
 
-type ICreateTenantEnvironmentDto = z.infer<
-  typeof createTenantEnvironmentDtoSchema
+type ICreateEnvironmentDto = z.infer<
+  typeof createEnvironmentDtoSchema
 >;
 
 const createTenantEnvironmentNoInternalPropertiesDtoSchema = z
-  .strictObject(tenantEnvironmentSchema.shape)
+  .strictObject(environmentSchema.shape)
   .pick({
     name: true,
     customProperties: true,
@@ -25,17 +25,17 @@ type ICreateTenantEnvironmentNoInternalPropertiesDto = z.infer<
   typeof createTenantEnvironmentNoInternalPropertiesDtoSchema
 >;
 
-const getTenantEnvironmentDtoSchema = tenantEnvironmentSchema.pick({
+const getEnvironmentDtoSchema = environmentSchema.pick({
   id: true,
   name: true,
   tenantId: true,
   customProperties: true,
 });
 
-type IGetTenantEnvironmentDto = z.infer<typeof getTenantEnvironmentDtoSchema>;
+type IGetEnvironmentDto = z.infer<typeof getEnvironmentDtoSchema>;
 
-const updateTenantEnvironmentNonSensitivePropertiesDtoSchema = z
-  .strictObject(tenantEnvironmentSchema.shape)
+const updateEnvironmentNonSensitivePropertiesDtoSchema = z
+  .strictObject(environmentSchema.shape)
   .pick({
     name: true,
   })
@@ -46,46 +46,46 @@ const updateTenantEnvironmentNonSensitivePropertiesDtoSchema = z
     message: 'payload cannot be empty',
   });
 
-type IUpdateTenantEnvironmentNonSensitivePropertiesDto = z.infer<
-  typeof updateTenantEnvironmentNonSensitivePropertiesDtoSchema
+type IUpdateEnvironmentNonSensitivePropertiesDto = z.infer<
+  typeof updateEnvironmentNonSensitivePropertiesDtoSchema
 >;
 
 const tenantEnvironmentCustomPropertiesOperationDtoSchema =
-  tenantEnvironmentSchema.shape.customProperties.refine(
+  environmentSchema.shape.customProperties.refine(
     (val) => Object.keys(val).length
   );
 
-type ITenantEnvironmentCustomPropertiesOperationDtoSchema = z.infer<
+type IEnvironmentCustomPropertiesOperationDtoSchema = z.infer<
   typeof tenantEnvironmentCustomPropertiesOperationDtoSchema
 >;
 
-type IUpdateTenantEnvironmentAllowedDtos =
-  IUpdateTenantEnvironmentNonSensitivePropertiesDto;
+type IUpdateEnvironmentAllowedDtos =
+  IUpdateEnvironmentNonSensitivePropertiesDto;
 
-type CreateNewTenantEnvironmentUseCaseDtoResult = ITenantEnvironment['id'];
+type CreateNewEnvironmentUseCaseDtoResult = IEnvironment['id'];
 type DeleteTenantEnvironmentUseCaseDtoResult = boolean;
 type UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult = boolean;
 type SetTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
 type DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
 
 export type {
-  CreateNewTenantEnvironmentUseCaseDtoResult,
+  CreateNewEnvironmentUseCaseDtoResult,
   DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult,
   DeleteTenantEnvironmentUseCaseDtoResult,
-  ICreateTenantEnvironmentDto,
+  ICreateEnvironmentDto,
   ICreateTenantEnvironmentNoInternalPropertiesDto,
-  IGetTenantEnvironmentDto,
-  ITenantEnvironmentCustomPropertiesOperationDtoSchema,
-  IUpdateTenantEnvironmentAllowedDtos,
-  IUpdateTenantEnvironmentNonSensitivePropertiesDto,
+  IGetEnvironmentDto,
+  IEnvironmentCustomPropertiesOperationDtoSchema,
+  IUpdateEnvironmentAllowedDtos,
+  IUpdateEnvironmentNonSensitivePropertiesDto,
   SetTenantEnvironmentCustomPropertiesUseCaseDtoResult,
   UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult,
 };
 
 export {
-  createTenantEnvironmentDtoSchema,
+  createEnvironmentDtoSchema,
   createTenantEnvironmentNoInternalPropertiesDtoSchema,
-  getTenantEnvironmentDtoSchema,
+  getEnvironmentDtoSchema,
   tenantEnvironmentCustomPropertiesOperationDtoSchema,
-  updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
+  updateEnvironmentNonSensitivePropertiesDtoSchema,
 };

@@ -6,7 +6,7 @@ import {
   ValidationError,
 } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
-import { IAccountUserDefinedIdentification } from '../types/account/dto.type';
+import { ITenantAccountUserDefinedIdentification } from '../types/tenant-account/dto.type';
 import {
   CreateNewTenantUseCaseDto,
   createNewTenantUseCaseDtoSchema,
@@ -52,7 +52,7 @@ class TenantUseCase extends BaseUseCase {
 
     const { email, phone, username } = createNewTenantDto.account;
 
-    const hits = await this.services.account.getByUserDefinedIdentification({
+    const hits = await this.services.tenantAccount.getByUserDefinedIdentification({
       email,
       phone,
       username,
@@ -62,7 +62,7 @@ class TenantUseCase extends BaseUseCase {
       const errorEntries = [{ email }, { phone }, { username }]
         .map((udi) => {
           const [key, value] = Object.entries(udi)[0] as [
-            keyof IAccountUserDefinedIdentification,
+            keyof ITenantAccountUserDefinedIdentification,
             string | undefined,
           ];
 
@@ -105,7 +105,7 @@ class TenantUseCase extends BaseUseCase {
     this.logger.info(
       `creating account on tenant ${tenantId}:  ${createNewTenantDto.account.name}`
     );
-    const accountId = await this.services.account.create(
+    const accountId = await this.services.tenantAccount.create(
       tenantId,
       createNewTenantDto.account
     );
@@ -121,15 +121,15 @@ class TenantUseCase extends BaseUseCase {
     this.logger.info(
       `creating environment on tenant ${tenantId}:  ${firstEnvironment.name}`
     );
-    const tenantEnvironmentId = await this.services.tenantEnvironment.create(
+    const environmentId = await this.services.environment.create(
       tenantId,
       firstEnvironment
     );
     this.logger.info(
-      `new environment created on tenant ${tenantId}: id "${tenantEnvironmentId}"`
+      `new environment created on tenant ${tenantId}: id "${environmentId}"`
     );
 
-    return { tenantId, accountId, tenantEnvironmentId };
+    return { tenantId, accountId, environmentId };
   }
 
   async deleteTenantById(
@@ -183,7 +183,7 @@ class TenantUseCase extends BaseUseCase {
     }
 
     const environments =
-      await this.services.tenantEnvironment.getByTenantId(id);
+      await this.services.environment.getByTenantId(id);
 
     return { ...tenant, environments: environments ?? [] };
   }
@@ -218,7 +218,7 @@ class TenantUseCase extends BaseUseCase {
       });
     }
 
-    return this.services.account.getByTenantId(id);
+    return this.services.tenantAccount.getByTenantId(id);
   }
 
   async deleteCustomPropertyByTenantIdUseCase(

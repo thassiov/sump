@@ -6,27 +6,27 @@ import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
 import {
   ICreateTenantEnvironmentNoInternalPropertiesDto,
-  IGetTenantEnvironmentDto,
-  IUpdateTenantEnvironmentNonSensitivePropertiesDto,
+  IGetEnvironmentDto,
+  IUpdateEnvironmentNonSensitivePropertiesDto,
   tenantEnvironmentCustomPropertiesOperationDtoSchema,
   updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
-} from '../types/tenant-environment/dto.type';
-import { ITenantEnvironmentRepository } from '../types/tenant-environment/repository.type';
-import { ITenantEnvironmentService } from '../types/tenant-environment/service.type';
+} from '../types/environment/dto.type';
+import { IEnvironmentRepository } from '../types/tenant-environment/repository.type';
+import { IEnvironmentService } from '../types/environment/service.type';
 import {
-  ITenantEnvironment,
+  IEnvironment,
   tenantEnvironmentSchema,
-} from '../types/tenant-environment/tenant-environment.type';
+} from '../types/environment/environment.type';
 import { ITenant } from '../types/tenant/tenant.type';
 
-export class TenantEnvironmentService
+export class EnvironmentService
   extends BaseService
-  implements ITenantEnvironmentService
+  implements IEnvironmentService
 {
   constructor(
-    private readonly tenantEnvironmentRepository: ITenantEnvironmentRepository
+    private readonly tenantEnvironmentRepository: IEnvironmentRepository
   ) {
-    super('tenant-environment-service');
+    super('environment-service');
   }
 
   async create(
@@ -56,7 +56,7 @@ export class TenantEnvironmentService
           input: { ...dto },
         },
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_CREATE,
+        context: contexts.ENVIRONMENT_CREATE,
       });
 
       this.logger.error(errorInstance);
@@ -66,31 +66,31 @@ export class TenantEnvironmentService
   }
 
   async getById(
-    id: ITenantEnvironment['id']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
+    id: IEnvironment['id']
+  ): Promise<IGetEnvironmentDto | undefined> {
     this.logger.info(`getById: ${id}`);
 
     return this.tenantEnvironmentRepository.getById(id);
   }
 
   async getByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto | undefined> {
     this.logger.info(`getById: ${id}`);
 
     return this.tenantEnvironmentRepository.getByIdAndTenantId(id, tenantId);
   }
 
   async getByTenantId(
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto[] | undefined> {
     this.logger.info(`getByTenantId: ${tenantId}`);
 
     return this.tenantEnvironmentRepository.getByTenantId(tenantId);
   }
 
-  async deleteById(id: ITenantEnvironment['id']): Promise<boolean> {
+  async deleteById(id: IEnvironment['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
     const isIdValid = tenantEnvironmentSchema
@@ -103,7 +103,7 @@ export class TenantEnvironmentService
           input: { id },
           errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -114,8 +114,8 @@ export class TenantEnvironmentService
   }
 
   async deleteByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
   ): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
@@ -123,9 +123,9 @@ export class TenantEnvironmentService
   }
 
   async updateNonSensitivePropertiesByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    dto: IUpdateTenantEnvironmentNonSensitivePropertiesDto
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    dto: IUpdateEnvironmentNonSensitivePropertiesDto
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
@@ -172,9 +172,9 @@ export class TenantEnvironmentService
   }
 
   async setCustomPropertyByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    customProperties: ITenantEnvironment['customProperties']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    customProperties: IEnvironment['customProperties']
   ): Promise<boolean> {
     this.logger.info(`setCustomPropertyById: ${id}`);
     const isIdValid = tenantEnvironmentSchema
@@ -187,7 +187,7 @@ export class TenantEnvironmentService
           input: { id },
           errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -205,7 +205,7 @@ export class TenantEnvironmentService
           input: { ...customProperties },
           errors: formatZodError(isPayloadValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -221,7 +221,7 @@ export class TenantEnvironmentService
 
   async deleteCustomPropertyByIdAndTenantId(
     id: ITenant['id'],
-    tenantId: ITenantEnvironment['tenantId'],
+    tenantId: IEnvironment['tenantId'],
     customPropertyKey: string
   ): Promise<boolean> {
     this.logger.info(`deleteCustomPropertyById: ${id}`);
@@ -235,7 +235,7 @@ export class TenantEnvironmentService
           input: { id },
           errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -253,7 +253,7 @@ export class TenantEnvironmentService
           input: { customPropertyKey },
           errors: formatZodError(isPayloadValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
       });
 
       this.logger.error(errorInstance);

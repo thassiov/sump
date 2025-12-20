@@ -6,38 +6,38 @@ import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
 import {
   ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
-  IGetTenantEnvironmentAccountDto,
+  IGetEnvironmentAccountDto,
   IUpdateTenantEnvironmentAccountEmailDto,
-  IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
+  IUpdateEnvironmentAccountNonSensitivePropertiesDto,
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
-} from '../types/tenant-environment-account/dto.type';
-import { ITenantEnvironmentAccountRepository } from '../types/tenant-environment-account/repository.type';
-import { ITenantEnvironmentAccountService } from '../types/tenant-environment-account/service.type';
+} from '../types/environment-account/dto.type';
+import { IEnvironmentAccountRepository } from '../types/tenant-environment-account/repository.type';
+import { IEnvironmentAccountService } from '../types/environment-account/service.type';
 import {
-  ITenantEnvironmentAccount,
+  IEnvironmentAccount,
   tenantEnvironmentAccountSchema,
-} from '../types/tenant-environment-account/tenant-environment-account.type';
+} from '../types/environment-account/environment-account.type';
 import { ITenantEnvironment } from '../types/tenant-environment/tenant-environment.type';
 
-export class TenantEnvironmentAccountService
+export class EnvironmentAccountService
   extends BaseService
-  implements ITenantEnvironmentAccountService
+  implements IEnvironmentAccountService
 {
   constructor(
-    private readonly tenantEnvironmentAccountRepository: ITenantEnvironmentAccountRepository
+    private readonly tenantEnvironmentAccountRepository: IEnvironmentAccountRepository
   ) {
-    super('tenant-environment-account-service');
+    super('environment-account-service');
   }
 
   // @NOTE: maybe the transaction argument must be called something else here
   async create(
-    tenantEnvironmentId: ITenantEnvironment['id'],
+    environmentId: ITenantEnvironment['id'],
     dto: ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     this.logger.info(
-      `create tenant environment account in environment ${tenantEnvironmentId}`
+      `create tenant environment account in environment ${environmentId}`
     );
     try {
       const tenantEnvironmentAccountId =
@@ -46,7 +46,7 @@ export class TenantEnvironmentAccountService
             ...dto,
             phoneVerified: false,
             emailVerified: false,
-            tenantEnvironmentId,
+            environmentId,
           },
           transaction
         );
@@ -67,7 +67,7 @@ export class TenantEnvironmentAccountService
           input: { ...dto },
         },
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE,
+        context: contexts.ENVIRONMENT_ACCOUNT_CREATE,
       });
 
       this.logger.error(errorInstance);
@@ -77,26 +77,26 @@ export class TenantEnvironmentAccountService
   }
 
   async getById(
-    id: ITenantEnvironmentAccount['id']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
+    id: IEnvironmentAccount['id']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
     this.logger.info(`getById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.getById(id);
   }
 
   async getByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
     this.logger.info(`getById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.getByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId
+      environmentId
     );
   }
 
-  async deleteById(id: ITenantEnvironmentAccount['id']): Promise<boolean> {
+  async deleteById(id: IEnvironmentAccount['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
     const isIdValid = tenantEnvironmentAccountSchema
@@ -109,7 +109,7 @@ export class TenantEnvironmentAccountService
           input: { id },
           errors: formatZodError(isIdValid.error.issues),
         },
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -120,97 +120,97 @@ export class TenantEnvironmentAccountService
   }
 
   async deleteByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.deleteByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId
+      environmentId
     );
   }
 
   async updateNonSensitivePropertiesByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IUpdateEnvironmentAccountNonSensitivePropertiesDto
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.updateByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updateEmailByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountEmailDto
   ): Promise<boolean> {
     this.logger.info(`updateEmailById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.updateByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updateUsernameByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountUsernameDto
   ): Promise<boolean> {
     this.logger.info(`updateUsernameById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.updateByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updatePhoneByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountPhoneDto
   ): Promise<boolean> {
     this.logger.info(`updatePhoneById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.updateByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async setCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    customProperties: ITenantEnvironmentAccount['customProperties']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    customProperties: IEnvironmentAccount['customProperties']
   ): Promise<boolean> {
     this.logger.info(`setCustomPropertyById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.setCustomPropertyByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       customProperties
     );
   }
 
   async deleteCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     customPropertyKey: string
   ): Promise<boolean> {
     this.logger.info(`deleteCustomPropertyById: ${id}`);
 
     return this.tenantEnvironmentAccountRepository.deleteCustomPropertyByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       customPropertyKey
     );
   }

@@ -1,11 +1,11 @@
-import { makeAccountUseCaseEndpoints } from './account.endpoint';
-import { makeTenantEnvironmentAccountUseCaseEndpoints } from './tenant-environment-account.endpoint';
-import { makeTenantEnvironmentUseCaseEndpoints } from './tenant-environment.endpoint';
+import { makeTenantAccountUseCaseEndpoints } from './tenant-account.endpoint';
+import { makeEnvironmentAccountUseCaseEndpoints } from './environment-account.endpoint';
+import { makeEnvironmentUseCaseEndpoints } from './environment.endpoint';
 import { makeTenantUseCaseEndpoints } from './tenant.endpoint';
 
 export {
-  makeAccountUseCaseEndpoints,
-  makeTenantEnvironmentAccountUseCaseEndpoints,
-  makeTenantEnvironmentUseCaseEndpoints,
+  makeTenantAccountUseCaseEndpoints,
+  makeEnvironmentAccountUseCaseEndpoints,
+  makeEnvironmentUseCaseEndpoints,
   makeTenantUseCaseEndpoints,
 };

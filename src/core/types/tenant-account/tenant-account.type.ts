@@ -1,14 +1,14 @@
 import z from 'zod';
 
-const accountRoleListSchema = z.enum(['owner', 'admin', 'user']);
-const accountRoleTargetListSchema = z.enum(['tenant', 'environment']);
-const accountRoleSchema = z.object({
-  role: accountRoleListSchema,
-  target: accountRoleTargetListSchema,
+const tenantAccountRoleListSchema = z.enum(['owner', 'admin', 'user']);
+const tenantAccountRoleTargetListSchema = z.enum(['tenant', 'environment']);
+const tenantAccountRoleSchema = z.object({
+  role: tenantAccountRoleListSchema,
+  target: tenantAccountRoleTargetListSchema,
   targetId: z.uuid(),
 });
 
-const accountSchema = z.object({
+const tenantAccountSchema = z.object({
   id: z.uuid(),
   email: z.string().check(z.email()),
   emailVerified: z.boolean().default(false),
@@ -18,13 +18,13 @@ const accountSchema = z.object({
   username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()).optional(),
   tenantId: z.uuid(),
-  roles: z.array(accountRoleSchema).min(1).max(1),
+  roles: z.array(tenantAccountRoleSchema).min(1).max(1),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-type IAccount = z.infer<typeof accountSchema>;
-type IAccountRole = z.infer<typeof accountRoleSchema>;
+type ITenantAccount = z.infer<typeof tenantAccountSchema>;
+type ITenantAccountRole = z.infer<typeof tenantAccountRoleSchema>;
 
-export { accountRoleSchema, accountSchema };
-export type { IAccount, IAccountRole };
+export { tenantAccountRoleSchema, tenantAccountSchema };
+export type { ITenantAccount, ITenantAccountRole };

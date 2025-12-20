@@ -1,6 +1,6 @@
 import z from 'zod';
 
-const tenantEnvironmentAccountSchema = z.object({
+const environmentAccountSchema = z.object({
   id: z.uuid(),
   email: z.string().check(z.email()),
   emailVerified: z.boolean(),
@@ -9,13 +9,13 @@ const tenantEnvironmentAccountSchema = z.object({
   name: z.string().min(3).max(100),
   username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()),
-  tenantEnvironmentId: z.uuid(),
+  environmentId: z.uuid(),
   customProperties: z.record(z.string(), z.json()),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-type ITenantEnvironmentAccount = z.infer<typeof tenantEnvironmentAccountSchema>;
+type IEnvironmentAccount = z.infer<typeof environmentAccountSchema>;
 
-export { tenantEnvironmentAccountSchema };
-export type { ITenantEnvironmentAccount };
+export { environmentAccountSchema };
+export type { IEnvironmentAccount };

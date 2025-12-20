@@ -1,60 +1,60 @@
 import { Knex } from 'knex';
 import {
   ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
-  IGetTenantEnvironmentAccountDto,
+  IGetEnvironmentAccountDto,
   IUpdateTenantEnvironmentAccountEmailDto,
-  IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
+  IUpdateEnvironmentAccountNonSensitivePropertiesDto,
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
 } from './dto.type';
-import { ITenantEnvironmentAccount } from './tenant-environment-account.type';
+import { IEnvironmentAccount } from './environment-account.type';
 
-export type ITenantEnvironmentAccountService = {
+export type IEnvironmentAccountService = {
   create: (
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (
-    id: ITenantEnvironmentAccount['id']
-  ) => Promise<IGetTenantEnvironmentAccountDto | undefined>;
+    id: IEnvironmentAccount['id']
+  ) => Promise<IGetEnvironmentAccountDto | undefined>;
   getByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
-  ) => Promise<IGetTenantEnvironmentAccountDto | undefined>;
-  deleteById: (id: ITenantEnvironmentAccount['id']) => Promise<boolean>;
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ) => Promise<IGetEnvironmentAccountDto | undefined>;
+  deleteById: (id: IEnvironmentAccount['id']) => Promise<boolean>;
   deleteByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ) => Promise<boolean>;
   updateNonSensitivePropertiesByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IUpdateEnvironmentAccountNonSensitivePropertiesDto
   ) => Promise<boolean>;
   updateEmailByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountEmailDto
   ) => Promise<boolean>;
   updateUsernameByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountUsernameDto
   ) => Promise<boolean>;
   updatePhoneByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountPhoneDto
   ) => Promise<boolean>;
   setCustomPropertyByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    customProperty: ITenantEnvironmentAccount['customProperties']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    customProperty: IEnvironmentAccount['customProperties']
   ) => Promise<boolean>;
   deleteCustomPropertyByIdAndTenantEnvironmentId: (
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     customPropertyKey: string
   ) => Promise<boolean>;
 };

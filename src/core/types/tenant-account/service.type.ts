@@ -1,63 +1,63 @@
 import { Knex } from 'knex';
-import { IAccount } from './account.type';
+import { ITenantAccount } from './tenant-account.type';
 import {
-  IAccountUserDefinedIdentification,
-  ICreateAccountDto,
-  IGetAccountDto,
-  IUpdateAccountEmailDto,
-  IUpdateAccountNonSensitivePropertiesDto,
-  IUpdateAccountPhoneDto,
-  IUpdateAccountUsernameDto,
+  ITenantAccountUserDefinedIdentification,
+  ICreateTenantAccountDto,
+  IGetTenantAccountDto,
+  IUpdateTenantAccountEmailDto,
+  IUpdateTenantAccountNonSensitivePropertiesDto,
+  IUpdateTenantAccountPhoneDto,
+  IUpdateTenantAccountUsernameDto,
 } from './dto.type';
 
-export type IAccountService = {
+export type ITenantAccountService = {
   create: (
-    tenantId: IAccount['tenantId'],
-    dto: ICreateAccountDto,
+    tenantId: ITenantAccount['tenantId'],
+    dto: ICreateTenantAccountDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
-  getById: (id: IAccount['id']) => Promise<IGetAccountDto | undefined>;
+  getById: (id: ITenantAccount['id']) => Promise<IGetTenantAccountDto | undefined>;
   getByTenantId: (
-    tenantId: IAccount['tenantId']
-  ) => Promise<IGetAccountDto[] | undefined>;
+    tenantId: ITenantAccount['tenantId']
+  ) => Promise<IGetTenantAccountDto[] | undefined>;
   getByAccountIdAndTenantId: (
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
-  ) => Promise<IGetAccountDto | undefined>;
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ) => Promise<IGetTenantAccountDto | undefined>;
   getByUserDefinedIdentificationAndTenantId: (
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
-    tenantId: IAccount['tenantId']
-  ) => Promise<IGetAccountDto[] | undefined>;
+    accountUserDefinedIdentification: ITenantAccountUserDefinedIdentification,
+    tenantId: ITenantAccount['tenantId']
+  ) => Promise<IGetTenantAccountDto[] | undefined>;
   getByUserDefinedIdentification: (
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification
-  ) => Promise<IGetAccountDto[] | undefined>;
-  deleteById: (id: IAccount['id']) => Promise<boolean>;
+    accountUserDefinedIdentification: ITenantAccountUserDefinedIdentification
+  ) => Promise<IGetTenantAccountDto[] | undefined>;
+  deleteById: (id: ITenantAccount['id']) => Promise<boolean>;
   deleteByIdAndTenantId: (
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ) => Promise<boolean>;
   updateNonSensitivePropertiesByIdAndTenantId: (
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountNonSensitivePropertiesDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountNonSensitivePropertiesDto
   ) => Promise<boolean>;
   updateEmailByIdAndTenantId: (
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountEmailDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountEmailDto
   ) => Promise<boolean>;
   updateUsernameByIdAndTenantId: (
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountUsernameDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountUsernameDto
   ) => Promise<boolean>;
   updatePhoneByIdAndTenantId: (
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountPhoneDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountPhoneDto
   ) => Promise<boolean>;
   canAccountBeDeleted(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<boolean>;
 };

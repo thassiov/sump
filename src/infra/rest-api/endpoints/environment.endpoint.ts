@@ -6,13 +6,13 @@ import {
   ITenantEnvironmentCustomPropertiesOperationDtoSchema,
   IUpdateTenantEnvironmentNonSensitivePropertiesDto,
 } from '../../../core/types/tenant-environment/dto.type';
-import { TenantEnvironmentUseCase } from '../../../core/use-cases/tenant-environment.use-case';
+import { EnvironmentUseCase } from '../../../core/use-cases/environment.use-case';
 import { EndpointHandler } from '../../../lib/types';
 
 const router = express.Router({ mergeParams: true });
 
-function makeTenantEnvironmentUseCaseEndpoints(
-  useCase: TenantEnvironmentUseCase
+function makeEnvironmentUseCaseEndpoints(
+  useCase: EnvironmentUseCase
 ): express.Router {
   router.post(
     '/environments',
@@ -58,7 +58,7 @@ function makeTenantEnvironmentUseCaseEndpoints(
 }
 
 function createNewEnvironmentUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['createNewEnvironment']
+  useCase: EnvironmentUseCase['createNewEnvironment']
 ): EndpointHandler {
   return async function createNewEnvironmentUseCaseEndpoint(
     req: Request,
@@ -74,7 +74,7 @@ function createNewEnvironmentUseCaseEndpointFactory(
 }
 
 function getEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['getEnvironmentByIdAndTenantId']
+  useCase: EnvironmentUseCase['getEnvironmentByIdAndTenantId']
 ): EndpointHandler {
   return async function getEnvironmentByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -95,7 +95,7 @@ function getEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function deleteEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['deleteEnvironmentByIdAndTenantId']
+  useCase: EnvironmentUseCase['deleteEnvironmentByIdAndTenantId']
 ): EndpointHandler {
   return async function deleteEnvironmentByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -111,7 +111,7 @@ function deleteEnvironmentByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['updateEnvironmentNonSensitivePropertiesByIdAndTenantId']
+  useCase: EnvironmentUseCase['updateEnvironmentNonSensitivePropertiesByIdAndTenantId']
 ): EndpointHandler {
   return async function updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -128,7 +128,7 @@ function updateEnvironmentNonSensitivePropertiesByIdAndTenantIdUseCaseEndpointFa
 }
 
 function setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['setEnvironmentCustomPropertyByIdAndTenantId']
+  useCase: EnvironmentUseCase['setEnvironmentCustomPropertyByIdAndTenantId']
 ): EndpointHandler {
   return async function setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -146,7 +146,7 @@ function setEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
 }
 
 function deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentUseCase['deleteEnvironmentCustomPropertyByIdAndTenantId']
+  useCase: EnvironmentUseCase['deleteEnvironmentCustomPropertyByIdAndTenantId']
 ): EndpointHandler {
   return async function deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpoint(
     req: Request,
@@ -162,4 +162,4 @@ function deleteEnvironmentCustomPropertyByIdAndTenantIdUseCaseEndpointFactory(
   };
 }
 
-export { makeTenantEnvironmentUseCaseEndpoints };
+export { makeEnvironmentUseCaseEndpoints };

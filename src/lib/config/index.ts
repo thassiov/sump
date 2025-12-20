@@ -5,17 +5,17 @@ import { formatZodError } from '../utils/formatters';
 import { readJsonFile } from '../utils/fs-operations';
 
 const repository = {
-  account: {
-    tableName: 'account',
+  tenantAccount: {
+    tableName: 'tenant_account',
   },
   tenant: {
     tableName: 'tenant',
   },
-  tenantEnvironment: {
-    tableName: 'tenant_environment',
+  environment: {
+    tableName: 'environment',
   },
-  tenantEnvironmentAccount: {
-    tableName: 'tenant_environment_account',
+  environmentAccount: {
+    tableName: 'environment_account',
   },
 };
 

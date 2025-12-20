@@ -12,16 +12,16 @@ import {
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import {
-  ICreateTenantEnvironmentAccountDto,
-  IGetTenantEnvironmentAccountDto,
-  IUpdateTenantEnvironmentAccountAllowedDtos,
-} from '../types/tenant-environment-account/dto.type';
-import { ITenantEnvironmentAccountRepository } from '../types/tenant-environment-account/repository.type';
-import { ITenantEnvironmentAccount } from '../types/tenant-environment-account/tenant-environment-account.type';
+  ICreateEnvironmentAccountDto,
+  IGetEnvironmentAccountDto,
+  IUpdateEnvironmentAccountAllowedDtos,
+} from '../types/environment-account/dto.type';
+import { IEnvironmentAccountRepository } from '../types/environment-account/repository.type';
+import { IEnvironmentAccount } from '../types/environment-account/environment-account.type';
 
-class TenantEnvironmentAccountRepository
+class EnvironmentAccountRepository
   extends BaseRepository
-  implements ITenantEnvironmentAccountRepository
+  implements IEnvironmentAccountRepository
 {
   private tableName: string;
   constructor(private readonly dbClient: Knex) {
@@ -30,7 +30,7 @@ class TenantEnvironmentAccountRepository
   }
 
   async create(
-    dto: ICreateTenantEnvironmentAccountDto,
+    dto: ICreateEnvironmentAccountDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
@@ -38,7 +38,7 @@ class TenantEnvironmentAccountRepository
 
       if (!result) {
         throw new NotExpectedError({
-          context: contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE,
+          context: contexts.ENVIRONMENT_ACCOUNT_CREATE,
           details: {
             input: { ...dto },
             output: result,
@@ -59,7 +59,7 @@ class TenantEnvironmentAccountRepository
         if (error.detail!.endsWith('already exists.')) {
           const conflictError = new ConflictError({
             cause: error as Error,
-            context: contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE,
+            context: contexts.ENVIRONMENT_ACCOUNT_CREATE,
             details: {
               input: { ...dto },
               message: 'User identification already in use',
@@ -72,7 +72,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE,
+        context: contexts.ENVIRONMENT_ACCOUNT_CREATE,
         details: {
           input: { ...dto },
         },
@@ -83,14 +83,14 @@ class TenantEnvironmentAccountRepository
   }
 
   async getById(
-    id: ITenantEnvironmentAccount['id']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
+    id: IEnvironmentAccount['id']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_GET_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_GET_BY_ID,
         details: {
           input: { id },
         },
@@ -101,18 +101,18 @@ class TenantEnvironmentAccountRepository
   }
 
   async getByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
     try {
       return await this.sendFindByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId
+        environmentId
       );
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_GET_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_GET_BY_ID,
         details: {
           input: { id },
         },
@@ -123,20 +123,20 @@ class TenantEnvironmentAccountRepository
   }
 
   async updateByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: IUpdateTenantEnvironmentAccountAllowedDtos
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IUpdateEnvironmentAccountAllowedDtos
   ): Promise<boolean> {
     try {
       const result = await this.sendUpdateByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId,
+        environmentId,
         dto
       );
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
+          context: contexts.ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
           details: {
             input: { id, ...dto },
           },
@@ -151,7 +151,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_UPDATE_BY_ID,
         details: {
           input: { id, ...dto },
         },
@@ -161,13 +161,13 @@ class TenantEnvironmentAccountRepository
     }
   }
 
-  async deleteById(id: ITenantEnvironmentAccount['id']): Promise<boolean> {
+  async deleteById(id: IEnvironmentAccount['id']): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdQuery(id);
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+          context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -182,7 +182,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -193,18 +193,18 @@ class TenantEnvironmentAccountRepository
   }
 
   async deleteByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId
+        environmentId
       );
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+          context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -219,7 +219,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -230,18 +230,18 @@ class TenantEnvironmentAccountRepository
   }
 
   async deleteCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId
+        environmentId
       );
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+          context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -256,7 +256,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -267,14 +267,14 @@ class TenantEnvironmentAccountRepository
   }
 
   async setCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: ITenantEnvironmentAccount['customProperties']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IEnvironmentAccount['customProperties']
   ): Promise<boolean> {
     try {
       await this.sendSetJsonDataOnPathByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId,
+        environmentId,
         dto
       );
 
@@ -286,7 +286,7 @@ class TenantEnvironmentAccountRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_ACCOUNT_SET_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_ACCOUNT_SET_CUSTOM_PROPERTY_BY_ID,
         details: {
           input: { id, ...dto },
         },
@@ -297,14 +297,14 @@ class TenantEnvironmentAccountRepository
   }
 
   async deleteCustomPropertyById(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     customPropertyKey: string
   ): Promise<boolean> {
     try {
       await this.sendDeleteJsonDataOnPathByIdAndTenantEnvironmentIdQuery(
         id,
-        tenantEnvironmentId,
+        environmentId,
         customPropertyKey
       );
 
@@ -317,7 +317,7 @@ class TenantEnvironmentAccountRepository
       const repositoryError = new UnexpectedError({
         cause: error as Error,
         context:
-          contexts.TENANT_ENVIRONMENT_ACCOUNT_DELETE_CUSTOM_PROPERTY_BY_ID,
+          contexts.ENVIRONMENT_ACCOUNT_DELETE_CUSTOM_PROPERTY_BY_ID,
         details: {
           input: { id, customPropertyKey },
         },
@@ -328,7 +328,7 @@ class TenantEnvironmentAccountRepository
   }
 
   private async sendInsertReturningIdQuery(
-    payload: ICreateTenantEnvironmentAccountDto,
+    payload: ICreateEnvironmentAccountDto,
     transaction?: Knex.Transaction
   ): Promise<IInsertReturningId> {
     const query = this.dbClient
@@ -344,69 +344,69 @@ class TenantEnvironmentAccountRepository
   }
 
   private async sendFindByIdQuery(
-    id: ITenantEnvironmentAccount['id']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
-    return await this.dbClient<IGetTenantEnvironmentAccountDto>(this.tableName)
+    id: IEnvironmentAccount['id']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
+    return await this.dbClient<IGetEnvironmentAccountDto>(this.tableName)
       .where('id', id)
       .first();
   }
 
   private async sendFindByIdAndTenantEnvironmentIdQuery(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
-    return await this.dbClient<IGetTenantEnvironmentAccountDto>(this.tableName)
-      .where({ id, tenantEnvironmentId })
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
+    return await this.dbClient<IGetEnvironmentAccountDto>(this.tableName)
+      .where({ id, environmentId })
       .first();
   }
 
   private async sendUpdateByIdAndTenantEnvironmentIdQuery(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: IUpdateTenantEnvironmentAccountAllowedDtos
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IUpdateEnvironmentAccountAllowedDtos
   ): Promise<number> {
     return await this.dbClient(this.tableName)
-      .where({ id, tenantEnvironmentId })
+      .where({ id, environmentId })
       .update(dto);
   }
 
   private async sendDeleteByIdQuery(
-    id: ITenantEnvironmentAccount['id']
+    id: IEnvironmentAccount['id']
   ): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
   }
 
   private async sendDeleteByIdAndTenantEnvironmentIdQuery(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ): Promise<number> {
     return await this.dbClient(this.tableName)
-      .where({ id, tenantEnvironmentId })
+      .where({ id, environmentId })
       .del();
   }
 
   private async sendSetJsonDataOnPathByIdAndTenantEnvironmentIdQuery(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    customProperty: ITenantEnvironmentAccount['customProperties']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    customProperty: IEnvironmentAccount['customProperties']
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
     const key = Object.keys(customProperty)[0] as string;
 
     await this.dbClient(this.tableName)
-      .where({ id, tenantEnvironmentId })
+      .where({ id, environmentId })
       .jsonSet('customProperties', `$.${key}`, customProperty);
   }
 
   private async sendDeleteJsonDataOnPathByIdAndTenantEnvironmentIdQuery(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     jsonPath: string
   ): Promise<void> {
     await this.dbClient(this.tableName)
-      .where({ id, tenantEnvironmentId })
+      .where({ id, environmentId })
       .jsonRemove('customProperties', `$.${jsonPath}`);
   }
 }
 
-export { TenantEnvironmentAccountRepository };
+export { EnvironmentAccountRepository };

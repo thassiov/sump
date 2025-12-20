@@ -6,10 +6,10 @@ import { formatZodError } from '../../lib/utils/formatters';
 import {
   CreateNewTenantEnvironmentAccountUseCaseDtoResult,
   createTenantEnvironmentAccountDtoSchema,
-  ICreateTenantEnvironmentAccountDto,
-  IGetTenantEnvironmentAccountDto,
+  ICreateEnvironmentAccountDto,
+  IGetEnvironmentAccountDto,
   IUpdateTenantEnvironmentAccountEmailDto,
-  IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto,
+  IUpdateEnvironmentAccountNonSensitivePropertiesDto,
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
   tenantEnvironmentAccountCustomPropertiesOperationDtoSchema,
@@ -17,83 +17,83 @@ import {
   updateTenantEnvironmentAccountNonSensitivePropertiesDtoSchema,
   updateTenantEnvironmentAccountPhoneDtoSchema,
   updateTenantEnvironmentAccountUsernameDtoSchema,
-} from '../types/tenant-environment-account/dto.type';
+} from '../types/environment-account/dto.type';
 import {
-  ITenantEnvironmentAccount,
+  IEnvironmentAccount,
   tenantEnvironmentAccountSchema,
-} from '../types/tenant-environment-account/tenant-environment-account.type';
-import { TenantEnvironmentAccountUseCaseServices } from '../types/tenant-environment-account/use-case.type';
+} from '../types/environment-account/environment-account.type';
+import { EnvironmentAccountUseCaseServices } from '../types/environment-account/use-case.type';
 
-class TenantEnvironmentAccountUseCase extends BaseUseCase {
-  protected services: TenantEnvironmentAccountUseCaseServices;
-  constructor(services: TenantEnvironmentAccountUseCaseServices) {
-    super('tenant-environment-account-use-case');
+class EnvironmentAccountUseCase extends BaseUseCase {
+  protected services: EnvironmentAccountUseCaseServices;
+  constructor(services: EnvironmentAccountUseCaseServices) {
+    super('environment-account-use-case');
     this.services = services;
   }
 
   async createNewAccount(
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: ICreateTenantEnvironmentAccountDto
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: ICreateEnvironmentAccountDto
   ): Promise<CreateNewTenantEnvironmentAccountUseCaseDtoResult> {
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
-      contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE
+      environmentId,
+      contexts.ENVIRONMENT_ACCOUNT_CREATE
     );
     this.validateDto(
       dto,
       createTenantEnvironmentAccountDtoSchema,
-      contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE
+      contexts.ENVIRONMENT_ACCOUNT_CREATE
     );
 
     return this.services.tenantEnvironmentAccount.create(
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async getAccountByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
-  ): Promise<IGetTenantEnvironmentAccountDto | undefined> {
-    this.validateAccountId(id, contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE);
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ): Promise<IGetEnvironmentAccountDto | undefined> {
+    this.validateAccountId(id, contexts.ENVIRONMENT_ACCOUNT_CREATE);
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
-      contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE
+      environmentId,
+      contexts.ENVIRONMENT_ACCOUNT_CREATE
     );
 
     return this.services.tenantEnvironmentAccount.getByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId
+      environmentId
     );
   }
 
   async deleteAccountByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
   ) {
-    this.validateAccountId(id, contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE);
+    this.validateAccountId(id, contexts.ENVIRONMENT_ACCOUNT_CREATE);
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
-      contexts.TENANT_ENVIRONMENT_ACCOUNT_CREATE
+      environmentId,
+      contexts.ENVIRONMENT_ACCOUNT_CREATE
     );
 
     return this.services.tenantEnvironmentAccount.deleteByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId
+      environmentId
     );
   }
 
   async updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    dto: IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    dto: IUpdateEnvironmentAccountNonSensitivePropertiesDto
   ) {
     this.validateAccountId(
       id,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -104,14 +104,14 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.updateNonSensitivePropertiesByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updateAccountEmailByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountEmailDto
   ) {
     this.validateAccountId(
@@ -119,7 +119,7 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -130,14 +130,14 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.updateEmailByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updateAccountPhoneByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountPhoneDto
   ) {
     this.validateAccountId(
@@ -145,7 +145,7 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -156,14 +156,14 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.updatePhoneByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async updateAccountUsernameByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     dto: IUpdateTenantEnvironmentAccountUsernameDto
   ) {
     this.validateAccountId(
@@ -171,7 +171,7 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -182,22 +182,22 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.updateUsernameByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       dto
     );
   }
 
   async setAccountCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
-    customProperties: ITenantEnvironmentAccount['customProperties']
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
+    customProperties: IEnvironmentAccount['customProperties']
   ) {
     this.validateAccountId(
       id,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -208,14 +208,14 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.setCustomPropertyByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       customProperties
     );
   }
 
   async deleteAccountCustomPropertyByIdAndTenantEnvironmentId(
-    id: ITenantEnvironmentAccount['id'],
-    tenantEnvironmentId: ITenantEnvironmentAccount['tenantEnvironmentId'],
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId'],
     customPropertyKey: string
   ) {
     this.validateAccountId(
@@ -223,7 +223,7 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantEnvironmentId(
-      tenantEnvironmentId,
+      environmentId,
       contexts.TENANT_ENVIRONMENT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
@@ -234,7 +234,7 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
 
     return this.services.tenantEnvironmentAccount.deleteCustomPropertyByIdAndTenantEnvironmentId(
       id,
-      tenantEnvironmentId,
+      environmentId,
       customPropertyKey
     );
   }
@@ -262,17 +262,17 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
   }
 
   private validateTenantEnvironmentId(
-    tenantEnvironmentId: unknown,
+    environmentId: unknown,
     context: keyof typeof contexts
   ): void {
     const isTenantIdValid = tenantEnvironmentAccountSchema
-      .pick({ tenantEnvironmentId: true })
-      .safeParse({ tenantEnvironmentId });
+      .pick({ environmentId: true })
+      .safeParse({ environmentId });
 
     if (!isTenantIdValid.success) {
       const errorInstance = new ValidationError({
         details: {
-          input: { tenantEnvironmentId },
+          input: { environmentId },
           errors: formatZodError(isTenantIdValid.error.issues),
         },
         context,
@@ -305,4 +305,4 @@ class TenantEnvironmentAccountUseCase extends BaseUseCase {
   }
 }
 
-export { TenantEnvironmentAccountUseCase };
+export { EnvironmentAccountUseCase };

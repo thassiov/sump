@@ -10,25 +10,25 @@ import {
 } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import {
-  ICreateTenantEnvironmentDto,
-  IGetTenantEnvironmentDto,
-  IUpdateTenantEnvironmentAllowedDtos,
-} from '../types/tenant-environment/dto.type';
-import { ITenantEnvironmentRepository } from '../types/tenant-environment/repository.type';
-import { ITenantEnvironment } from '../types/tenant-environment/tenant-environment.type';
+  ICreateEnvironmentDto,
+  IGetEnvironmentDto,
+  IUpdateEnvironmentAllowedDtos,
+} from '../types/environment/dto.type';
+import { IEnvironmentRepository } from '../types/environment/repository.type';
+import { IEnvironment } from '../types/environment/environment.type';
 
-class TenantEnvironmentRepository
+class EnvironmentRepository
   extends BaseRepository
-  implements ITenantEnvironmentRepository
+  implements IEnvironmentRepository
 {
   private tableName: string;
   constructor(private readonly dbClient: Knex) {
-    super('tenant-environment-repository');
-    this.tableName = internalConfigs.repository.tenantEnvironment.tableName;
+    super('environment-repository');
+    this.tableName = internalConfigs.repository.environment.tableName;
   }
 
   async create(
-    dto: ICreateTenantEnvironmentDto,
+    dto: ICreateEnvironmentDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     try {
@@ -36,7 +36,7 @@ class TenantEnvironmentRepository
 
       if (!result) {
         throw new NotExpectedError({
-          context: contexts.TENANT_ENVIRONMENT_CREATE,
+          context: contexts.ENVIRONMENT_CREATE,
           details: {
             input: { ...dto },
             output: result,
@@ -54,7 +54,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_CREATE,
+        context: contexts.ENVIRONMENT_CREATE,
         details: {
           input: { ...dto },
         },
@@ -65,14 +65,14 @@ class TenantEnvironmentRepository
   }
 
   async getById(
-    id: ITenantEnvironment['id']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
+    id: IEnvironment['id']
+  ): Promise<IGetEnvironmentDto | undefined> {
     try {
       return await this.sendFindByIdQuery(id);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_GET_BY_ID,
+        context: contexts.ENVIRONMENT_GET_BY_ID,
         details: {
           input: { id },
         },
@@ -83,15 +83,15 @@ class TenantEnvironmentRepository
   }
 
   async getByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto | undefined> {
     try {
       return await this.sendFindByIdAndTenantIdQuery(id, tenantId);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_GET_BY_ID,
+        context: contexts.ENVIRONMENT_GET_BY_ID,
         details: {
           input: { id, tenantId },
         },
@@ -102,14 +102,14 @@ class TenantEnvironmentRepository
   }
 
   async getByTenantId(
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto[] | undefined> {
     try {
       return await this.sendFindByTenantIdQuery(tenantId);
     } catch (error) {
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_GET_BY_TENANT_ID,
+        context: contexts.ENVIRONMENT_GET_BY_TENANT_ID,
         details: {
           input: { tenantId },
         },
@@ -120,9 +120,9 @@ class TenantEnvironmentRepository
   }
 
   async updateByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    dto: IUpdateTenantEnvironmentAllowedDtos
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    dto: IUpdateEnvironmentAllowedDtos
   ): Promise<boolean> {
     try {
       const result = await this.sendUpdateByIdAndTenantIdQuery(
@@ -133,7 +133,7 @@ class TenantEnvironmentRepository
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
+          context: contexts.ENVIRONMENT_UPDATE_BY_ID,
           details: {
             input: { id, ...dto },
           },
@@ -148,7 +148,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_UPDATE_BY_ID,
+        context: contexts.ENVIRONMENT_UPDATE_BY_ID,
         details: {
           input: { id, ...dto },
         },
@@ -158,13 +158,13 @@ class TenantEnvironmentRepository
     }
   }
 
-  async deleteById(id: ITenantEnvironment['id']): Promise<boolean> {
+  async deleteById(id: IEnvironment['id']): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdQuery(id);
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
+          context: contexts.ENVIRONMENT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -179,7 +179,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -190,15 +190,15 @@ class TenantEnvironmentRepository
   }
 
   async deleteByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
   ): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdAndTenantIdQuery(id, tenantId);
 
       if (result === 0) {
         throw new NotFoundError({
-          context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
+          context: contexts.ENVIRONMENT_DELETE_BY_ID,
           details: {
             input: { id },
           },
@@ -213,7 +213,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_DELETE_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_BY_ID,
         details: {
           input: { id },
         },
@@ -224,9 +224,9 @@ class TenantEnvironmentRepository
   }
 
   async setCustomPropertyByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    dto: ITenantEnvironment['customProperties']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    dto: IEnvironment['customProperties']
   ): Promise<boolean> {
     try {
       await this.sendSetJsonDataOnPathByIdAndTenantIdQuery(id, tenantId, dto);
@@ -239,7 +239,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_SET_CUSTOM_PROPERTY_BY_ID,
         details: {
           input: { id, ...dto },
         },
@@ -250,8 +250,8 @@ class TenantEnvironmentRepository
   }
 
   async deleteCustomPropertyByIdAndTenantId(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
     customPropertyKey: string
   ): Promise<boolean> {
     try {
@@ -269,7 +269,7 @@ class TenantEnvironmentRepository
 
       const repositoryError = new UnexpectedError({
         cause: error as Error,
-        context: contexts.TENANT_ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
+        context: contexts.ENVIRONMENT_DELETE_CUSTOM_PROPERTY_BY_ID,
         details: {
           input: { id, customPropertyKey },
         },
@@ -280,7 +280,7 @@ class TenantEnvironmentRepository
   }
 
   private async sendInsertReturningIdQuery(
-    payload: ICreateTenantEnvironmentDto,
+    payload: ICreateEnvironmentDto,
     transaction?: Knex.Transaction
   ): Promise<IInsertReturningId> {
     const query = this.dbClient
@@ -296,28 +296,28 @@ class TenantEnvironmentRepository
   }
 
   private async sendFindByIdQuery(
-    id: ITenantEnvironment['id']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
-    return await this.dbClient<IGetTenantEnvironmentDto>(this.tableName)
+    id: IEnvironment['id']
+  ): Promise<IGetEnvironmentDto | undefined> {
+    return await this.dbClient<IGetEnvironmentDto>(this.tableName)
       .where('id', id)
       .select('id', 'name', 'tenantId', 'customProperties')
       .first();
   }
 
   private async sendFindByIdAndTenantIdQuery(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto | undefined> {
-    return await this.dbClient<IGetTenantEnvironmentDto>(this.tableName)
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto | undefined> {
+    return await this.dbClient<IGetEnvironmentDto>(this.tableName)
       .where({ id, tenantId })
       .select('id', 'name', 'tenantId', 'customProperties')
       .first();
   }
 
   private async sendFindByTenantIdQuery(
-    tenantId: ITenantEnvironment['tenantId']
-  ): Promise<IGetTenantEnvironmentDto[] | undefined> {
-    const result = await this.dbClient<IGetTenantEnvironmentDto>(this.tableName)
+    tenantId: IEnvironment['tenantId']
+  ): Promise<IGetEnvironmentDto[] | undefined> {
+    const result = await this.dbClient<IGetEnvironmentDto>(this.tableName)
       .where('tenantId', tenantId)
       .select('id', 'name', 'tenantId', 'customProperties');
 
@@ -328,9 +328,9 @@ class TenantEnvironmentRepository
     return result;
   }
   private async sendUpdateByIdAndTenantIdQuery(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    dto: IUpdateTenantEnvironmentAllowedDtos
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    dto: IUpdateEnvironmentAllowedDtos
   ): Promise<number> {
     return await this.dbClient(this.tableName)
       .where({ id, tenantId })
@@ -338,22 +338,22 @@ class TenantEnvironmentRepository
   }
 
   private async sendDeleteByIdQuery(
-    id: ITenantEnvironment['id']
+    id: IEnvironment['id']
   ): Promise<number> {
     return await this.dbClient(this.tableName).where('id', id).del();
   }
 
   private async sendDeleteByIdAndTenantIdQuery(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId']
   ): Promise<number> {
     return await this.dbClient(this.tableName).where({ id, tenantId }).del();
   }
 
   private async sendSetJsonDataOnPathByIdAndTenantIdQuery(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
-    customProperty: ITenantEnvironment['customProperties']
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
+    customProperty: IEnvironment['customProperties']
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
     const key = Object.keys(customProperty)[0] as string;
@@ -364,8 +364,8 @@ class TenantEnvironmentRepository
   }
 
   private async sendDeleteJsonDataOnPathByIdAndTenantIdQuery(
-    id: ITenantEnvironment['id'],
-    tenantId: ITenantEnvironment['tenantId'],
+    id: IEnvironment['id'],
+    tenantId: IEnvironment['tenantId'],
     jsonPath: string
   ): Promise<void> {
     await this.dbClient(this.tableName)
@@ -374,4 +374,4 @@ class TenantEnvironmentRepository
   }
 }
 
-export { TenantEnvironmentRepository };
+export { EnvironmentRepository };

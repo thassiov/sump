@@ -1,28 +1,28 @@
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
-import { IAccount, IAccountRole } from '../types/account/account.type';
+import { ITenantAccount, ITenantAccountRole } from '../types/tenant-account/tenant-account.type';
 import {
-  IAccountUserDefinedIdentification,
-  ICreateAccountDto,
-  IGetAccountDto,
-  IUpdateAccountEmailDto,
-  IUpdateAccountNonSensitivePropertiesDto,
-  IUpdateAccountPhoneDto,
-  IUpdateAccountUsernameDto,
-} from '../types/account/dto.type';
-import { IAccountRepository } from '../types/account/repository.type';
-import { IAccountService } from '../types/account/service.type';
+  ITenantAccountUserDefinedIdentification,
+  ICreateTenantAccountDto,
+  IGetTenantAccountDto,
+  IUpdateTenantAccountEmailDto,
+  IUpdateTenantAccountNonSensitivePropertiesDto,
+  IUpdateTenantAccountPhoneDto,
+  IUpdateTenantAccountUsernameDto,
+} from '../types/tenant-account/dto.type';
+import { ITenantAccountRepository } from '../types/account/repository.type';
+import { ITenantAccountService } from '../types/tenant-account/service.type';
 import { ITenant } from '../types/tenant/tenant.type';
 
-export class AccountService extends BaseService implements IAccountService {
-  constructor(private readonly accountRepository: IAccountRepository) {
-    super('account-service');
+export class TenantAccountService extends BaseService implements ITenantAccountService {
+  constructor(private readonly accountRepository: ITenantAccountRepository) {
+    super('tenant-account-service');
   }
 
   // @NOTE: maybe the transaction argument must be called something else here
   async create(
     tenantId: ITenant['id'],
-    dto: ICreateAccountDto,
+    dto: ICreateTenantAccountDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     this.logger.info(`create account for tenant ${tenantId}`);
@@ -37,24 +37,24 @@ export class AccountService extends BaseService implements IAccountService {
     return accountId;
   }
 
-  async getById(id: IAccount['id']): Promise<IGetAccountDto | undefined> {
+  async getById(id: ITenantAccount['id']): Promise<IGetTenantAccountDto | undefined> {
     this.logger.info(`getById: ${id}`);
 
     return this.accountRepository.getById(id);
   }
 
   async getByTenantId(
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     this.logger.info(`getByTenantId: ${tenantId}`);
 
     return this.accountRepository.getByTenantId(tenantId);
   }
 
   async getByAccountIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto | undefined> {
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto | undefined> {
     this.logger.info(`getByAccountIdAndTenantId: ${accountId} ${tenantId}`);
 
     return this.accountRepository.getByAccountIdAndTenantId(
@@ -64,9 +64,9 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async getByUserDefinedIdentificationAndTenantId(
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
+    accountUserDefinedIdentification: ITenantAccountUserDefinedIdentification,
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     this.logger.info(
       `getByUserDefinedIdentification: ${JSON.stringify(accountUserDefinedIdentification)}`
     );
@@ -78,8 +78,8 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async getByUserDefinedIdentification(
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification
-  ): Promise<IGetAccountDto[] | undefined> {
+    accountUserDefinedIdentification: ITenantAccountUserDefinedIdentification
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     this.logger.info(
       `getByUserDefinedIdentification: ${JSON.stringify(accountUserDefinedIdentification)}`
     );
@@ -89,15 +89,15 @@ export class AccountService extends BaseService implements IAccountService {
     );
   }
 
-  async deleteById(id: IAccount['id']): Promise<boolean> {
+  async deleteById(id: ITenantAccount['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
     return this.accountRepository.deleteById(id);
   }
 
   async deleteByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
@@ -109,9 +109,9 @@ export class AccountService extends BaseService implements IAccountService {
    * the other properties must have their own methods, with their own specific validations
    * */
   async updateNonSensitivePropertiesByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountNonSensitivePropertiesDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountNonSensitivePropertiesDto
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
@@ -119,9 +119,9 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async updateEmailByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountEmailDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountEmailDto
   ): Promise<boolean> {
     this.logger.info(`updateEmailById: ${id}`);
 
@@ -129,9 +129,9 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async updateUsernameByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountUsernameDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountUsernameDto
   ): Promise<boolean> {
     this.logger.info(`updateUsernameById: ${id}`);
 
@@ -139,9 +139,9 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async updatePhoneByIdAndTenantId(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountPhoneDto
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountPhoneDto
   ): Promise<boolean> {
     this.logger.info(`updatePhoneById: ${id}`);
 
@@ -149,8 +149,8 @@ export class AccountService extends BaseService implements IAccountService {
   }
 
   async canAccountBeDeleted(
-    id: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<boolean> {
     this.logger.info(`doesAccountHasRole: ${id}`);
 
@@ -158,7 +158,7 @@ export class AccountService extends BaseService implements IAccountService {
       role: 'owner',
       target: 'tenant',
       targetId: tenantId,
-    } as IAccountRole;
+    } as ITenantAccountRole;
 
     const accounts =
       await this.accountRepository.getAccountsByRoleAndByTenantId(

@@ -3,46 +3,46 @@ import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { NotFoundError, ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
-import { accountSchema, IAccount } from '../types/account/account.type';
+import { accountSchema, ITenantAccount } from '../types/tenant-account/tenant-account.type';
 import {
   createAccountDtoSchema,
   CreateNewAccountUseCaseDtoResult,
   DeleteAccountByIdAndTenantIdUseCaseResultDto,
-  IAccountUserDefinedIdentification,
-  ICreateAccountDto,
-  IGetAccountDto,
-  IUpdateAccountEmailDto,
-  IUpdateAccountPhoneDto,
-  IUpdateAccountUsernameDto,
+  ITenantAccountUserDefinedIdentification,
+  ICreateTenantAccountDto,
+  IGetTenantAccountDto,
+  IUpdateTenantAccountEmailDto,
+  IUpdateTenantAccountPhoneDto,
+  IUpdateTenantAccountUsernameDto,
   UpdateAccountEmailByIdAndTenantIdUseCaseResultDto,
   UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
   updateAccountNonSensitivePropertiesDtoSchema,
   UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto,
   UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto,
   updateAccountUsernameDtoSchema,
-} from '../types/account/dto.type';
-import { AccountUseCaseServices } from '../types/account/use-case.type';
+} from '../types/tenant-account/dto.type';
+import { TenantAccountUseCaseServices } from '../types/tenant-account/use-case.type';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../types/tenant/dto.type';
 
-class AccountUseCase extends BaseUseCase {
-  protected services: AccountUseCaseServices;
-  constructor(services: AccountUseCaseServices) {
-    super('account-use-case');
+class TenantAccountUseCase extends BaseUseCase {
+  protected services: TenantAccountUseCaseServices;
+  constructor(services: TenantAccountUseCaseServices) {
+    super('tenant-account-use-case');
     this.services = services;
   }
 
   async createNewAccount(
-    tenantId: IAccount['tenantId'],
-    dto: ICreateAccountDto
+    tenantId: ITenantAccount['tenantId'],
+    dto: ICreateTenantAccountDto
   ): Promise<CreateNewAccountUseCaseDtoResult> {
-    this.validateTenantId(tenantId, contexts.ACCOUNT_CREATE);
-    this.validateDto(dto, createAccountDtoSchema, contexts.ACCOUNT_CREATE);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_CREATE);
+    this.validateDto(dto, createAccountDtoSchema, contexts.TENANT_ACCOUNT_CREATE);
 
     const tenant = await this.services.tenant.getById(tenantId);
 
     if (!tenant) {
       throw new NotFoundError({
-        context: contexts.ACCOUNT_CREATE,
+        context: contexts.TENANT_ACCOUNT_CREATE,
         details: {
           input: { tenantId },
         },
@@ -52,17 +52,17 @@ class AccountUseCase extends BaseUseCase {
     // @TODO: add a `canCreateAccount` for cheking for a previously registered token, email, phone
     //  this must be paired with a `inviteAccount` functionality as well to send an invitation
 
-    return this.services.account.create(tenantId, dto);
+    return this.services.tenantAccount.create(tenantId, dto);
   }
 
   async deleteAccountByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
   ): Promise<DeleteAccountByIdAndTenantIdUseCaseResultDto> {
-    this.validateAccountId(accountId, contexts.ACCOUNT_DELETE_BY_ID);
-    this.validateTenantId(tenantId, contexts.ACCOUNT_DELETE_BY_ID);
+    this.validateAccountId(accountId, contexts.TENANT_ACCOUNT_DELETE_BY_ID);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_DELETE_BY_ID);
 
-    const canBeDeleted = await this.services.account.canAccountBeDeleted(
+    const canBeDeleted = await this.services.tenantAccount.canAccountBeDeleted(
       accountId,
       tenantId
     );
@@ -71,12 +71,12 @@ class AccountUseCase extends BaseUseCase {
       throw new ValidationError();
     }
 
-    return this.services.account.deleteByIdAndTenantId(accountId, tenantId);
+    return this.services.tenantAccount.deleteByIdAndTenantId(accountId, tenantId);
   }
 
   async updateNonSensitivePropertiesByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId'],
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
     dto: IUpdateTenantNonSensitivePropertiesDto
   ): Promise<UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(
@@ -104,7 +104,7 @@ class AccountUseCase extends BaseUseCase {
       });
     }
 
-    return this.services.account.updateNonSensitivePropertiesByIdAndTenantId(
+    return this.services.tenantAccount.updateNonSensitivePropertiesByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -112,46 +112,46 @@ class AccountUseCase extends BaseUseCase {
   }
 
   async getAccountByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto | undefined> {
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto | undefined> {
     this.validateAccountId(
       accountId,
-      contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
+      contexts.TENANT_ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
     );
     this.validateTenantId(
       tenantId,
-      contexts.ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
+      contexts.TENANT_ACCOUNT_GET_BY_ACCOUNT_ID_AND_TENANT_ID
     );
 
-    return this.services.account.getByAccountIdAndTenantId(accountId, tenantId);
+    return this.services.tenantAccount.getByAccountIdAndTenantId(accountId, tenantId);
   }
 
   async getAccountByUserDefinedIdentificationAndTenantId(
-    accountUserDefinedIdentification: IAccountUserDefinedIdentification,
-    tenantId: IAccount['tenantId']
-  ): Promise<IGetAccountDto[] | undefined> {
+    accountUserDefinedIdentification: ITenantAccountUserDefinedIdentification,
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<IGetTenantAccountDto[] | undefined> {
     this.validateDto(
       accountUserDefinedIdentification,
       updateAccountUsernameDtoSchema,
-      contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
+      contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
     );
 
     this.validateTenantId(
       tenantId,
-      contexts.ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
+      contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
     );
 
-    return this.services.account.getByUserDefinedIdentificationAndTenantId(
+    return this.services.tenantAccount.getByUserDefinedIdentificationAndTenantId(
       accountUserDefinedIdentification,
       tenantId
     );
   }
 
   async updateAccountEmailByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountEmailDto
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountEmailDto
   ): Promise<UpdateAccountEmailByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
     this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
@@ -161,7 +161,7 @@ class AccountUseCase extends BaseUseCase {
       contexts.ACCOUNT_UPDATE_EMAIL_BY_ID
     );
 
-    return this.services.account.updateEmailByIdAndTenantId(
+    return this.services.tenantAccount.updateEmailByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -169,9 +169,9 @@ class AccountUseCase extends BaseUseCase {
   }
 
   async updateAccountPhoneByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountPhoneDto
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountPhoneDto
   ): Promise<UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
     this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
@@ -181,7 +181,7 @@ class AccountUseCase extends BaseUseCase {
       contexts.ACCOUNT_UPDATE_PHONE_BY_ID
     );
 
-    return this.services.account.updatePhoneByIdAndTenantId(
+    return this.services.tenantAccount.updatePhoneByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -189,9 +189,9 @@ class AccountUseCase extends BaseUseCase {
   }
 
   async updateAccountUsernameByIdAndTenantId(
-    accountId: IAccount['id'],
-    tenantId: IAccount['tenantId'],
-    dto: IUpdateAccountUsernameDto
+    accountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId'],
+    dto: IUpdateTenantAccountUsernameDto
   ): Promise<UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
     this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
@@ -201,7 +201,7 @@ class AccountUseCase extends BaseUseCase {
       contexts.ACCOUNT_UPDATE_USERNAME_BY_ID
     );
 
-    return this.services.account.updateUsernameByIdAndTenantId(
+    return this.services.tenantAccount.updateUsernameByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -274,4 +274,4 @@ class AccountUseCase extends BaseUseCase {
   }
 }
 
-export { AccountUseCase };
+export { TenantAccountUseCase };

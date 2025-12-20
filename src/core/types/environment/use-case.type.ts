@@ -1,7 +1,7 @@
-import { ITenantEnvironmentService } from './service.type';
+import { IEnvironmentService } from './service.type';
 
-type TenantEnvironmentUseCaseServices = {
-  tenantEnvironment: ITenantEnvironmentService;
+type EnvironmentUseCaseServices = {
+  environment: IEnvironmentService;
 };
 
-export type { TenantEnvironmentUseCaseServices };
+export type { EnvironmentUseCaseServices };

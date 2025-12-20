@@ -45,14 +45,14 @@ async function up(knex: Knex) {
   await knex.raw(onUpdateTrigger(internalConfigs.repository.tenant.tableName));
 
   await knex.schema.createTable(
-    internalConfigs.repository.account.tableName,
+    internalConfigs.repository.tenantAccount.tableName,
     function (table) {
       table
         .uuid('id')
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('accountIdx');
+        .index('tenantAccountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
       table.string('phone').notNullable().unique();
@@ -71,17 +71,17 @@ async function up(knex: Knex) {
       table.timestamps(true, true);
     }
   );
-  await knex.raw(onUpdateTrigger(internalConfigs.repository.account.tableName));
+  await knex.raw(onUpdateTrigger(internalConfigs.repository.tenantAccount.tableName));
 
   await knex.schema.createTable(
-    internalConfigs.repository.tenantEnvironment.tableName,
+    internalConfigs.repository.environment.tableName,
     function (table) {
       table
         .uuid('id')
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('tenantEnvironmentIdx');
+        .index('environmentIdx');
       table.string('name').notNullable();
       table.json('customProperties').notNullable();
       table.uuid('tenantId');
@@ -94,18 +94,18 @@ async function up(knex: Knex) {
     }
   );
   await knex.raw(
-    onUpdateTrigger(internalConfigs.repository.tenantEnvironment.tableName)
+    onUpdateTrigger(internalConfigs.repository.environment.tableName)
   );
 
   await knex.schema.createTable(
-    internalConfigs.repository.tenantEnvironmentAccount.tableName,
+    internalConfigs.repository.environmentAccount.tableName,
     function (table) {
       table
         .uuid('id')
         .defaultTo(knex.fn.uuid())
         .primary()
         .unique()
-        .index('tenantEnvironmentAccountIdx');
+        .index('environmentAccountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
       table.string('phone').notNullable().unique();
@@ -114,25 +114,28 @@ async function up(knex: Knex) {
       table.string('name').notNullable();
       table.string('avatarUrl').notNullable();
       table.json('customProperties').notNullable();
-      table.uuid('tenantEnvironmentId');
+      table.uuid('environmentId');
       table
-        .foreign('tenantEnvironmentId')
+        .foreign('environmentId')
         .references('id')
-        .inTable(internalConfigs.repository.tenantEnvironment.tableName)
+        .inTable(internalConfigs.repository.environment.tableName)
         .onDelete('CASCADE');
       table.timestamps(true, true);
     }
   );
   await knex.raw(
     onUpdateTrigger(
-      internalConfigs.repository.tenantEnvironmentAccount.tableName
+      internalConfigs.repository.environmentAccount.tableName
     )
   );
 }
 
 async function down(knex: Knex) {
+  await knex.schema.dropTable(internalConfigs.repository.environmentAccount.tableName);
+  await knex.schema.dropTable(internalConfigs.repository.environment.tableName);
+  await knex.schema.dropTable(internalConfigs.repository.tenantAccount.tableName);
+  await knex.schema.dropTable(internalConfigs.repository.tenant.tableName);
   await knex.raw(DROP_ON_UPDATE_TIMESTAMP_FUNCTION);
-  await knex.schema.dropTable(internalConfigs.repository.account.tableName);
 }
 
 const config = { transaction: false };

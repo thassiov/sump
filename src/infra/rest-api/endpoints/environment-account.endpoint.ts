@@ -9,13 +9,13 @@ import {
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
 } from '../../../core/types/tenant-environment-account/dto.type';
-import { TenantEnvironmentAccountUseCase } from '../../../core/use-cases';
+import { EnvironmentAccountUseCase } from '../../../core/use-cases';
 import { EndpointHandler } from '../../../lib/types';
 
 const router = express.Router({ mergeParams: true });
 
-function makeTenantEnvironmentAccountUseCaseEndpoints(
-  useCase: TenantEnvironmentAccountUseCase
+function makeEnvironmentAccountUseCaseEndpoints(
+  useCase: EnvironmentAccountUseCase
 ): express.Router {
   router.post(
     '/accounts',
@@ -82,15 +82,15 @@ function makeTenantEnvironmentAccountUseCaseEndpoints(
 }
 
 function createNewAccountUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['createNewAccount']
+  useCase: EnvironmentAccountUseCase['createNewAccount']
 ): EndpointHandler {
   return async function createNewAccountUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const dto = req.body as ICreateTenantEnvironmentAccountDto;
-    const result = await useCase(tenantEnvironmentId, dto);
+    const result = await useCase(environmentId, dto);
 
     res.status(StatusCodes.CREATED).json(result);
     return;
@@ -98,15 +98,15 @@ function createNewAccountUseCaseEndpointFactory(
 }
 
 function getAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['getAccountByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['getAccountByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function getAccountByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
-    const account = await useCase(accountId, tenantEnvironmentId);
+    const account = await useCase(accountId, environmentId);
 
     if (!account) {
       res.status(StatusCodes.NOT_FOUND).send();
@@ -119,15 +119,15 @@ function getAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function deleteAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['deleteAccountByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['deleteAccountByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function deleteAccountByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
-    await useCase(accountId, tenantEnvironmentId);
+    await useCase(accountId, environmentId);
 
     res.status(StatusCodes.NO_CONTENT).send();
     return;
@@ -135,17 +135,17 @@ function deleteAccountByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function updateAccountNonSensitivePropertiesByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function updateAccountNonSensitivePropertiesByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const dto =
       req.body as IUpdateTenantEnvironmentAccountNonSensitivePropertiesDto;
-    await useCase(accountId, tenantEnvironmentId, dto);
+    await useCase(accountId, environmentId, dto);
 
     res.status(StatusCodes.OK).send();
     return;
@@ -153,16 +153,16 @@ function updateAccountNonSensitivePropertiesByIdAndEnvironmentIdUseCaseEndpointF
 }
 
 function updateAccountEmailByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['updateAccountEmailByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['updateAccountEmailByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function updateAccountEmailByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const dto = req.body as IUpdateTenantEnvironmentAccountEmailDto;
-    await useCase(accountId, tenantEnvironmentId, dto);
+    await useCase(accountId, environmentId, dto);
 
     res.status(StatusCodes.OK).send();
     return;
@@ -170,16 +170,16 @@ function updateAccountEmailByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function updateAccountPhoneByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['updateAccountPhoneByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['updateAccountPhoneByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function updateAccountPhoneByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const dto = req.body as IUpdateTenantEnvironmentAccountPhoneDto;
-    await useCase(accountId, tenantEnvironmentId, dto);
+    await useCase(accountId, environmentId, dto);
 
     res.status(StatusCodes.OK).send();
     return;
@@ -187,16 +187,16 @@ function updateAccountPhoneByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function updateAccountUsernameByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['updateAccountUsernameByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['updateAccountUsernameByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function updateAccountUsernameByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const dto = req.body as IUpdateTenantEnvironmentAccountUsernameDto;
-    await useCase(accountId, tenantEnvironmentId, dto);
+    await useCase(accountId, environmentId, dto);
 
     res.status(StatusCodes.OK).send();
     return;
@@ -204,17 +204,17 @@ function updateAccountUsernameByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function setAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['setAccountCustomPropertyByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['setAccountCustomPropertyByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function setAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const dto =
       req.body as ITenantEnvironmentAccountCustomPropertiesOperationDtoSchema;
-    await useCase(accountId, tenantEnvironmentId, dto);
+    await useCase(accountId, environmentId, dto);
 
     res.status(StatusCodes.OK).send();
     return;
@@ -222,20 +222,20 @@ function setAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpointFactory(
 }
 
 function deleteAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpointFactory(
-  useCase: TenantEnvironmentAccountUseCase['deleteAccountCustomPropertyByIdAndTenantEnvironmentId']
+  useCase: EnvironmentAccountUseCase['deleteAccountCustomPropertyByIdAndTenantEnvironmentId']
 ): EndpointHandler {
   return async function deleteAccountCustomPropertyByIdAndEnvironmentIdUseCaseEndpoint(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tenantEnvironmentId = req.params['tenantEnvironmentId'] as string;
+    const environmentId = req.params['environmentId'] as string;
     const accountId = req.params['environmentAccountId'] as string;
     const payload = req.body as { customProperty: string };
-    await useCase(accountId, tenantEnvironmentId, payload.customProperty);
+    await useCase(accountId, environmentId, payload.customProperty);
 
     res.status(StatusCodes.OK).send();
     return;
   };
 }
 
-export { makeTenantEnvironmentAccountUseCaseEndpoints };
+export { makeEnvironmentAccountUseCaseEndpoints };

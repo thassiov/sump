@@ -1,9 +1,9 @@
 import { ITenantService } from '../tenant/service.type';
-import { IAccountService } from './service.type';
+import { ITenantAccountService } from './service.type';
 
-type AccountUseCaseServices = {
+type TenantAccountUseCaseServices = {
   tenant: ITenantService;
-  account: IAccountService;
+  tenantAccount: ITenantAccountService;
 };
 
-export type { AccountUseCaseServices };
+export type { TenantAccountUseCaseServices };
