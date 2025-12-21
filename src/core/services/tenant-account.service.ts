@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
 import { ITenantAccount, ITenantAccountRole } from '../types/tenant-account/tenant-account.type';
@@ -10,12 +11,13 @@ import {
   IUpdateTenantAccountPhoneDto,
   IUpdateTenantAccountUsernameDto,
 } from '../types/tenant-account/dto.type';
-import { ITenantAccountRepository } from '../types/account/repository.type';
 import { ITenantAccountService } from '../types/tenant-account/service.type';
 import { ITenant } from '../types/tenant/tenant.type';
+import { TenantAccountRepository } from '../repositories/tenant-account.repository';
 
+@Injectable()
 export class TenantAccountService extends BaseService implements ITenantAccountService {
-  constructor(private readonly accountRepository: ITenantAccountRepository) {
+  constructor(private readonly accountRepository: TenantAccountRepository) {
     super('tenant-account-service');
   }
 

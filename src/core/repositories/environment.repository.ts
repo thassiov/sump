@@ -1,3 +1,5 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { DATABASE_CLIENT } from '../../common/database/database.module';
 import { Knex } from 'knex';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
 import { BaseRepository } from '../../lib/base-classes';
@@ -17,12 +19,13 @@ import {
 import { IEnvironmentRepository } from '../types/environment/repository.type';
 import { IEnvironment } from '../types/environment/environment.type';
 
+@Injectable()
 class EnvironmentRepository
   extends BaseRepository
   implements IEnvironmentRepository
 {
   private tableName: string;
-  constructor(private readonly dbClient: Knex) {
+  constructor(@Inject(DATABASE_CLIENT) private readonly dbClient: Knex) {
     super('environment-repository');
     this.tableName = internalConfigs.repository.environment.tableName;
   }

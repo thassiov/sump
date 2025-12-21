@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import {
@@ -21,12 +22,24 @@ import {
 } from '../types/tenant/dto.type';
 import { ITenant, tenantSchema } from '../types/tenant/tenant.type';
 import { TenantUseCaseServices } from '../types/tenant/use-case.type';
+import { TenantService } from '../services/tenant.service';
+import { TenantAccountService } from '../services/tenant-account.service';
+import { EnvironmentService } from '../services/environment.service';
 
+@Injectable()
 class TenantUseCase extends BaseUseCase {
   protected services: TenantUseCaseServices;
-  constructor(services: TenantUseCaseServices) {
+  constructor(
+    private readonly tenantService: TenantService,
+    private readonly tenantAccountService: TenantAccountService,
+    private readonly environmentService: EnvironmentService,
+  ) {
     super('tenant-use-case');
-    this.services = services;
+    this.services = {
+      tenant: this.tenantService,
+      tenantAccount: this.tenantAccountService,
+      environment: this.environmentService,
+    };
   }
 
   async createNewTenant(

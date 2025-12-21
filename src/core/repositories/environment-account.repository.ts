@@ -1,3 +1,5 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { DATABASE_CLIENT } from '../../common/database/database.module';
 import { Knex } from 'knex';
 import { DatabaseError } from 'pg';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
@@ -19,14 +21,15 @@ import {
 import { IEnvironmentAccountRepository } from '../types/environment-account/repository.type';
 import { IEnvironmentAccount } from '../types/environment-account/environment-account.type';
 
+@Injectable()
 class EnvironmentAccountRepository
   extends BaseRepository
   implements IEnvironmentAccountRepository
 {
   private tableName: string;
-  constructor(private readonly dbClient: Knex) {
+  constructor(@Inject(DATABASE_CLIENT) private readonly dbClient: Knex) {
     super('account-repository');
-    this.tableName = internalConfigs.repository.account.tableName;
+    this.tableName = internalConfigs.repository.environmentAccount.tableName;
   }
 
   async create(
@@ -231,7 +234,8 @@ class EnvironmentAccountRepository
 
   async deleteCustomPropertyByIdAndTenantEnvironmentId(
     id: IEnvironmentAccount['id'],
-    environmentId: IEnvironmentAccount['environmentId']
+    environmentId: IEnvironmentAccount['environmentId'],
+    _customPropertyKey: string
   ): Promise<boolean> {
     try {
       const result = await this.sendDeleteByIdAndTenantEnvironmentIdQuery(

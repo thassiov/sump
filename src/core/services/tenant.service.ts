@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
@@ -12,12 +13,13 @@ import {
   tenantCustomPropertiesOperationDtoSchema,
   updateTenantNonSensitivePropertiesDtoSchema,
 } from '../types/tenant/dto.type';
-import { ITenantRepository } from '../types/tenant/repository.type';
 import { ITenantService } from '../types/tenant/service.type';
 import { ITenant, tenantSchema } from '../types/tenant/tenant.type';
+import { TenantRepository } from '../repositories/tenant.repository';
 
+@Injectable()
 export class TenantService extends BaseService implements ITenantService {
-  constructor(private readonly tenantRepository: ITenantRepository) {
+  constructor(private readonly tenantRepository: TenantRepository) {
     super('tenant-service');
   }
 

@@ -11,8 +11,11 @@
     "dev:container:watch": "docker compose up --build --watch",
     "dev:container:start": "docker compose up --build",
     "dev:container:down": "docker compose down",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "jest --config jest.unit.config.ts",
+    "test:watch": "jest --config jest.unit.config.ts --watchAll",
+    "test:unit": "jest --config jest.unit.config.ts",
+    "test:integration": "jest --config jest.integration.config.ts",
+    "test:integration:docker": "docker compose --profile test run --rm test-runner",
     "lint": "eslint",
     "build": "rimraf ./build && tsc",
     "db:migration:up": "ts-node --project ./tsconfig.json ./src/infra/database/postgres/tools/run-migration-up.ts"

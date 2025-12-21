@@ -1,42 +1,52 @@
+import { Injectable } from '@nestjs/common';
 import z from 'zod';
 import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { NotFoundError, ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
-import { accountSchema, ITenantAccount } from '../types/tenant-account/tenant-account.type';
+import { tenantAccountSchema, ITenantAccount } from '../types/tenant-account/tenant-account.type';
 import {
-  createAccountDtoSchema,
-  CreateNewAccountUseCaseDtoResult,
-  DeleteAccountByIdAndTenantIdUseCaseResultDto,
+  createTenantAccountDtoSchema,
+  CreateNewTenantAccountUseCaseDtoResult,
+  DeleteTenantAccountByIdAndTenantIdUseCaseResultDto,
   ITenantAccountUserDefinedIdentification,
   ICreateTenantAccountDto,
   IGetTenantAccountDto,
   IUpdateTenantAccountEmailDto,
   IUpdateTenantAccountPhoneDto,
   IUpdateTenantAccountUsernameDto,
-  UpdateAccountEmailByIdAndTenantIdUseCaseResultDto,
-  UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
-  updateAccountNonSensitivePropertiesDtoSchema,
-  UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto,
-  UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto,
-  updateAccountUsernameDtoSchema,
+  UpdateTenantAccountEmailByIdAndTenantIdUseCaseResultDto,
+  UpdateTenantAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto,
+  updateTenantAccountNonSensitivePropertiesDtoSchema,
+  UpdateTenantAccountPhoneByIdAndTenantIdUseCaseResultDto,
+  UpdateTenantAccountUsernameByIdAndTenantIdUseCaseResultDto,
+  updateTenantAccountUsernameDtoSchema,
 } from '../types/tenant-account/dto.type';
 import { TenantAccountUseCaseServices } from '../types/tenant-account/use-case.type';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../types/tenant/dto.type';
+import { TenantService } from '../services/tenant.service';
+import { TenantAccountService } from '../services/tenant-account.service';
 
+@Injectable()
 class TenantAccountUseCase extends BaseUseCase {
   protected services: TenantAccountUseCaseServices;
-  constructor(services: TenantAccountUseCaseServices) {
+  constructor(
+    private readonly tenantService: TenantService,
+    private readonly tenantAccountService: TenantAccountService,
+  ) {
     super('tenant-account-use-case');
-    this.services = services;
+    this.services = {
+      tenant: this.tenantService,
+      tenantAccount: this.tenantAccountService,
+    };
   }
 
   async createNewAccount(
     tenantId: ITenantAccount['tenantId'],
     dto: ICreateTenantAccountDto
-  ): Promise<CreateNewAccountUseCaseDtoResult> {
+  ): Promise<CreateNewTenantAccountUseCaseDtoResult> {
     this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_CREATE);
-    this.validateDto(dto, createAccountDtoSchema, contexts.TENANT_ACCOUNT_CREATE);
+    this.validateDto(dto, createTenantAccountDtoSchema, contexts.TENANT_ACCOUNT_CREATE);
 
     const tenant = await this.services.tenant.getById(tenantId);
 
@@ -58,7 +68,7 @@ class TenantAccountUseCase extends BaseUseCase {
   async deleteAccountByIdAndTenantId(
     accountId: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId']
-  ): Promise<DeleteAccountByIdAndTenantIdUseCaseResultDto> {
+  ): Promise<DeleteTenantAccountByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(accountId, contexts.TENANT_ACCOUNT_DELETE_BY_ID);
     this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_DELETE_BY_ID);
 
@@ -78,26 +88,26 @@ class TenantAccountUseCase extends BaseUseCase {
     accountId: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId'],
     dto: IUpdateTenantNonSensitivePropertiesDto
-  ): Promise<UpdateAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto> {
+  ): Promise<UpdateTenantAccountNonSensitivePropertiesByIdAndTenantIdUseCaseResultDto> {
     this.validateAccountId(
       accountId,
-      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+      contexts.TENANT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateTenantId(
       tenantId,
-      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+      contexts.TENANT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
     this.validateDto(
       dto,
-      updateAccountNonSensitivePropertiesDtoSchema,
-      contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
+      updateTenantAccountNonSensitivePropertiesDtoSchema,
+      contexts.TENANT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID
     );
 
     const tenant = await this.services.tenant.getById(tenantId);
 
     if (!tenant) {
       throw new NotFoundError({
-        context: contexts.ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
+        context: contexts.TENANT_ACCOUNT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
         details: {
           input: { tenantId },
         },
@@ -133,7 +143,7 @@ class TenantAccountUseCase extends BaseUseCase {
   ): Promise<IGetTenantAccountDto[] | undefined> {
     this.validateDto(
       accountUserDefinedIdentification,
-      updateAccountUsernameDtoSchema,
+      updateTenantAccountUsernameDtoSchema,
       contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
     );
 
@@ -152,13 +162,13 @@ class TenantAccountUseCase extends BaseUseCase {
     accountId: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId'],
     dto: IUpdateTenantAccountEmailDto
-  ): Promise<UpdateAccountEmailByIdAndTenantIdUseCaseResultDto> {
-    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
-    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_EMAIL_BY_ID);
+  ): Promise<UpdateTenantAccountEmailByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.TENANT_ACCOUNT_UPDATE_EMAIL_BY_ID);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_UPDATE_EMAIL_BY_ID);
     this.validateDto(
       dto,
-      updateAccountUsernameDtoSchema,
-      contexts.ACCOUNT_UPDATE_EMAIL_BY_ID
+      updateTenantAccountUsernameDtoSchema,
+      contexts.TENANT_ACCOUNT_UPDATE_EMAIL_BY_ID
     );
 
     return this.services.tenantAccount.updateEmailByIdAndTenantId(
@@ -172,13 +182,13 @@ class TenantAccountUseCase extends BaseUseCase {
     accountId: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId'],
     dto: IUpdateTenantAccountPhoneDto
-  ): Promise<UpdateAccountPhoneByIdAndTenantIdUseCaseResultDto> {
-    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
-    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_PHONE_BY_ID);
+  ): Promise<UpdateTenantAccountPhoneByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.TENANT_ACCOUNT_UPDATE_PHONE_BY_ID);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_UPDATE_PHONE_BY_ID);
     this.validateDto(
       dto,
-      updateAccountUsernameDtoSchema,
-      contexts.ACCOUNT_UPDATE_PHONE_BY_ID
+      updateTenantAccountUsernameDtoSchema,
+      contexts.TENANT_ACCOUNT_UPDATE_PHONE_BY_ID
     );
 
     return this.services.tenantAccount.updatePhoneByIdAndTenantId(
@@ -192,13 +202,13 @@ class TenantAccountUseCase extends BaseUseCase {
     accountId: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId'],
     dto: IUpdateTenantAccountUsernameDto
-  ): Promise<UpdateAccountUsernameByIdAndTenantIdUseCaseResultDto> {
-    this.validateAccountId(accountId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
-    this.validateTenantId(tenantId, contexts.ACCOUNT_UPDATE_USERNAME_BY_ID);
+  ): Promise<UpdateTenantAccountUsernameByIdAndTenantIdUseCaseResultDto> {
+    this.validateAccountId(accountId, contexts.TENANT_ACCOUNT_UPDATE_USERNAME_BY_ID);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_UPDATE_USERNAME_BY_ID);
     this.validateDto(
       dto,
-      updateAccountUsernameDtoSchema,
-      contexts.ACCOUNT_UPDATE_USERNAME_BY_ID
+      updateTenantAccountUsernameDtoSchema,
+      contexts.TENANT_ACCOUNT_UPDATE_USERNAME_BY_ID
     );
 
     return this.services.tenantAccount.updateUsernameByIdAndTenantId(
@@ -212,7 +222,7 @@ class TenantAccountUseCase extends BaseUseCase {
     accountId: unknown,
     context: keyof typeof contexts
   ): void {
-    const isIdValid = accountSchema
+    const isIdValid = tenantAccountSchema
       .pick({ id: true })
       .safeParse({ id: accountId });
 
@@ -234,7 +244,7 @@ class TenantAccountUseCase extends BaseUseCase {
     tenantId: unknown,
     context: keyof typeof contexts
   ): void {
-    const isTenantIdValid = accountSchema
+    const isTenantIdValid = tenantAccountSchema
       .pick({ tenantId: true })
       .safeParse({ tenantId });
 

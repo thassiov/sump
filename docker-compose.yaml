@@ -15,6 +15,11 @@ services:
       - POSTGRES_USER=sump
       - POSTGRES_PASSWORD=sump
       - POSTGRES_DB=sump
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sump -d sump']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgres-init:
     image: sump-image:latest
@@ -23,8 +28,10 @@ services:
       ['npm', 'run', 'db:migration:up', '--', '--config=./sump-config.json']
     restart: on-failure:5
     depends_on:
-      - postgres-local
-      - base-image
+      postgres-local:
+        condition: service_healthy
+      base-image:
+        condition: service_completed_successfully
     volumes:
       - ./sump-config.json:/app/sump-config.json
 
@@ -45,9 +52,29 @@ services:
           path: ./package.json
     ports:
       - '8080:8080'
-    command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
+    command:
+      ['npm', 'run', 'dev:start:nest', '--', '--config=./sump-config.json']
     volumes:
       - ./sump-config.json:/app/sump-config.json
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
+
+  test-runner:
+    image: sump-image:latest
+    pull_policy: never
+    profiles:
+      - test
+    command: ['npx', 'jest', '--config', 'jest.integration.config.ts']
+    volumes:
+      - ./sump-config.json:/app/sump-config.json
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres-local
+      - DB_PORT=5432
+      - DB_USER=sump
+      - DB_PASSWORD=sump
+      - DB_NAME=sump
     depends_on:
       postgres-init:
         condition: service_completed_successfully

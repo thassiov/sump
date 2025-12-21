@@ -14,15 +14,15 @@ type ICreateEnvironmentDto = z.infer<
   typeof createEnvironmentDtoSchema
 >;
 
-const createTenantEnvironmentNoInternalPropertiesDtoSchema = z
+const createEnvironmentNoInternalPropertiesDtoSchema = z
   .strictObject(environmentSchema.shape)
   .pick({
     name: true,
     customProperties: true,
   });
 
-type ICreateTenantEnvironmentNoInternalPropertiesDto = z.infer<
-  typeof createTenantEnvironmentNoInternalPropertiesDtoSchema
+type ICreateEnvironmentNoInternalPropertiesDto = z.infer<
+  typeof createEnvironmentNoInternalPropertiesDtoSchema
 >;
 
 const getEnvironmentDtoSchema = environmentSchema.pick({
@@ -50,42 +50,42 @@ type IUpdateEnvironmentNonSensitivePropertiesDto = z.infer<
   typeof updateEnvironmentNonSensitivePropertiesDtoSchema
 >;
 
-const tenantEnvironmentCustomPropertiesOperationDtoSchema =
+const environmentCustomPropertiesOperationDtoSchema =
   environmentSchema.shape.customProperties.refine(
     (val) => Object.keys(val).length
   );
 
 type IEnvironmentCustomPropertiesOperationDtoSchema = z.infer<
-  typeof tenantEnvironmentCustomPropertiesOperationDtoSchema
+  typeof environmentCustomPropertiesOperationDtoSchema
 >;
 
 type IUpdateEnvironmentAllowedDtos =
   IUpdateEnvironmentNonSensitivePropertiesDto;
 
 type CreateNewEnvironmentUseCaseDtoResult = IEnvironment['id'];
-type DeleteTenantEnvironmentUseCaseDtoResult = boolean;
-type UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult = boolean;
-type SetTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
-type DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
+type DeleteEnvironmentUseCaseDtoResult = boolean;
+type UpdateEnvironmentNonSensitivePropertiesUseCaseDtoResult = boolean;
+type SetEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
+type DeleteEnvironmentCustomPropertiesUseCaseDtoResult = boolean;
 
 export type {
   CreateNewEnvironmentUseCaseDtoResult,
-  DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult,
-  DeleteTenantEnvironmentUseCaseDtoResult,
+  DeleteEnvironmentCustomPropertiesUseCaseDtoResult,
+  DeleteEnvironmentUseCaseDtoResult,
   ICreateEnvironmentDto,
-  ICreateTenantEnvironmentNoInternalPropertiesDto,
+  ICreateEnvironmentNoInternalPropertiesDto,
   IGetEnvironmentDto,
   IEnvironmentCustomPropertiesOperationDtoSchema,
   IUpdateEnvironmentAllowedDtos,
   IUpdateEnvironmentNonSensitivePropertiesDto,
-  SetTenantEnvironmentCustomPropertiesUseCaseDtoResult,
-  UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult,
+  SetEnvironmentCustomPropertiesUseCaseDtoResult,
+  UpdateEnvironmentNonSensitivePropertiesUseCaseDtoResult,
 };
 
 export {
   createEnvironmentDtoSchema,
-  createTenantEnvironmentNoInternalPropertiesDtoSchema,
+  createEnvironmentNoInternalPropertiesDtoSchema,
   getEnvironmentDtoSchema,
-  tenantEnvironmentCustomPropertiesOperationDtoSchema,
+  environmentCustomPropertiesOperationDtoSchema,
   updateEnvironmentNonSensitivePropertiesDtoSchema,
 };

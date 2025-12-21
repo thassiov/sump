@@ -1,43 +1,50 @@
+import { Injectable } from '@nestjs/common';
 import z from 'zod';
 import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
 import { ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
 import {
-  CreateNewTenantEnvironmentUseCaseDtoResult,
-  createTenantEnvironmentDtoSchema,
-  DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult,
-  DeleteTenantEnvironmentUseCaseDtoResult,
+  CreateNewEnvironmentUseCaseDtoResult,
+  createEnvironmentDtoSchema,
+  DeleteEnvironmentCustomPropertiesUseCaseDtoResult,
+  DeleteEnvironmentUseCaseDtoResult,
   ICreateEnvironmentDto,
   IGetEnvironmentDto,
   IEnvironmentCustomPropertiesOperationDtoSchema,
   IUpdateEnvironmentNonSensitivePropertiesDto,
-  SetTenantEnvironmentCustomPropertiesUseCaseDtoResult,
-  tenantEnvironmentCustomPropertiesOperationDtoSchema,
-  updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
-  UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult,
+  SetEnvironmentCustomPropertiesUseCaseDtoResult,
+  environmentCustomPropertiesOperationDtoSchema,
+  updateEnvironmentNonSensitivePropertiesDtoSchema,
+  UpdateEnvironmentNonSensitivePropertiesUseCaseDtoResult,
 } from '../types/environment/dto.type';
 import {
   IEnvironment,
-  tenantEnvironmentSchema,
+  environmentSchema,
 } from '../types/environment/environment.type';
 import { EnvironmentUseCaseServices } from '../types/environment/use-case.type';
+import { EnvironmentService } from '../services/environment.service';
 
+@Injectable()
 class EnvironmentUseCase extends BaseUseCase {
   protected services: EnvironmentUseCaseServices;
-  constructor(services: EnvironmentUseCaseServices) {
+  constructor(
+    private readonly environmentService: EnvironmentService,
+  ) {
     super('environment-use-case');
-    this.services = services;
+    this.services = {
+      tenantEnvironment: this.environmentService,
+    };
   }
 
   async createNewEnvironment(
     tenantId: IEnvironment['tenantId'],
     dto: ICreateEnvironmentDto
-  ): Promise<CreateNewTenantEnvironmentUseCaseDtoResult> {
+  ): Promise<CreateNewEnvironmentUseCaseDtoResult> {
     this.validateTenantId(tenantId, contexts.ENVIRONMENT_CREATE);
     this.validateDto(
       dto,
-      createTenantEnvironmentDtoSchema,
+      createEnvironmentDtoSchema,
       contexts.ENVIRONMENT_CREATE
     );
 
@@ -57,7 +64,7 @@ class EnvironmentUseCase extends BaseUseCase {
   async deleteEnvironmentByIdAndTenantId(
     id: IEnvironment['id'],
     tenantId: IEnvironment['tenantId']
-  ): Promise<DeleteTenantEnvironmentUseCaseDtoResult> {
+  ): Promise<DeleteEnvironmentUseCaseDtoResult> {
     this.validateTenantEnvironmentId(
       id,
       contexts.ENVIRONMENT_DELETE_BY_ID
@@ -71,7 +78,7 @@ class EnvironmentUseCase extends BaseUseCase {
     id: IEnvironment['id'],
     tenantId: IEnvironment['tenantId'],
     dto: IUpdateEnvironmentNonSensitivePropertiesDto
-  ): Promise<UpdateTenantEnvironmentNonSensitivePropertiesUseCaseDtoResult> {
+  ): Promise<UpdateEnvironmentNonSensitivePropertiesUseCaseDtoResult> {
     this.validateTenantEnvironmentId(
       id,
       contexts.ENVIRONMENT_DELETE_BY_ID
@@ -79,7 +86,7 @@ class EnvironmentUseCase extends BaseUseCase {
     this.validateTenantId(tenantId, contexts.ENVIRONMENT_DELETE_BY_ID);
     this.validateDto(
       dto,
-      updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
+      updateEnvironmentNonSensitivePropertiesDtoSchema,
       contexts.ENVIRONMENT_DELETE_BY_ID
     );
 
@@ -94,7 +101,7 @@ class EnvironmentUseCase extends BaseUseCase {
     id: IEnvironment['id'],
     tenantId: IEnvironment['tenantId'],
     dto: IEnvironmentCustomPropertiesOperationDtoSchema
-  ): Promise<SetTenantEnvironmentCustomPropertiesUseCaseDtoResult> {
+  ): Promise<SetEnvironmentCustomPropertiesUseCaseDtoResult> {
     this.validateTenantEnvironmentId(
       id,
       contexts.ENVIRONMENT_DELETE_BY_ID
@@ -102,7 +109,7 @@ class EnvironmentUseCase extends BaseUseCase {
     this.validateTenantId(tenantId, contexts.ENVIRONMENT_DELETE_BY_ID);
     this.validateDto(
       dto,
-      tenantEnvironmentCustomPropertiesOperationDtoSchema,
+      environmentCustomPropertiesOperationDtoSchema,
       contexts.ENVIRONMENT_DELETE_BY_ID
     );
 
@@ -117,7 +124,7 @@ class EnvironmentUseCase extends BaseUseCase {
     id: IEnvironment['id'],
     tenantId: IEnvironment['tenantId'],
     customPropertyKey: string
-  ): Promise<DeleteTenantEnvironmentCustomPropertiesUseCaseDtoResult> {
+  ): Promise<DeleteEnvironmentCustomPropertiesUseCaseDtoResult> {
     this.validateTenantEnvironmentId(
       id,
       contexts.ENVIRONMENT_DELETE_BY_ID
@@ -140,7 +147,7 @@ class EnvironmentUseCase extends BaseUseCase {
     environmentId: unknown,
     context: keyof typeof contexts
   ): void {
-    const isIdValid = tenantEnvironmentSchema
+    const isIdValid = environmentSchema
       .pick({ id: true })
       .safeParse({ id: environmentId });
 
@@ -162,7 +169,7 @@ class EnvironmentUseCase extends BaseUseCase {
     tenantId: unknown,
     context: keyof typeof contexts
   ): void {
-    const isTenantIdValid = tenantEnvironmentSchema
+    const isTenantIdValid = environmentSchema
       .pick({ tenantId: true })
       .safeParse({ tenantId });
 

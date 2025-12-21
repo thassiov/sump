@@ -1,10 +1,13 @@
 import type { Config } from 'jest';
 
-const jestConfig: Config = {
+const integrationConfig: Config = {
   clearMocks: true,
   resetMocks: true,
   resetModules: true,
   cache: false,
+  testEnvironment: 'node',
+  rootDir: './src',
+  moduleFileExtensions: ['ts', 'js', 'json'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
@@ -13,6 +16,8 @@ const jestConfig: Config = {
       },
     ],
   },
+  testMatch: ['**/*.integration.test.ts'],
+  testTimeout: 30000,
 };
 
-export default jestConfig;
+export default integrationConfig;

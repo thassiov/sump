@@ -1,10 +1,10 @@
 import z from 'zod';
 import {
-  createAccountNoInternalPropertiesDtoSchema,
-  IGetAccountDto,
-} from '../account/dto.type';
-import { createTenantEnvironmentNoInternalPropertiesDtoSchema } from '../tenant-environment/dto.type';
-import { tenantEnvironmentSchema } from '../tenant-environment/tenant-environment.type';
+  createTenantAccountNoInternalPropertiesDtoSchema,
+  IGetTenantAccountDto,
+} from '../tenant-account/dto.type';
+import { createEnvironmentNoInternalPropertiesDtoSchema } from '../environment/dto.type';
+import { environmentSchema } from '../environment/environment.type';
 import { tenantSchema } from './tenant.type';
 
 const createTenantDtoSchema = tenantSchema.pick({
@@ -48,9 +48,9 @@ type IUpdateTenantAllowedDtos = IUpdateTenantNonSensitivePropertiesDto;
 
 const createNewTenantUseCaseDtoSchema = z.object({
   tenant: z.strictObject(createTenantDtoSchema.shape),
-  account: z.strictObject(createAccountNoInternalPropertiesDtoSchema.shape),
+  account: z.strictObject(createTenantAccountNoInternalPropertiesDtoSchema.shape),
   environment: z
-    .strictObject(createTenantEnvironmentNoInternalPropertiesDtoSchema.shape)
+    .strictObject(createEnvironmentNoInternalPropertiesDtoSchema.shape)
     .optional(),
 });
 
@@ -61,7 +61,7 @@ type CreateNewTenantUseCaseDto = z.infer<
 type CreateNewTenantUseCaseResultDto = {
   tenantId: string;
   accountId: string;
-  tenantEnvironmentId: string;
+  environmentId: string;
 };
 
 type DeleteTenantByIdUseCaseResultDto = boolean;
@@ -69,8 +69,8 @@ type DeleteCustomPropertyByTenantIdUseCaseResultDto = boolean;
 type SetCustomPropertyByTenantIdUseCaseResultDto = boolean;
 type UpdateNonSensitivePropertiesByTenantIdUseCaseResultDto = boolean;
 
-const tenantEnvironmentListSchema = z.array(
-  z.strictObject(tenantEnvironmentSchema.shape).pick({
+const environmentListSchema = z.array(
+  z.strictObject(environmentSchema.shape).pick({
     id: true,
     name: true,
     tenantId: true,
@@ -86,14 +86,14 @@ const getTenantByIdUseCaseResultDtoSchema = z
     customProperties: true,
   })
   .extend({
-    environments: tenantEnvironmentListSchema,
+    environments: environmentListSchema,
   });
 
 type GetTenantByIdUseCaseResultDto = z.infer<
   typeof getTenantByIdUseCaseResultDtoSchema
 >;
 
-type GetAccountsByTenantIdSUseCaseResultDto = IGetAccountDto[] | undefined;
+type GetAccountsByTenantIdSUseCaseResultDto = IGetTenantAccountDto[] | undefined;
 
 export type {
   CreateNewTenantUseCaseDto,

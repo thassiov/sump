@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
@@ -12,27 +13,28 @@ import {
   IUpdateTenantEnvironmentAccountPhoneDto,
   IUpdateTenantEnvironmentAccountUsernameDto,
 } from '../types/environment-account/dto.type';
-import { IEnvironmentAccountRepository } from '../types/tenant-environment-account/repository.type';
 import { IEnvironmentAccountService } from '../types/environment-account/service.type';
 import {
   IEnvironmentAccount,
-  tenantEnvironmentAccountSchema,
+  environmentAccountSchema,
 } from '../types/environment-account/environment-account.type';
-import { ITenantEnvironment } from '../types/tenant-environment/tenant-environment.type';
+import { IEnvironment } from '../types/environment/environment.type';
+import { EnvironmentAccountRepository } from '../repositories/environment-account.repository';
 
+@Injectable()
 export class EnvironmentAccountService
   extends BaseService
   implements IEnvironmentAccountService
 {
   constructor(
-    private readonly tenantEnvironmentAccountRepository: IEnvironmentAccountRepository
+    private readonly tenantEnvironmentAccountRepository: EnvironmentAccountRepository
   ) {
     super('environment-account-service');
   }
 
   // @NOTE: maybe the transaction argument must be called something else here
   async create(
-    environmentId: ITenantEnvironment['id'],
+    environmentId: IEnvironment['id'],
     dto: ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
@@ -99,7 +101,7 @@ export class EnvironmentAccountService
   async deleteById(id: IEnvironmentAccount['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
-    const isIdValid = tenantEnvironmentAccountSchema
+    const isIdValid = environmentAccountSchema
       .pick({ id: true })
       .safeParse({ id });
 

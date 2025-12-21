@@ -3,6 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
 import { DatabaseModule } from './common/database/database.module';
+import { TenantModule } from './tenant/tenant.module';
+import { TenantAccountModule } from './tenant-account/tenant-account.module';
+import { EnvironmentModule } from './environment/environment.module';
+import { EnvironmentAccountModule } from './environment-account/environment-account.module';
 
 @Module({
   imports: [
@@ -21,11 +25,10 @@ import { DatabaseModule } from './common/database/database.module';
             },
     }),
     DatabaseModule,
-    // Domain modules will be added here as we migrate them
-    // TenantModule,
-    // AccountModule,
-    // TenantEnvironmentModule,
-    // TenantEnvironmentAccountModule,
+    TenantModule,
+    TenantAccountModule,
+    EnvironmentModule,
+    EnvironmentAccountModule,
   ],
 })
 export class AppModule {}

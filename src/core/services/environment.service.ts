@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { BaseService } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
@@ -5,33 +6,34 @@ import { UnexpectedError, ValidationError } from '../../lib/errors';
 import { BaseCustomError } from '../../lib/errors/base-custom-error.error';
 import { formatZodError } from '../../lib/utils/formatters';
 import {
-  ICreateTenantEnvironmentNoInternalPropertiesDto,
+  ICreateEnvironmentNoInternalPropertiesDto,
   IGetEnvironmentDto,
   IUpdateEnvironmentNonSensitivePropertiesDto,
-  tenantEnvironmentCustomPropertiesOperationDtoSchema,
-  updateTenantEnvironmentNonSensitivePropertiesDtoSchema,
+  environmentCustomPropertiesOperationDtoSchema,
+  updateEnvironmentNonSensitivePropertiesDtoSchema,
 } from '../types/environment/dto.type';
-import { IEnvironmentRepository } from '../types/tenant-environment/repository.type';
 import { IEnvironmentService } from '../types/environment/service.type';
 import {
   IEnvironment,
-  tenantEnvironmentSchema,
+  environmentSchema,
 } from '../types/environment/environment.type';
 import { ITenant } from '../types/tenant/tenant.type';
+import { EnvironmentRepository } from '../repositories/environment.repository';
 
+@Injectable()
 export class EnvironmentService
   extends BaseService
   implements IEnvironmentService
 {
   constructor(
-    private readonly tenantEnvironmentRepository: IEnvironmentRepository
+    private readonly tenantEnvironmentRepository: EnvironmentRepository
   ) {
     super('environment-service');
   }
 
   async create(
     tenantId: ITenant['id'],
-    dto: ICreateTenantEnvironmentNoInternalPropertiesDto,
+    dto: ICreateEnvironmentNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ): Promise<string> {
     this.logger.info(`create environment in tenant ${tenantId}`);
@@ -93,7 +95,7 @@ export class EnvironmentService
   async deleteById(id: IEnvironment['id']): Promise<boolean> {
     this.logger.info(`deleteById: ${id}`);
 
-    const isIdValid = tenantEnvironmentSchema
+    const isIdValid = environmentSchema
       .pick({ id: true })
       .safeParse({ id });
 
@@ -129,7 +131,7 @@ export class EnvironmentService
   ): Promise<boolean> {
     this.logger.info(`updateNonSensitivePropertiesById: ${id}`);
 
-    const isIdValid = tenantEnvironmentSchema
+    const isIdValid = environmentSchema
       .pick({ id: true })
       .safeParse({ id });
 
@@ -140,7 +142,7 @@ export class EnvironmentService
           errors: formatZodError(isIdValid.error.issues),
         },
         context:
-          contexts.TENANT_ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
+          contexts.ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -148,7 +150,7 @@ export class EnvironmentService
     }
 
     const isPayloadValid =
-      updateTenantEnvironmentNonSensitivePropertiesDtoSchema.safeParse(dto);
+      updateEnvironmentNonSensitivePropertiesDtoSchema.safeParse(dto);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({
@@ -157,7 +159,7 @@ export class EnvironmentService
           errors: formatZodError(isPayloadValid.error.issues),
         },
         context:
-          contexts.TENANT_ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
+          contexts.ENVIRONMENT_UPDATE_NON_SENSITIVE_PROPERTIES_BY_ID,
       });
 
       this.logger.error(errorInstance);
@@ -177,7 +179,7 @@ export class EnvironmentService
     customProperties: IEnvironment['customProperties']
   ): Promise<boolean> {
     this.logger.info(`setCustomPropertyById: ${id}`);
-    const isIdValid = tenantEnvironmentSchema
+    const isIdValid = environmentSchema
       .pick({ id: true })
       .safeParse({ id });
 
@@ -195,7 +197,7 @@ export class EnvironmentService
     }
 
     const isPayloadValid =
-      tenantEnvironmentCustomPropertiesOperationDtoSchema.safeParse({
+      environmentCustomPropertiesOperationDtoSchema.safeParse({
         customProperties,
       });
 
@@ -225,7 +227,7 @@ export class EnvironmentService
     customPropertyKey: string
   ): Promise<boolean> {
     this.logger.info(`deleteCustomPropertyById: ${id}`);
-    const isIdValid = tenantEnvironmentSchema
+    const isIdValid = environmentSchema
       .pick({ id: true })
       .safeParse({ id });
 
@@ -243,7 +245,7 @@ export class EnvironmentService
     }
 
     const isPayloadValid =
-      tenantEnvironmentCustomPropertiesOperationDtoSchema.keyType.safeParse(
+      environmentCustomPropertiesOperationDtoSchema.keyType.safeParse(
         customPropertyKey
       );
 

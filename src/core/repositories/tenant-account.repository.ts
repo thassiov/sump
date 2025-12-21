@@ -1,3 +1,5 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { DATABASE_CLIENT } from '../../common/database/database.module';
 import { Knex } from 'knex';
 import { DatabaseError } from 'pg';
 import { IInsertReturningId } from '../../infra/database/postgres/types';
@@ -20,9 +22,10 @@ import {
 } from '../types/tenant-account/dto.type';
 import { ITenantAccountRepository } from '../types/tenant-account/repository.type';
 
+@Injectable()
 class TenantAccountRepository extends BaseRepository implements ITenantAccountRepository {
   private tableName: string;
-  constructor(private readonly dbClient: Knex) {
+  constructor(@Inject(DATABASE_CLIENT) private readonly dbClient: Knex) {
     super('tenant-account-repository');
     this.tableName = internalConfigs.repository.tenantAccount.tableName;
   }
