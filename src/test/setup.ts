@@ -5,9 +5,10 @@ import { AppModule } from '../app.module';
 import { DATABASE_CLIENT } from '../common/database/database.module';
 import { truncateAllTables } from './database.utils';
 
-let app: INestApplication;
-let dbClient: Knex;
-let moduleRef: TestingModule;
+let app: INestApplication | undefined;
+let dbClient: Knex | undefined;
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+let moduleRef: TestingModule | undefined;
 
 /**
  * Creates and initializes the NestJS application for testing.
@@ -72,13 +73,17 @@ export async function closeTestApp(): Promise<void> {
   }
 }
 
+type ProviderToken = string | symbol | (new (...args: unknown[]) => unknown);
+
 /**
  * Gets a provider from the test module.
  * Useful for getting services/repositories in tests.
  */
-export function getProvider<T>(token: string | symbol | Function): T {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+export function getProvider<T>(token: ProviderToken): T {
   if (!moduleRef) {
     throw new Error('Test module not initialized. Call createTestApp() first.');
   }
-  return moduleRef.get<T>(token as any);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return moduleRef.get<T>(token);
 }

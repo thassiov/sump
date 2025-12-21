@@ -17,4 +17,5 @@ import { TenantRepository } from '../core/repositories/tenant.repository';
   ],
   exports: [TenantAccountService],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class TenantAccountModule {}

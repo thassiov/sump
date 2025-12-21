@@ -52,8 +52,7 @@ services:
           path: ./package.json
     ports:
       - '8080:8080'
-    command:
-      ['npm', 'run', 'dev:start:nest', '--', '--config=./sump-config.json']
+    command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
     volumes:
       - ./sump-config.json:/app/sump-config.json
     depends_on:

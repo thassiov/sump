@@ -235,22 +235,14 @@ class EnvironmentAccountRepository
   async deleteCustomPropertyByIdAndTenantEnvironmentId(
     id: IEnvironmentAccount['id'],
     environmentId: IEnvironmentAccount['environmentId'],
-    _customPropertyKey: string
+    customPropertyKey: string
   ): Promise<boolean> {
     try {
-      const result = await this.sendDeleteByIdAndTenantEnvironmentIdQuery(
+      await this.sendDeleteJsonDataOnPathByIdAndTenantEnvironmentIdQuery(
         id,
-        environmentId
+        environmentId,
+        customPropertyKey
       );
-
-      if (result === 0) {
-        throw new NotFoundError({
-          context: contexts.ENVIRONMENT_ACCOUNT_DELETE_BY_ID,
-          details: {
-            input: { id },
-          },
-        });
-      }
 
       return true;
     } catch (error) {

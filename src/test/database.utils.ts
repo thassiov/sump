@@ -18,7 +18,7 @@ export async function truncateAllTables(knex: Knex): Promise<void> {
  */
 export async function truncateTables(
   knex: Knex,
-  tables: Array<keyof typeof internalConfigs.repository>
+  tables: (keyof typeof internalConfigs.repository)[]
 ): Promise<void> {
   for (const table of tables) {
     const tableName = internalConfigs.repository[table].tableName;

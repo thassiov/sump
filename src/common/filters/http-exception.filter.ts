@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       body =
         typeof exceptionResponse === 'string'
           ? { message: exceptionResponse }
-          : (exceptionResponse as object);
+          : exceptionResponse;
     }
     // Handle custom application errors
     else if (exception instanceof ValidationError) {

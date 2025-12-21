@@ -4,8 +4,7 @@
   "description": "sump - simple user management platform",
   "main": "index.js",
   "scripts": {
-    "dev:start": "ts-node ./src/index.ts",
-    "dev:start:nest": "ts-node ./src/main.ts",
+    "dev:start": "ts-node ./src/main.ts",
     "dev:watch": "nodemon",
     "dev:watch:nest": "nodemon --exec ts-node ./src/main.ts",
     "dev:container:watch": "docker compose up --build --watch",

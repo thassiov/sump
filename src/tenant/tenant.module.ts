@@ -12,4 +12,5 @@ import { EnvironmentModule } from '../environment/environment.module';
   providers: [TenantUseCase, TenantService, TenantRepository],
   exports: [TenantService],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class TenantModule {}

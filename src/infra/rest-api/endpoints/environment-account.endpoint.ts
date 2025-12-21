@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/non-nullable-type-assertion-style */
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';

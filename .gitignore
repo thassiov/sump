@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 sump-config.json
+.claude

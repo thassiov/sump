@@ -15,13 +15,17 @@ import { EnvironmentAccountModule } from './environment-account/environment-acco
       pinoHttp:
         process.env['NODE_ENV'] !== 'production'
           ? {
-              genReqId: (req) =>
-                (req.headers['x-request-id'] as string) ?? randomUUID(),
+              genReqId: (req) => {
+                const requestId = req.headers['x-request-id'];
+                return (Array.isArray(requestId) ? requestId[0] : requestId) ?? randomUUID();
+              },
               transport: { target: 'pino-pretty' },
             }
           : {
-              genReqId: (req) =>
-                (req.headers['x-request-id'] as string) ?? randomUUID(),
+              genReqId: (req) => {
+                const requestId = req.headers['x-request-id'];
+                return (Array.isArray(requestId) ? requestId[0] : requestId) ?? randomUUID();
+              },
             },
     }),
     DatabaseModule,
@@ -31,4 +35,5 @@ import { EnvironmentAccountModule } from './environment-account/environment-acco
     EnvironmentAccountModule,
   ],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class AppModule {}

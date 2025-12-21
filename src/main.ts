@@ -30,7 +30,7 @@ async function bootstrap() {
   await app.listen(port);
 
   const logger = app.get(Logger);
-  logger.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Application is running on: http://localhost:${String(port)}`);
 }
 
-bootstrap();
+void bootstrap();
