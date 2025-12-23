@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import {
-  ICreateTenantEnvironmentNoInternalPropertiesDto,
+  ICreateEnvironmentNoInternalPropertiesDto,
   IGetEnvironmentDto,
   IUpdateEnvironmentNonSensitivePropertiesDto,
 } from './dto.type';
@@ -9,7 +9,7 @@ import { IEnvironment } from './environment.type';
 export type IEnvironmentService = {
   create: (
     tenantId: IEnvironment['tenantId'],
-    dto: ICreateTenantEnvironmentNoInternalPropertiesDto,
+    dto: ICreateEnvironmentNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (

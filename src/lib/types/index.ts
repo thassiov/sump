@@ -1,9 +1,4 @@
-import { Request, Response } from 'express';
-import { Knex } from 'knex';
 import z from 'zod';
-import { BaseHttpService, BaseRepository, BaseService } from '../base-classes';
-
-const idSchema = z.uuid();
 
 const restApiConfigSchema = z.object({
   port: z.number(),
@@ -24,31 +19,7 @@ const sumpConfigSchema = z.object({
 
 type SumpConfig = z.infer<typeof sumpConfigSchema>;
 type DatabaseConfig = z.infer<typeof databaseConfigSchema>;
-type RestApiConfig = z.infer<typeof restApiConfigSchema>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Ctor<T> = abstract new (...args: any[]) => T;
+export { sumpConfigSchema };
 
-type ServiceModule = {
-  service: Ctor<BaseService>;
-  httpService: Ctor<BaseHttpService>;
-  repository: Ctor<BaseRepository>;
-};
-
-type EndpointHandler = (req: Request, res: Response) => Promise<void>;
-
-type UseCaseServices = Record<string, BaseService>;
-
-type CreateServiceInstanceOptions = { url?: string; databaseClient?: Knex };
-
-export { idSchema, sumpConfigSchema };
-
-export type {
-  CreateServiceInstanceOptions,
-  DatabaseConfig,
-  EndpointHandler,
-  RestApiConfig,
-  ServiceModule,
-  SumpConfig,
-  UseCaseServices,
-};
+export type { DatabaseConfig, SumpConfig };
