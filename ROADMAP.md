@@ -22,9 +22,9 @@ This document tracks planned features, improvements, and technical debt for the 
 
 ### 1.2 Unit Tests
 - [ ] Repositories (TenantRepository, TenantAccountRepository, EnvironmentRepository, EnvironmentAccountRepository)
-- [ ] Services (TenantService, TenantAccountService, EnvironmentService, EnvironmentAccountService)
-- [ ] Use Cases (TenantUseCase, TenantAccountUseCase, EnvironmentUseCase, EnvironmentAccountUseCase)
-- [ ] Custom error classes
+- [~] Services (TenantService done, TenantAccountService, EnvironmentService, EnvironmentAccountService pending)
+- [~] Use Cases (TenantUseCase done, TenantAccountUseCase, EnvironmentUseCase, EnvironmentAccountUseCase pending)
+- [x] Custom error classes
 - [ ] Validators and DTOs
 
 ---
@@ -32,10 +32,10 @@ This document tracks planned features, improvements, and technical debt for the 
 ## 2. API Request Scripts
 
 ### 2.1 Individual Endpoint Scripts
-- [ ] Tenant CRUD operations
-- [ ] Tenant Account CRUD operations
-- [ ] Environment CRUD operations
-- [ ] Environment Account CRUD operations
+- [x] Tenant CRUD operations
+- [x] Tenant Account CRUD operations
+- [x] Environment CRUD operations
+- [x] Environment Account CRUD operations
 
 ### 2.2 Scenario Scripts (End-to-End Flows)
 - [ ] Create tenant with owner account and default environment
@@ -44,8 +44,8 @@ This document tracks planned features, improvements, and technical debt for the 
 - [ ] Custom properties management flow
 
 ### 2.3 Format Options
-- [ ] curl scripts (shell)
-- [ ] Hurl files (for CI/CD integration)
+- [x] curl scripts (shell)
+- [x] Hurl files (for CI/CD integration)
 - [ ] Postman/Bruno collection (for GUI-based testing)
 
 ---
@@ -209,11 +209,11 @@ const account = await sump.accounts.create({ tenantId: tenant.id, ... });
 ### 8.1 Code Quality
 - [x] Fix all linting errors
 - [x] Remove legacy bootstrap code (old index.ts with manual DI)
-- [ ] Remove legacy Express endpoint files (migrate fully to NestJS controllers)
+- [x] Remove legacy Express endpoint files (migrate fully to NestJS controllers)
 - [ ] Clean up unused code and dependencies
 
 ### 8.2 Infrastructure
-- [ ] Add health check endpoint
+- [x] Add health check endpoint
 - [ ] Add metrics/observability
 - [ ] Database migrations versioning strategy
 - [ ] CI/CD pipeline setup

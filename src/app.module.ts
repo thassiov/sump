@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
 import { DatabaseModule } from './common/database/database.module';
+import { HealthModule } from './health/health.module';
 import { TenantModule } from './tenant/tenant.module';
 import { TenantAccountModule } from './tenant-account/tenant-account.module';
 import { EnvironmentModule } from './environment/environment.module';
@@ -29,6 +30,7 @@ import { EnvironmentAccountModule } from './environment-account/environment-acco
             },
     }),
     DatabaseModule,
+    HealthModule,
     TenantModule,
     TenantAccountModule,
     EnvironmentModule,
