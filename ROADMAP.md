@@ -21,11 +21,11 @@ This document tracks planned features, improvements, and technical debt for the 
 - [ ] Error handling and edge cases
 
 ### 1.2 Unit Tests
-- [ ] Repositories (TenantRepository, TenantAccountRepository, EnvironmentRepository, EnvironmentAccountRepository)
-- [~] Services (TenantService done, TenantAccountService, EnvironmentService, EnvironmentAccountService pending)
-- [~] Use Cases (TenantUseCase done, TenantAccountUseCase, EnvironmentUseCase, EnvironmentAccountUseCase pending)
+- [x] Repositories (TenantRepository, TenantAccountRepository, EnvironmentRepository, EnvironmentAccountRepository)
+- [x] Services (TenantService, TenantAccountService, EnvironmentService, EnvironmentAccountService)
+- [x] Use Cases (TenantUseCase, TenantAccountUseCase, EnvironmentUseCase, EnvironmentAccountUseCase)
 - [x] Custom error classes
-- [ ] Validators and DTOs
+- [x] Validators and DTOs (Zod schemas for all entities)
 
 ---
 
