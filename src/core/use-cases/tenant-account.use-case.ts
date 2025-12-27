@@ -20,7 +20,10 @@ import {
   updateTenantAccountNonSensitivePropertiesDtoSchema,
   UpdateTenantAccountPhoneByIdAndTenantIdUseCaseResultDto,
   UpdateTenantAccountUsernameByIdAndTenantIdUseCaseResultDto,
+  updateTenantAccountEmailDtoSchema,
+  updateTenantAccountPhoneDtoSchema,
   updateTenantAccountUsernameDtoSchema,
+  tenantAccountUserDefinedIdentificationSchema,
 } from '../types/tenant-account/dto.type';
 import { TenantAccountUseCaseServices } from '../types/tenant-account/use-case.type';
 import { IUpdateTenantNonSensitivePropertiesDto } from '../types/tenant/dto.type';
@@ -143,7 +146,7 @@ class TenantAccountUseCase extends BaseUseCase {
   ): Promise<IGetTenantAccountDto[] | undefined> {
     this.validateDto(
       accountUserDefinedIdentification,
-      updateTenantAccountUsernameDtoSchema,
+      tenantAccountUserDefinedIdentificationSchema,
       contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION
     );
 
@@ -167,7 +170,7 @@ class TenantAccountUseCase extends BaseUseCase {
     this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_UPDATE_EMAIL_BY_ID);
     this.validateDto(
       dto,
-      updateTenantAccountUsernameDtoSchema,
+      updateTenantAccountEmailDtoSchema,
       contexts.TENANT_ACCOUNT_UPDATE_EMAIL_BY_ID
     );
 
@@ -187,7 +190,7 @@ class TenantAccountUseCase extends BaseUseCase {
     this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_UPDATE_PHONE_BY_ID);
     this.validateDto(
       dto,
-      updateTenantAccountUsernameDtoSchema,
+      updateTenantAccountPhoneDtoSchema,
       contexts.TENANT_ACCOUNT_UPDATE_PHONE_BY_ID
     );
 
