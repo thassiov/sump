@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { Request } from 'express';
 import { AuthService } from '../services';
 import { ISession } from '../types';
@@ -32,10 +33,12 @@ export interface RequestWithSession extends Request {
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private tenantAccountService: TenantAccountService | null = null;
+  private environmentAccountService: EnvironmentAccountService | null = null;
+
   constructor(
     private readonly authService: AuthService,
-    private readonly tenantAccountService: TenantAccountService,
-    private readonly environmentAccountService: EnvironmentAccountService
+    private readonly moduleRef: ModuleRef
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -60,16 +63,36 @@ export class AuthGuard implements CanActivate {
   }
 
   /**
+   * Get TenantAccountService lazily to avoid circular dependency
+   */
+  private getTenantAccountService(): TenantAccountService {
+    if (!this.tenantAccountService) {
+      this.tenantAccountService = this.moduleRef.get(TenantAccountService, { strict: false });
+    }
+    return this.tenantAccountService!;
+  }
+
+  /**
+   * Get EnvironmentAccountService lazily to avoid circular dependency
+   */
+  private getEnvironmentAccountService(): EnvironmentAccountService {
+    if (!this.environmentAccountService) {
+      this.environmentAccountService = this.moduleRef.get(EnvironmentAccountService, { strict: false });
+    }
+    return this.environmentAccountService!;
+  }
+
+  /**
    * Check if the account associated with the session is disabled
    */
   private async isAccountDisabled(session: ISession): Promise<boolean> {
     if (session.accountType === 'tenant_account') {
-      const account = await this.tenantAccountService.getById(session.accountId);
+      const account = await this.getTenantAccountService().getById(session.accountId);
       return account?.disabled ?? false;
     }
 
     if (session.accountType === 'environment_account') {
-      const account = await this.environmentAccountService.getById(session.accountId);
+      const account = await this.getEnvironmentAccountService().getById(session.accountId);
       return account?.disabled ?? false;
     }
 

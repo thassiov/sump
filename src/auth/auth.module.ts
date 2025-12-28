@@ -1,4 +1,4 @@
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider, forwardRef } from '@nestjs/common';
 import {
   AUTH_CONFIG,
   SumpAuthAsyncConfig,
@@ -9,6 +9,10 @@ import { TenantAuthController, EnvironmentAuthController } from './controllers';
 import { AuthGuard, RolesGuard } from './guards';
 import { SessionRepository, PasswordResetRepository } from './repositories';
 import { AuthService, PasswordService, SessionService, PasswordResetService } from './services';
+import { TenantModule } from '../tenant/tenant.module';
+import { TenantAccountModule } from '../tenant-account/tenant-account.module';
+import { EnvironmentModule } from '../environment/environment.module';
+import { EnvironmentAccountModule } from '../environment-account/environment-account.module';
 
 @Global()
 @Module({})
@@ -36,6 +40,12 @@ export class SumpAuthModule {
 
     return {
       module: SumpAuthModule,
+      imports: [
+        forwardRef(() => TenantModule),
+        forwardRef(() => TenantAccountModule),
+        forwardRef(() => EnvironmentModule),
+        forwardRef(() => EnvironmentAccountModule),
+      ],
       controllers: [TenantAuthController, EnvironmentAuthController],
       providers,
       exports: this.getExports(),
@@ -73,7 +83,13 @@ export class SumpAuthModule {
 
     return {
       module: SumpAuthModule,
-      imports: options.imports ?? [],
+      imports: [
+        ...(options.imports ?? []),
+        forwardRef(() => TenantModule),
+        forwardRef(() => TenantAccountModule),
+        forwardRef(() => EnvironmentModule),
+        forwardRef(() => EnvironmentAccountModule),
+      ],
       controllers: [TenantAuthController, EnvironmentAuthController],
       providers,
       exports: this.getExports(),
