@@ -27,6 +27,8 @@ describe('TenantAccount Schemas', () => {
     avatarUrl: 'https://example.com/avatar.png',
     tenantId: faker.string.uuid(),
     roles: [validRole],
+    disabled: false,
+    disabledAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

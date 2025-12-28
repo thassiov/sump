@@ -3,6 +3,7 @@ import { ITenantAccount } from './tenant-account.type';
 import {
   ITenantAccountUserDefinedIdentification,
   ICreateTenantAccountDto,
+  ICreateTenantAccountWithPasswordDto,
   IGetTenantAccountDto,
   IUpdateTenantAccountEmailDto,
   IUpdateTenantAccountNonSensitivePropertiesDto,
@@ -14,6 +15,11 @@ export type ITenantAccountService = {
   create: (
     tenantId: ITenantAccount['tenantId'],
     dto: ICreateTenantAccountDto,
+    transaction?: Knex.Transaction
+  ) => Promise<string>;
+  createWithPassword: (
+    tenantId: ITenantAccount['tenantId'],
+    dto: ICreateTenantAccountWithPasswordDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (id: ITenantAccount['id']) => Promise<IGetTenantAccountDto | undefined>;
@@ -57,6 +63,14 @@ export type ITenantAccountService = {
     dto: IUpdateTenantAccountPhoneDto
   ) => Promise<boolean>;
   canAccountBeDeleted(
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean>;
+  disableByIdAndTenantId(
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean>;
+  enableByIdAndTenantId(
     id: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId']
   ): Promise<boolean>;

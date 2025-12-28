@@ -17,6 +17,12 @@ const repository = {
   environmentAccount: {
     tableName: 'environment_account',
   },
+  session: {
+    tableName: 'session',
+  },
+  passwordResetToken: {
+    tableName: 'password_reset_token',
+  },
 };
 
 // @NOTE: this needs a better name because it is confusing to have it when

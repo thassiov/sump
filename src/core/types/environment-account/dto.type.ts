@@ -9,6 +9,8 @@ const createEnvironmentAccountDtoSchema = z
   .strictObject(environmentAccountSchema.shape)
   .omit({
     id: true,
+    disabled: true,
+    disabledAt: true,
     createdAt: true,
     updatedAt: true,
   });
@@ -24,6 +26,8 @@ const createTenantEnvironmentAccountNoInternalPropertiesDtoSchema = z
     environmentId: true,
     emailVerified: true,
     phoneVerified: true,
+    disabled: true,
+    disabledAt: true,
     createdAt: true,
     updatedAt: true,
   });
@@ -96,11 +100,23 @@ type IUpdateTenantEnvironmentAccountUsernameDto = z.infer<
   typeof updateTenantEnvironmentAccountUsernameDtoSchema
 >;
 
+const updateEnvironmentAccountDisabledDtoSchema = z
+  .strictObject(environmentAccountSchema.shape)
+  .pick({ disabled: true, disabledAt: true });
+type IUpdateEnvironmentAccountDisabledDto = z.infer<
+  typeof updateEnvironmentAccountDisabledDtoSchema
+>;
+
+// Password hash update (for password reset)
+type IUpdateEnvironmentAccountPasswordHashDto = { passwordHash: string };
+
 type IUpdateEnvironmentAccountAllowedDtos =
   | IUpdateEnvironmentAccountNonSensitivePropertiesDto
   | IUpdateTenantEnvironmentAccountEmailDto
   | IUpdateTenantEnvironmentAccountPhoneDto
-  | IUpdateTenantEnvironmentAccountUsernameDto;
+  | IUpdateTenantEnvironmentAccountUsernameDto
+  | IUpdateEnvironmentAccountDisabledDto
+  | IUpdateEnvironmentAccountPasswordHashDto;
 
 type CreateNewEnvironmentAccountUseCaseDtoResult =
   IEnvironmentAccount['id'];

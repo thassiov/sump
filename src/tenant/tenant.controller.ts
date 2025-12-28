@@ -8,13 +8,14 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { TenantUseCase } from '../core/use-cases/tenant.use-case';
-import {
-  CreateNewTenantUseCaseDto,
-  IUpdateTenantNonSensitivePropertiesDto,
-} from '../core/types/tenant/dto.type';
+import { CreateNewTenantUseCaseDto, IUpdateTenantNonSensitivePropertiesDto } from '../core/types/tenant/dto.type';
 import { ITenant } from '../core/types/tenant/tenant.type';
 import {
   CreateTenantDto,
@@ -25,28 +26,104 @@ import {
   TenantResponseDto,
 } from './dto';
 import { TenantAccountResponseDto } from '../tenant-account/dto';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { RequireRoles, TenantResource } from '../auth/decorators';
+import { AuthService } from '../auth/services';
 
 @ApiTags('Tenants')
 @Controller('tenants')
 export class TenantController {
-  constructor(private readonly tenantUseCase: TenantUseCase) {}
+  constructor(
+    private readonly tenantUseCase: TenantUseCase,
+    private readonly authService: AuthService
+  ) {}
 
   @Post()
   @ApiOperation({
     summary: 'Create a new tenant with initial account and environment',
-    description: 'Creates a new tenant along with an owner account and optionally an initial environment. If no environment is specified, a "default" environment will be created.',
+    description:
+      'Creates a new tenant along with an owner account and optionally an initial environment. ' +
+      'If no environment is specified, a "default" environment will be created. ' +
+      'Returns a session for the newly created owner account.',
   })
   @ApiBody({ type: CreateTenantDto })
   @ApiResponse({
     status: 201,
-    description: 'Tenant created successfully',
+    description: 'Tenant created successfully with session',
     type: CreateTenantResponseDto,
   })
-  async createTenant(@Body() dto: CreateNewTenantUseCaseDto) {
-    return this.tenantUseCase.createNewTenant(dto);
+  @ApiResponse({ status: 400, description: 'Invalid input or weak password' })
+  @ApiResponse({ status: 409, description: 'Email/username already exists' })
+  async createTenant(
+    @Body() dto: CreateTenantDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<CreateTenantResponseDto> {
+    // Hash the password
+    const passwordHash = await this.authService.hashPassword(dto.account.password);
+
+    // Prepare use case DTO - replace password with passwordHash
+    // Note: customProperties from Swagger DTO is Record<string, unknown>, but use case expects JSON-compatible types
+    // We use type assertion since the Swagger validation ensures JSON-compatible values at runtime
+    const { password: _, ...accountWithoutPassword } = dto.account;
+    const useCaseDto = {
+      tenant: {
+        name: dto.tenant.name,
+        customProperties: dto.tenant.customProperties ?? {},
+      },
+      account: {
+        ...accountWithoutPassword,
+        passwordHash,
+        // Owner role will be set by the use case based on tenantId
+        roles: [{ role: 'owner' as const, target: 'tenant' as const, targetId: '' }],
+      },
+      environment: dto.environment
+        ? {
+            name: dto.environment.name,
+            customProperties: dto.environment.customProperties ?? {},
+          }
+        : undefined,
+    } as CreateNewTenantUseCaseDto & { account: { passwordHash: string } };
+
+    // Create tenant, account, and environment
+    const result = await this.tenantUseCase.createNewTenant(useCaseDto);
+
+    // Create session for the new owner account
+    const ipAddress = this.authService.getIpAddress(req);
+    const userAgent = this.authService.getUserAgent(req);
+
+    const session = await this.authService.createSession(res, {
+      accountType: 'tenant_account',
+      accountId: result.accountId,
+      contextType: 'tenant',
+      contextId: result.tenantId,
+      ...(ipAddress && { ipAddress }),
+      ...(userAgent && { userAgent }),
+    });
+
+    return {
+      tenantId: result.tenantId,
+      accountId: result.accountId,
+      environmentId: result.environmentId,
+      session: {
+        id: session.id,
+        accountType: session.accountType,
+        accountId: session.accountId,
+        contextType: session.contextType,
+        contextId: session.contextId,
+        expiresAt: session.expiresAt,
+      },
+    };
   }
 
   @Get(':tenantId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
+    { role: 'user', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Get tenant by ID',
     description: 'Retrieves a tenant by its UUID, including all its environments.',
@@ -57,12 +134,17 @@ export class TenantController {
     description: 'Tenant found',
     type: TenantResponseDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async getTenantById(@Param('tenantId') tenantId: string) {
     return this.tenantUseCase.getTenantById(tenantId);
   }
 
   @Delete(':tenantId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles({ role: 'owner', target: 'tenant', targetId: ':tenantId' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete tenant by ID',
@@ -70,12 +152,20 @@ export class TenantController {
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiResponse({ status: 204, description: 'Tenant deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async deleteTenantById(@Param('tenantId') tenantId: string) {
     return this.tenantUseCase.deleteTenantById(tenantId);
   }
 
   @Patch(':tenantId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Update tenant non-sensitive properties',
     description: 'Updates allowed tenant properties like name.',
@@ -83,6 +173,8 @@ export class TenantController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiBody({ type: UpdateTenantDto })
   @ApiResponse({ status: 200, description: 'Tenant updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async updateTenant(
     @Param('tenantId') tenantId: string,
@@ -95,6 +187,13 @@ export class TenantController {
   }
 
   @Get(':tenantId/accounts')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
+    { role: 'user', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Get all accounts for a tenant',
     description: 'Retrieves all accounts associated with the specified tenant.',
@@ -105,11 +204,19 @@ export class TenantController {
     description: 'List of accounts',
     type: [TenantAccountResponseDto],
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   async getAccountsByTenantId(@Param('tenantId') tenantId: string) {
     return this.tenantUseCase.getAccountsByTenantId(tenantId);
   }
 
   @Patch(':tenantId/custom-property')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Set custom property on tenant',
     description: 'Sets or updates a custom property on the tenant. Pass the property as a key-value pair in the body.',
@@ -117,6 +224,8 @@ export class TenantController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiBody({ type: SetCustomPropertyDto })
   @ApiResponse({ status: 200, description: 'Custom property set successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async setCustomProperty(
     @Param('tenantId') tenantId: string,
@@ -129,6 +238,12 @@ export class TenantController {
   }
 
   @Delete(':tenantId/custom-property')
+  @UseGuards(AuthGuard, RolesGuard)
+  @TenantResource('tenantId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete custom property from tenant',
@@ -137,6 +252,8 @@ export class TenantController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiBody({ type: DeleteCustomPropertyDto })
   @ApiResponse({ status: 204, description: 'Custom property deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async deleteCustomProperty(
     @Param('tenantId') tenantId: string,

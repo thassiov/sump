@@ -21,6 +21,8 @@ describe('EnvironmentAccount Schemas', () => {
     avatarUrl: 'https://example.com/avatar.png',
     environmentId: faker.string.uuid(),
     customProperties: { role: 'user' },
+    disabled: false,
+    disabledAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

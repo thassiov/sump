@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import z from 'zod';
 import { BaseUseCase } from '../../lib/base-classes';
 import { contexts } from '../../lib/contexts';
-import { NotFoundError, ValidationError } from '../../lib/errors';
+import { NotFoundError, PermissionError, ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
-import { tenantAccountSchema, ITenantAccount } from '../types/tenant-account/tenant-account.type';
+import { tenantAccountSchema, ITenantAccount, ITenantAccountRoleType } from '../types/tenant-account/tenant-account.type';
+import { canDisableAccount, canEnableAccount } from '../rules';
 import {
   createTenantAccountDtoSchema,
   CreateNewTenantAccountUseCaseDtoResult,
@@ -219,6 +220,142 @@ class TenantAccountUseCase extends BaseUseCase {
       tenantId,
       dto
     );
+  }
+
+  async disableAccountByIdAndTenantId(
+    actorAccountId: ITenantAccount['id'],
+    targetAccountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean> {
+    this.validateAccountId(actorAccountId, contexts.TENANT_ACCOUNT_DISABLE);
+    this.validateAccountId(targetAccountId, contexts.TENANT_ACCOUNT_DISABLE);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_DISABLE);
+
+    // Get actor's account to determine their role
+    const actorAccount = await this.services.tenantAccount.getByAccountIdAndTenantId(
+      actorAccountId,
+      tenantId
+    );
+
+    if (!actorAccount) {
+      throw new NotFoundError({
+        context: contexts.TENANT_ACCOUNT_DISABLE,
+        details: { input: { actorAccountId } },
+      });
+    }
+
+    // Get target account to determine their role
+    const targetAccount = await this.services.tenantAccount.getByAccountIdAndTenantId(
+      targetAccountId,
+      tenantId
+    );
+
+    if (!targetAccount) {
+      throw new NotFoundError({
+        context: contexts.TENANT_ACCOUNT_DISABLE,
+        details: { input: { targetAccountId } },
+      });
+    }
+
+    // Extract roles for the tenant context
+    const actorRole = this.extractTenantRole(actorAccount.roles, tenantId);
+    const targetRole = this.extractTenantRole(targetAccount.roles, tenantId);
+
+    // Check business rules
+    const canDisable = canDisableAccount({
+      actorRole,
+      actorAccountId,
+      targetRole,
+      targetAccountId,
+    });
+
+    if (!canDisable.allowed) {
+      throw new PermissionError({
+        context: contexts.TENANT_ACCOUNT_DISABLE,
+        details: {
+          reason: canDisable.reason,
+          actorRole,
+          targetRole,
+        },
+      });
+    }
+
+    return this.services.tenantAccount.disableByIdAndTenantId(targetAccountId, tenantId);
+  }
+
+  async enableAccountByIdAndTenantId(
+    actorAccountId: ITenantAccount['id'],
+    targetAccountId: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean> {
+    this.validateAccountId(actorAccountId, contexts.TENANT_ACCOUNT_ENABLE);
+    this.validateAccountId(targetAccountId, contexts.TENANT_ACCOUNT_ENABLE);
+    this.validateTenantId(tenantId, contexts.TENANT_ACCOUNT_ENABLE);
+
+    // Get actor's account to determine their role
+    const actorAccount = await this.services.tenantAccount.getByAccountIdAndTenantId(
+      actorAccountId,
+      tenantId
+    );
+
+    if (!actorAccount) {
+      throw new NotFoundError({
+        context: contexts.TENANT_ACCOUNT_ENABLE,
+        details: { input: { actorAccountId } },
+      });
+    }
+
+    // Get target account to determine their role
+    const targetAccount = await this.services.tenantAccount.getByAccountIdAndTenantId(
+      targetAccountId,
+      tenantId
+    );
+
+    if (!targetAccount) {
+      throw new NotFoundError({
+        context: contexts.TENANT_ACCOUNT_ENABLE,
+        details: { input: { targetAccountId } },
+      });
+    }
+
+    // Extract roles for the tenant context
+    const actorRole = this.extractTenantRole(actorAccount.roles, tenantId);
+    const targetRole = this.extractTenantRole(targetAccount.roles, tenantId);
+
+    // Check business rules
+    const canEnable = canEnableAccount({
+      actorRole,
+      actorAccountId,
+      targetRole,
+      targetAccountId,
+    });
+
+    if (!canEnable.allowed) {
+      throw new PermissionError({
+        context: contexts.TENANT_ACCOUNT_ENABLE,
+        details: {
+          reason: canEnable.reason,
+          actorRole,
+          targetRole,
+        },
+      });
+    }
+
+    return this.services.tenantAccount.enableByIdAndTenantId(targetAccountId, tenantId);
+  }
+
+  /**
+   * Extracts the role for a specific tenant from the account's roles array.
+   * Defaults to 'user' if no tenant-specific role is found.
+   */
+  private extractTenantRole(
+    roles: Array<{ role: string; target: string; targetId: string }>,
+    tenantId: string
+  ): ITenantAccountRoleType {
+    const tenantRole = roles.find(
+      (r) => r.target === 'tenant' && r.targetId === tenantId
+    );
+    return (tenantRole?.role as ITenantAccountRoleType) ?? 'user';
   }
 
   private validateAccountId(

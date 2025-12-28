@@ -71,7 +71,11 @@ describe('TenantUseCase', () => {
 
       expect(result).toEqual({ tenantId, accountId, environmentId });
       expect(mockTenantService.create).toHaveBeenCalledWith(validDto.tenant);
-      expect(mockTenantAccountService.create).toHaveBeenCalledWith(tenantId, validDto.account);
+      // The use case sets the owner role's targetId to the newly created tenantId
+      expect(mockTenantAccountService.create).toHaveBeenCalledWith(tenantId, {
+        ...validDto.account,
+        roles: [{ role: 'owner', target: 'tenant', targetId: tenantId }],
+      });
       expect(mockEnvironmentService.create).toHaveBeenCalledWith(tenantId, validDto.environment);
     });
 

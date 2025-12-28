@@ -118,10 +118,24 @@ class TenantUseCase extends BaseUseCase {
     this.logger.info(
       `creating account on tenant ${tenantId}:  ${createNewTenantDto.account.name}`
     );
-    const accountId = await this.services.tenantAccount.create(
-      tenantId,
-      createNewTenantDto.account
-    );
+
+    // Extract passwordHash if present (for auth signup flow)
+    const { passwordHash, ...accountData } = createNewTenantDto.account as typeof createNewTenantDto.account & { passwordHash?: string };
+
+    // Update role targetId to the newly created tenant
+    const accountWithRoles = {
+      ...accountData,
+      roles: [{ role: 'owner' as const, target: 'tenant' as const, targetId: tenantId }],
+    };
+
+    // Use createWithPassword if passwordHash is provided, otherwise regular create
+    const accountId = passwordHash
+      ? await this.services.tenantAccount.createWithPassword(tenantId, {
+          ...accountWithRoles,
+          passwordHash,
+        })
+      : await this.services.tenantAccount.create(tenantId, accountWithRoles);
+
     this.logger.info(
       `new account created on tenant ${tenantId}: id "${accountId}"`
     );

@@ -45,6 +45,13 @@ class CreateTenantAccountDto {
   })
   username!: string;
 
+  @ApiProperty({
+    description: 'Password for the account',
+    example: 'SecureP@ssw0rd!',
+    minLength: 8,
+  })
+  password!: string;
+
   @ApiPropertyOptional({
     description: 'Phone number in E.164 format',
     example: '+1234567890',
@@ -118,6 +125,43 @@ export class CreateTenantDto {
   environment?: CreateEnvironmentDetailsDto;
 }
 
+class SessionInfoDto {
+  @ApiProperty({
+    description: 'UUID of the session',
+    example: '550e8400-e29b-41d4-a716-446655440003',
+  })
+  id!: string;
+
+  @ApiProperty({
+    description: 'Account type',
+    example: 'tenant_account',
+  })
+  accountType!: string;
+
+  @ApiProperty({
+    description: 'UUID of the account',
+    example: '550e8400-e29b-41d4-a716-446655440001',
+  })
+  accountId!: string;
+
+  @ApiProperty({
+    description: 'Context type',
+    example: 'tenant',
+  })
+  contextType!: string;
+
+  @ApiProperty({
+    description: 'UUID of the context (tenant or environment)',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  contextId!: string;
+
+  @ApiProperty({
+    description: 'Session expiration timestamp',
+  })
+  expiresAt!: Date;
+}
+
 export class CreateTenantResponseDto {
   @ApiProperty({
     description: 'UUID of the created tenant',
@@ -136,4 +180,10 @@ export class CreateTenantResponseDto {
     example: '550e8400-e29b-41d4-a716-446655440002',
   })
   environmentId!: string;
+
+  @ApiProperty({
+    description: 'Session created for the new account',
+    type: SessionInfoDto,
+  })
+  session!: SessionInfoDto;
 }

@@ -292,6 +292,56 @@ class EnvironmentAccountRepository
     }
   }
 
+  /**
+   * Get account by identifier (email, phone, or username) with password hash
+   */
+  async getByIdentifierWithPassword(
+    identifier: { email?: string; phone?: string; username?: string },
+    environmentId: IEnvironmentAccount['environmentId']
+  ): Promise<(IGetEnvironmentAccountDto & { passwordHash: string | null }) | undefined> {
+    try {
+      const query = this.dbClient<IGetEnvironmentAccountDto & { passwordHash: string | null }>(
+        this.tableName
+      ).where({ environmentId });
+
+      if (identifier.email) {
+        query.andWhere({ email: identifier.email });
+      } else if (identifier.phone) {
+        query.andWhere({ phone: identifier.phone });
+      } else if (identifier.username) {
+        query.andWhere({ username: identifier.username });
+      } else {
+        return undefined;
+      }
+
+      return await query
+        .select(
+          'id',
+          'name',
+          'username',
+          'phone',
+          'email',
+          'environmentId',
+          'avatarUrl',
+          'customProperties',
+          'disabled',
+          'disabledAt',
+          'passwordHash'
+        )
+        .first();
+    } catch (error) {
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.ENVIRONMENT_ACCOUNT_GET_BY_ID,
+        details: {
+          input: { ...identifier, environmentId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   async deleteCustomPropertyById(
     id: IEnvironmentAccount['id'],
     environmentId: IEnvironmentAccount['environmentId'],

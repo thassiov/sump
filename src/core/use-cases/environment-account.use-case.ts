@@ -246,6 +246,38 @@ class EnvironmentAccountUseCase extends BaseUseCase {
     );
   }
 
+  async disableAccountByIdAndEnvironmentId(
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ) {
+    this.validateAccountId(id, contexts.ENVIRONMENT_ACCOUNT_DISABLE);
+    this.validateTenantEnvironmentId(
+      environmentId,
+      contexts.ENVIRONMENT_ACCOUNT_DISABLE
+    );
+
+    return this.services.tenantEnvironmentAccount.disableByIdAndEnvironmentId(
+      id,
+      environmentId
+    );
+  }
+
+  async enableAccountByIdAndEnvironmentId(
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ) {
+    this.validateAccountId(id, contexts.ENVIRONMENT_ACCOUNT_ENABLE);
+    this.validateTenantEnvironmentId(
+      environmentId,
+      contexts.ENVIRONMENT_ACCOUNT_ENABLE
+    );
+
+    return this.services.tenantEnvironmentAccount.enableByIdAndEnvironmentId(
+      id,
+      environmentId
+    );
+  }
+
   private validateAccountId(
     accountId: unknown,
     context: keyof typeof contexts

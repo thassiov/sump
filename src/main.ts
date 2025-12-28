@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
@@ -10,6 +11,13 @@ async function bootstrap() {
 
   // Use Pino logger
   app.useLogger(app.get(Logger));
+
+  // Cookie parser for session management (signed cookies)
+  const cookieSecret = process.env['AUTH_SECRET'];
+  if (!cookieSecret) {
+    throw new Error('AUTH_SECRET environment variable is required');
+  }
+  app.use(cookieParser(cookieSecret));
 
   // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());

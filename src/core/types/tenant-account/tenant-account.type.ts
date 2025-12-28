@@ -19,12 +19,15 @@ const tenantAccountSchema = z.object({
   avatarUrl: z.string().check(z.url()).optional(),
   tenantId: z.uuid(),
   roles: z.array(tenantAccountRoleSchema).min(1).max(1),
+  disabled: z.boolean(),
+  disabledAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 type ITenantAccount = z.infer<typeof tenantAccountSchema>;
 type ITenantAccountRole = z.infer<typeof tenantAccountRoleSchema>;
+type ITenantAccountRoleType = z.infer<typeof tenantAccountRoleListSchema>;
 
-export { tenantAccountRoleSchema, tenantAccountSchema };
-export type { ITenantAccount, ITenantAccountRole };
+export { tenantAccountRoleSchema, tenantAccountRoleListSchema, tenantAccountSchema };
+export type { ITenantAccount, ITenantAccountRole, ITenantAccountRoleType };

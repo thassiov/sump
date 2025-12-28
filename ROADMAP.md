@@ -74,25 +74,41 @@ This document tracks planned features, improvements, and technical debt for the 
 
 ---
 
-## 4. Authentication (better-auth + OpenID Connect)
+## 4. Authentication & Authorization
 
-Integration with [better-auth](https://github.com/better-auth/better-auth) for authentication.
+Custom authentication using bcrypt for password hashing and signed cookies for sessions.
 
 ### 4.1 Tenant Authentication
-- [ ] Integrate better-auth for tenant admin authentication
-- [ ] Tenant admin login (`/login`)
-- [ ] Tenant admin signup (`/signup`)
-- [ ] Tenant admin session management
-- [ ] Tenant admin password reset flow
+- [x] Password hashing (bcrypt)
+- [x] Session management (signed cookies)
+- [x] Tenant admin login (`POST /auth/tenants/:tenantId/login`)
+- [x] Tenant admin signup (via `POST /tenants` - creates owner account)
+- [x] Tenant admin logout (`POST /auth/tenants/:tenantId/logout`)
+- [x] Session validation (`GET /auth/tenants/:tenantId/session`)
+- [x] List sessions (`GET /auth/tenants/:tenantId/sessions`)
+- [x] Logout all sessions (`POST /auth/tenants/:tenantId/logout-all`)
+- [~] Tenant password reset flow (in progress)
 
 ### 4.2 Environment Authentication
-- [ ] Integrate better-auth for environment user authentication
-- [ ] Environment user login (`/environments/:id/login`)
-- [ ] Environment user signup (`/environments/:id/signup`)
-- [ ] Environment user session management
-- [ ] Environment user password reset flow
+- [x] Environment user login (`POST /auth/environments/:envId/login`)
+- [x] Environment user signup (`POST /auth/environments/:envId/signup`)
+- [x] Environment user logout (`POST /auth/environments/:envId/logout`)
+- [x] Session validation (`GET /auth/environments/:envId/session`)
+- [x] List sessions (`GET /auth/environments/:envId/sessions`)
+- [x] Logout all sessions (`POST /auth/environments/:envId/logout-all`)
+- [~] Environment password reset flow (in progress)
 
-### 4.3 OpenID Connect (OIDC)
+### 4.3 Authorization (RBAC)
+- [x] Role-based access control (owner, admin, user)
+- [x] AuthGuard - validates session, attaches account to request
+- [x] RolesGuard - checks roles against route requirements
+- [x] @RequireRoles decorator for route protection
+- [x] @TenantResource / @EnvironmentResource context decorators
+- [x] @SelfOnly / @AllowOwner for self-service endpoints
+- [x] @CurrentSession / @CurrentAccount parameter decorators
+- [x] Account disable/enable functionality
+
+### 4.4 OpenID Connect (OIDC) - Deferred
 - [ ] OIDC Provider implementation (sump as identity provider)
 - [ ] Authorization endpoint
 - [ ] Token endpoint
@@ -104,7 +120,7 @@ Integration with [better-auth](https://github.com/better-auth/better-auth) for a
 - [ ] Client application registration and management
 - [ ] Scope and claims configuration per environment
 
-### 4.4 Social/External Providers (via better-auth)
+### 4.5 Social/External Providers (OAuth) - Deferred
 - [ ] Google OAuth
 - [ ] GitHub OAuth
 - [ ] Other providers as needed

@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { TenantAccountUseCase } from '../core/use-cases/tenant-account.use-case';
@@ -30,13 +31,22 @@ import {
   UserDefinedIdentificationDto,
   TenantAccountResponseDto,
 } from './dto';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { RequireRoles, AllowOwner, CurrentSession, TenantResource } from '../auth/decorators';
+import { ISession } from '../auth/types/session.type';
 
 @ApiTags('Tenant Accounts')
 @Controller('tenants/:tenantId/accounts')
+@UseGuards(AuthGuard, RolesGuard)
+@TenantResource('tenantId')
 export class TenantAccountController {
   constructor(private readonly tenantAccountUseCase: TenantAccountUseCase) {}
 
   @Post()
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Create a new account for a tenant',
     description: 'Creates a new account associated with the specified tenant.',
@@ -48,6 +58,8 @@ export class TenantAccountController {
     description: 'Account created successfully',
     type: CreateTenantAccountResponseDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   async createAccount(
     @Param('tenantId') tenantId: string,
     @Body() dto: ICreateTenantAccountDto
@@ -56,6 +68,11 @@ export class TenantAccountController {
   }
 
   @Get(':accountId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
+    { role: 'user', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Get account by ID and tenant ID',
     description: 'Retrieves an account by its UUID within the specified tenant.',
@@ -67,6 +84,8 @@ export class TenantAccountController {
     description: 'Account found',
     type: TenantAccountResponseDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async getAccountById(
     @Param('tenantId') tenantId: string,
@@ -83,6 +102,11 @@ export class TenantAccountController {
   }
 
   @Get('user-defined-identification')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
+    { role: 'user', target: 'tenant', targetId: ':tenantId' }
+  )
   @ApiOperation({
     summary: 'Get account by user defined identification',
     description: 'Searches for an account by email, phone, or username within the tenant.',
@@ -94,6 +118,8 @@ export class TenantAccountController {
     description: 'Account found',
     type: TenantAccountResponseDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async getAccountByUserDefinedIdentification(
     @Param('tenantId') tenantId: string,
@@ -111,6 +137,10 @@ export class TenantAccountController {
   }
 
   @Delete(':accountId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete account by ID and tenant ID',
@@ -119,6 +149,8 @@ export class TenantAccountController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiResponse({ status: 204, description: 'Account deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async deleteAccount(
     @Param('tenantId') tenantId: string,
@@ -131,14 +163,21 @@ export class TenantAccountController {
   }
 
   @Patch(':accountId')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @AllowOwner()
   @ApiOperation({
     summary: 'Update account non-sensitive properties',
-    description: 'Updates allowed account properties like name and avatar URL.',
+    description: 'Updates allowed account properties like name and avatar URL. Users can update their own account.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountDto })
   @ApiResponse({ status: 200, description: 'Account updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async updateAccount(
     @Param('tenantId') tenantId: string,
@@ -153,14 +192,21 @@ export class TenantAccountController {
   }
 
   @Patch(':accountId/email')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @AllowOwner()
   @ApiOperation({
     summary: 'Update account email',
-    description: 'Updates the email address for the specified account.',
+    description: 'Updates the email address for the specified account. Users can update their own email.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountEmailDto })
   @ApiResponse({ status: 200, description: 'Email updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
   async updateAccountEmail(
@@ -176,14 +222,21 @@ export class TenantAccountController {
   }
 
   @Patch(':accountId/phone')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @AllowOwner()
   @ApiOperation({
     summary: 'Update account phone',
-    description: 'Updates the phone number for the specified account.',
+    description: 'Updates the phone number for the specified account. Users can update their own phone.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountPhoneDto })
   @ApiResponse({ status: 200, description: 'Phone updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   @ApiResponse({ status: 409, description: 'Phone already in use' })
   async updateAccountPhone(
@@ -199,14 +252,21 @@ export class TenantAccountController {
   }
 
   @Patch(':accountId/username')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @AllowOwner()
   @ApiOperation({
     summary: 'Update account username',
-    description: 'Updates the username for the specified account.',
+    description: 'Updates the username for the specified account. Users can update their own username.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountUsernameDto })
   @ApiResponse({ status: 200, description: 'Username updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   @ApiResponse({ status: 409, description: 'Username already in use' })
   async updateAccountUsername(
@@ -218,6 +278,60 @@ export class TenantAccountController {
       accountId,
       tenantId,
       dto
+    );
+  }
+
+  @Patch(':accountId/disable')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @ApiOperation({
+    summary: 'Disable an account',
+    description: 'Disables an account. Owners can disable admins and users. Admins can only disable users. Disabled accounts cannot log in.',
+  })
+  @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
+  @ApiParam({ name: 'accountId', description: 'UUID of the account to disable' })
+  @ApiResponse({ status: 200, description: 'Account disabled successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient role to disable this account' })
+  @ApiResponse({ status: 404, description: 'Account not found' })
+  async disableAccount(
+    @Param('tenantId') tenantId: string,
+    @Param('accountId') accountId: string,
+    @CurrentSession() session: ISession
+  ) {
+    return this.tenantAccountUseCase.disableAccountByIdAndTenantId(
+      session.accountId,
+      accountId,
+      tenantId
+    );
+  }
+
+  @Patch(':accountId/enable')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' }
+  )
+  @ApiOperation({
+    summary: 'Enable a disabled account',
+    description: 'Re-enables a previously disabled account. Owners can enable admins and users. Admins can only enable users.',
+  })
+  @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
+  @ApiParam({ name: 'accountId', description: 'UUID of the account to enable' })
+  @ApiResponse({ status: 200, description: 'Account enabled successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient role to enable this account' })
+  @ApiResponse({ status: 404, description: 'Account not found' })
+  async enableAccount(
+    @Param('tenantId') tenantId: string,
+    @Param('accountId') accountId: string,
+    @CurrentSession() session: ISession
+  ) {
+    return this.tenantAccountUseCase.enableAccountByIdAndTenantId(
+      session.accountId,
+      accountId,
+      tenantId
     );
   }
 }

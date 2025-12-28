@@ -20,6 +20,11 @@ const createTenantAccountDtoSchema = tenantAccountSchema
   });
 type ICreateTenantAccountDto = z.infer<typeof createTenantAccountDtoSchema>;
 
+// Extended DTO for auth signup - includes passwordHash (internal use only)
+type ICreateTenantAccountWithPasswordDto = ICreateTenantAccountDto & {
+  passwordHash: string;
+};
+
 // @FIXME: this is dumb. fix it with `pick` instead
 const createTenantAccountNoInternalPropertiesDtoSchema = z
   .strictObject(tenantAccountSchema.shape)
@@ -28,6 +33,8 @@ const createTenantAccountNoInternalPropertiesDtoSchema = z
     phoneVerified: true,
     emailVerified: true,
     tenantId: true,
+    disabled: true,
+    disabledAt: true,
     createdAt: true,
     updatedAt: true,
   });
@@ -72,6 +79,8 @@ const getTenantAccountDtoSchema = tenantAccountSchema.pick({
   avatarUrl: true,
   tenantId: true,
   roles: true,
+  disabled: true,
+  disabledAt: true,
 });
 type IGetTenantAccountDto = z.infer<typeof getTenantAccountDtoSchema>;
 
@@ -121,11 +130,20 @@ const updateTenantAccountUsernameDtoSchema = tenantAccountSchema
   .required();
 type IUpdateTenantAccountUsernameDto = z.infer<typeof updateTenantAccountUsernameDtoSchema>;
 
+const updateTenantAccountDisabledDtoSchema = tenantAccountSchema
+  .pick({ disabled: true, disabledAt: true });
+type IUpdateTenantAccountDisabledDto = z.infer<typeof updateTenantAccountDisabledDtoSchema>;
+
+// Password hash update (for password reset)
+type IUpdateTenantAccountPasswordHashDto = { passwordHash: string };
+
 type IUpdateTenantAccountAllowedDtos =
   | IUpdateTenantAccountNonSensitivePropertiesDto
   | IUpdateTenantAccountEmailDto
   | IUpdateTenantAccountPhoneDto
-  | IUpdateTenantAccountUsernameDto;
+  | IUpdateTenantAccountUsernameDto
+  | IUpdateTenantAccountDisabledDto
+  | IUpdateTenantAccountPasswordHashDto;
 
 type CreateNewTenantAccountUseCaseDtoResult = ITenantAccount['id'];
 type DeleteTenantAccountByIdAndTenantIdUseCaseResultDto = boolean;
@@ -141,6 +159,7 @@ export type {
   ITenantAccountOptionalQueryFilters,
   ITenantAccountUserDefinedIdentification,
   ICreateTenantAccountDto,
+  ICreateTenantAccountWithPasswordDto,
   IGetTenantAccountDto,
   IUpdateTenantAccountAllowedDtos,
   IUpdateTenantAccountEmailDto,

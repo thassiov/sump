@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
 import { DatabaseModule } from './common/database/database.module';
@@ -8,6 +8,7 @@ import { TenantModule } from './tenant/tenant.module';
 import { TenantAccountModule } from './tenant-account/tenant-account.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { EnvironmentAccountModule } from './environment-account/environment-account.module';
+import { SumpAuthModule } from './auth';
 
 @Module({
   imports: [
@@ -28,6 +29,12 @@ import { EnvironmentAccountModule } from './environment-account/environment-acco
                 return (Array.isArray(requestId) ? requestId[0] : requestId) ?? randomUUID();
               },
             },
+    }),
+    SumpAuthModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow<string>('AUTH_SECRET'),
+      }),
     }),
     DatabaseModule,
     HealthModule,

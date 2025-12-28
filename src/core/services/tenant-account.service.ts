@@ -5,6 +5,7 @@ import { ITenantAccount, ITenantAccountRole } from '../types/tenant-account/tena
 import {
   ITenantAccountUserDefinedIdentification,
   ICreateTenantAccountDto,
+  ICreateTenantAccountWithPasswordDto,
   IGetTenantAccountDto,
   IUpdateTenantAccountEmailDto,
   IUpdateTenantAccountNonSensitivePropertiesDto,
@@ -35,6 +36,26 @@ export class TenantAccountService extends BaseService implements ITenantAccountS
     );
 
     this.logger.info(`new account created: ${accountId}`);
+
+    return accountId;
+  }
+
+  /**
+   * Create account with password hash (for auth signup)
+   */
+  async createWithPassword(
+    tenantId: ITenant['id'],
+    dto: ICreateTenantAccountWithPasswordDto,
+    transaction?: Knex.Transaction
+  ): Promise<string> {
+    this.logger.info(`create account with password for tenant ${tenantId}`);
+
+    const accountId = await this.accountRepository.create(
+      { ...dto, tenantId },
+      transaction
+    );
+
+    this.logger.info(`new account with password created: ${accountId}`);
 
     return accountId;
   }
@@ -89,6 +110,18 @@ export class TenantAccountService extends BaseService implements ITenantAccountS
     return await this.accountRepository.getByUserDefinedIdentification(
       accountUserDefinedIdentification
     );
+  }
+
+  /**
+   * Get account by identifier (email, phone, or username) with password hash (for auth signin)
+   */
+  async getByIdentifierWithPassword(
+    identifier: { email?: string; phone?: string; username?: string },
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<(IGetTenantAccountDto & { passwordHash: string | null }) | undefined> {
+    this.logger.info(`getByIdentifierWithPassword: ${JSON.stringify(identifier)}`);
+
+    return await this.accountRepository.getByIdentifierWithPassword(identifier, tenantId);
   }
 
   async deleteById(id: ITenantAccount['id']): Promise<boolean> {
@@ -175,5 +208,49 @@ export class TenantAccountService extends BaseService implements ITenantAccountS
     }
 
     return true;
+  }
+
+  async disableByIdAndTenantId(
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean> {
+    this.logger.info(`disableByIdAndTenantId: ${id}`);
+
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, {
+      disabled: true,
+      disabledAt: new Date(),
+    });
+  }
+
+  async enableByIdAndTenantId(
+    id: ITenantAccount['id'],
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<boolean> {
+    this.logger.info(`enableByIdAndTenantId: ${id}`);
+
+    return this.accountRepository.updateByIdAndTenantId(id, tenantId, {
+      disabled: false,
+      disabledAt: null,
+    });
+  }
+
+  /**
+   * Update password hash for an account (for password reset)
+   */
+  async updatePasswordHashById(
+    id: ITenantAccount['id'],
+    passwordHash: string
+  ): Promise<boolean> {
+    this.logger.info(`updatePasswordHashById: ${id}`);
+
+    // Get the account to find its tenantId
+    const account = await this.accountRepository.getById(id);
+    if (!account) {
+      return false;
+    }
+
+    return this.accountRepository.updateByIdAndTenantId(id, account.tenantId, {
+      passwordHash,
+    });
   }
 }

@@ -57,4 +57,12 @@ export type IEnvironmentAccountService = {
     environmentId: IEnvironmentAccount['environmentId'],
     customPropertyKey: string
   ) => Promise<boolean>;
+  disableByIdAndEnvironmentId: (
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ) => Promise<boolean>;
+  enableByIdAndEnvironmentId: (
+    id: IEnvironmentAccount['id'],
+    environmentId: IEnvironmentAccount['environmentId']
+  ) => Promise<boolean>;
 };

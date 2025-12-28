@@ -182,6 +182,56 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
     }
   }
 
+  /**
+   * Get account by identifier (email, phone, or username) with password hash (for auth signin)
+   */
+  async getByIdentifierWithPassword(
+    identifier: { email?: string; phone?: string; username?: string },
+    tenantId: ITenantAccount['tenantId']
+  ): Promise<(IGetTenantAccountDto & { passwordHash: string | null }) | undefined> {
+    try {
+      const query = this.dbClient<IGetTenantAccountDto & { passwordHash: string | null }>(
+        this.tableName
+      ).where({ tenantId });
+
+      if (identifier.email) {
+        query.andWhere({ email: identifier.email });
+      } else if (identifier.phone) {
+        query.andWhere({ phone: identifier.phone });
+      } else if (identifier.username) {
+        query.andWhere({ username: identifier.username });
+      } else {
+        return undefined;
+      }
+
+      return await query
+        .select(
+          'id',
+          'name',
+          'username',
+          'phone',
+          'email',
+          'roles',
+          'tenantId',
+          'avatarUrl',
+          'disabled',
+          'disabledAt',
+          'passwordHash'
+        )
+        .first();
+    } catch (error) {
+      const repositoryError = new UnexpectedError({
+        cause: error as Error,
+        context: contexts.TENANT_ACCOUNT_GET_BY_USER_DEFINED_IDENTIFICATION,
+        details: {
+          input: { ...identifier, tenantId },
+        },
+      });
+
+      throw repositoryError;
+    }
+  }
+
   async updateByIdAndTenantId(
     id: ITenantAccount['id'],
     tenantId: ITenantAccount['tenantId'],
@@ -339,7 +389,9 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
         'email',
         'roles',
         'tenantId',
-        'avatarUrl'
+        'avatarUrl',
+        'disabled',
+        'disabledAt'
       )
       .first();
   }
@@ -357,7 +409,9 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
         'email',
         'roles',
         'tenantId',
-        'avatarUrl'
+        'avatarUrl',
+        'disabled',
+        'disabledAt'
       );
   }
 
@@ -375,7 +429,9 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
         'email',
         'roles',
         'tenantId',
-        'avatarUrl'
+        'avatarUrl',
+        'disabled',
+        'disabledAt'
       )
       .first();
   }
@@ -467,7 +523,9 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
         'email',
         'roles',
         'tenantId',
-        'avatarUrl'
+        'avatarUrl',
+        'disabled',
+        'disabledAt'
       );
   }
 }
