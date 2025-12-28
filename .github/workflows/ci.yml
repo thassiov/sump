@@ -72,6 +72,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create config file for CI
+        run: |
+          cat > sump-config.json << 'EOF'
+          {
+            "database": {
+              "host": "postgres-local",
+              "port": "5432",
+              "user": "sump",
+              "password": "sump",
+              "database": "sump"
+            },
+            "restApi": {
+              "port": 8080
+            }
+          }
+          EOF
+
       - name: Build Docker images
         run: docker compose build base-image
 
