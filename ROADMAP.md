@@ -70,7 +70,7 @@ This document tracks planned features, improvements, and technical debt for the 
 - [ ] Database schema documentation
 - [ ] Development setup guide
 - [ ] Deployment guide
-- [ ] Update README.md with accurate usage modes (standalone vs SDK)
+- [x] Update README.md with accurate API endpoints and setup instructions
 
 ---
 
@@ -248,7 +248,7 @@ const account = await sump.accounts.create({ tenantId: tenant.id, ... });
 - [x] Add health check endpoint
 - [ ] Add metrics/observability
 - [ ] Database migrations versioning strategy
-- [ ] CI/CD pipeline setup
+- [x] CI/CD pipeline setup (GitHub Actions: build, lint, unit tests, integration tests, security audit)
 
 ### 8.3 Configuration Unification
 

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-size="24" font-weight="600" fill="#1a1a1a">Sump Entity Model</text>
+
+  <!-- Tenant Box -->
+  <rect x="300" y="60" width="200" height="90" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="400" y="95" text-anchor="middle" font-size="18" font-weight="600" fill="#1e40af">Tenant</text>
+  <text x="400" y="118" text-anchor="middle" font-size="12" fill="#64748b">name, customProperties</text>
+  <text x="400" y="135" text-anchor="middle" font-size="11" fill="#94a3b8">(organization container)</text>
+
+  <!-- Tenant Account Box -->
+  <rect x="50" y="220" width="200" height="110" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+  <text x="150" y="255" text-anchor="middle" font-size="16" font-weight="600" fill="#166534">Tenant Account</text>
+  <text x="150" y="278" text-anchor="middle" font-size="11" fill="#64748b">name, email, phone</text>
+  <text x="150" y="293" text-anchor="middle" font-size="11" fill="#64748b">username, password</text>
+  <text x="150" y="308" text-anchor="middle" font-size="11" fill="#64748b">roles (owner/admin)</text>
+  <text x="150" y="323" text-anchor="middle" font-size="10" fill="#94a3b8">(for administration)</text>
+
+  <!-- Environment Box -->
+  <rect x="550" y="220" width="200" height="90" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="650" y="255" text-anchor="middle" font-size="16" font-weight="600" fill="#b45309">Environment</text>
+  <text x="650" y="278" text-anchor="middle" font-size="11" fill="#64748b">name, customProperties</text>
+  <text x="650" y="298" text-anchor="middle" font-size="10" fill="#94a3b8">(dev, staging, prod...)</text>
+
+  <!-- Environment Account Box -->
+  <rect x="550" y="380" width="200" height="110" rx="8" fill="#fef9c3" stroke="#eab308" stroke-width="2"/>
+  <text x="650" y="410" text-anchor="middle" font-size="14" font-weight="600" fill="#a16207">Environment Account</text>
+  <text x="650" y="433" text-anchor="middle" font-size="11" fill="#64748b">name, email, phone</text>
+  <text x="650" y="448" text-anchor="middle" font-size="11" fill="#64748b">username, password</text>
+  <text x="650" y="463" text-anchor="middle" font-size="11" fill="#64748b">customProperties</text>
+  <text x="650" y="480" text-anchor="middle" font-size="10" fill="#94a3b8">(your app's users)</text>
+
+  <!-- Arrow: Tenant -> Tenant Account -->
+  <path d="M300 130 L150 220" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <rect x="185" y="165" width="40" height="20" rx="4" fill="#fee2e2"/>
+  <text x="205" y="179" text-anchor="middle" font-size="11" font-weight="500" fill="#dc2626">1:N</text>
+
+  <!-- Arrow: Tenant -> Environment -->
+  <path d="M500 130 L650 220" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <rect x="555" y="165" width="40" height="20" rx="4" fill="#fee2e2"/>
+  <text x="575" y="179" text-anchor="middle" font-size="11" font-weight="500" fill="#dc2626">1:N</text>
+
+  <!-- Arrow: Environment -> Environment Account -->
+  <path d="M650 310 L650 380" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <rect x="660" y="335" width="40" height="20" rx="4" fill="#fee2e2"/>
+  <text x="680" y="349" text-anchor="middle" font-size="11" font-weight="500" fill="#dc2626">1:N</text>
+
+  <!-- Arrowhead marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg>
