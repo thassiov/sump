@@ -177,16 +177,25 @@ A simple admin dashboard built with shadcn/ui for managing tenants and environme
 
 ## 6. Distribution Modes
 
-SUMP should support two usage modes:
+SUMP should support two usage modes with unified configuration:
 
 ### 6.1 Standalone Server Mode
 Run as an independent service that applications connect to via REST API.
 
 - [ ] CLI for starting the server (`sump serve` or `sump -c config.json`)
-- [ ] Docker image with all dependencies
-- [ ] Configuration via environment variables and/or config file
+- [x] Docker image with all dependencies
+- [~] Configuration via environment variables and/or config file (currently env vars only, see 8.3)
 - [ ] Database connection management
 - [ ] Graceful shutdown handling
+
+**Configuration approach** (target):
+```bash
+# Via config file
+sump serve --config=./sump-config.json
+
+# Via environment variables (current approach)
+AUTH_SECRET=... DB_HOST=... npm run dev:start
+```
 
 ### 6.2 SDK/Library Mode
 Import and use programmatically within other Node.js applications.
@@ -194,7 +203,11 @@ Import and use programmatically within other Node.js applications.
 ```typescript
 import { Sump } from 'sump';
 
-const sump = new Sump({ database: { ... } });
+// Config passed as object (same structure as sump-config.json)
+const sump = new Sump({
+  database: { host: 'localhost', port: 5432, ... },
+  auth: { secret: '...' },
+});
 
 // Use services directly
 const tenant = await sump.tenants.create({ name: 'My Tenant', ... });
@@ -235,6 +248,33 @@ const account = await sump.accounts.create({ tenantId: tenant.id, ... });
 - [ ] Add metrics/observability
 - [ ] Database migrations versioning strategy
 - [ ] CI/CD pipeline setup
+
+### 8.3 Configuration Unification
+
+**Current State**: Configuration is fragmented between two approaches:
+
+| Component | Config Source |
+|-----------|--------------|
+| NestJS application | Environment variables via `ConfigService` |
+| Migration scripts | `sump-config.json` via `configLoader()` |
+
+**Target State**: Unified configuration that supports both distribution modes:
+
+1. **Standalone mode**: Read from `sump-config.json` file via `--config` CLI flag
+2. **SDK mode**: Accept config object passed programmatically
+
+The `configLoader()` in `src/lib/config/index.ts` already supports this pattern but is not used by the NestJS application.
+
+**Tasks**:
+- [ ] Create a NestJS ConfigModule wrapper that uses `configLoader()`
+- [ ] Update `DatabaseModule` to read from unified config
+- [ ] Update `SumpAuthModule` to read from unified config
+- [ ] Update `main.ts` to bootstrap with config file support
+- [ ] Ensure environment variables can override config file values
+- [ ] Update docker-compose to use config file instead of env vars
+- [ ] Document configuration schema and options
+
+**Temporary approach**: Using environment variables until unification is complete.
 
 ---
 
