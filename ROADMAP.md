@@ -87,7 +87,8 @@ Custom authentication using bcrypt for password hashing and signed cookies for s
 - [x] Session validation (`GET /auth/tenants/:tenantId/session`)
 - [x] List sessions (`GET /auth/tenants/:tenantId/sessions`)
 - [x] Logout all sessions (`POST /auth/tenants/:tenantId/logout-all`)
-- [~] Tenant password reset flow (in progress)
+- [x] Forgot password (`POST /auth/tenants/:tenantId/forgot-password`)
+- [x] Reset password (`POST /auth/tenants/:tenantId/reset-password`)
 
 ### 4.2 Environment Authentication
 - [x] Environment user login (`POST /auth/environments/:envId/login`)
@@ -96,7 +97,8 @@ Custom authentication using bcrypt for password hashing and signed cookies for s
 - [x] Session validation (`GET /auth/environments/:envId/session`)
 - [x] List sessions (`GET /auth/environments/:envId/sessions`)
 - [x] Logout all sessions (`POST /auth/environments/:envId/logout-all`)
-- [~] Environment password reset flow (in progress)
+- [x] Forgot password (`POST /auth/environments/:envId/forgot-password`)
+- [x] Reset password (`POST /auth/environments/:envId/reset-password`)
 
 ### 4.3 Authorization (RBAC)
 - [x] Role-based access control (owner, admin, user)
@@ -239,6 +241,7 @@ const account = await sump.accounts.create({ tenantId: tenant.id, ... });
 ## Notes
 
 - Priority should be given to testing before adding new features
-- Authentication (better-auth) integration should come after core CRUD is stable and tested
-- Frontend development can happen in parallel with backend auth work
+- Core authentication is complete (custom implementation with bcrypt + signed cookies)
+- OAuth and OIDC provider features are deferred until needed
+- Frontend development can happen in parallel with backend work
 - The SDK mode requires careful API design to ensure clean separation of concerns
