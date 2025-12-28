@@ -12,6 +12,15 @@ async function bootstrap() {
   // Use Pino logger
   app.useLogger(app.get(Logger));
 
+  // CORS configuration
+  const corsOrigins = process.env['CORS_ORIGINS']?.split(',') || ['http://localhost:3001'];
+  app.enableCors({
+    origin: corsOrigins,
+    credentials: true, // Required for cookies
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   // Cookie parser for session management (signed cookies)
   const cookieSecret = process.env['AUTH_SECRET'];
   if (!cookieSecret) {
