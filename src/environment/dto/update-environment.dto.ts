@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, ApiExtraModels } from '@nestjs/swagger';
+import { IsString, MinLength, IsOptional } from 'class-validator';
 
 export class UpdateEnvironmentDto {
   @ApiPropertyOptional({
@@ -6,6 +7,9 @@ export class UpdateEnvironmentDto {
     example: 'production-v2',
     minLength: 2,
   })
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
   name?: string;
 }
 
@@ -20,5 +24,6 @@ export class DeleteEnvironmentCustomPropertyDto {
     description: 'Key of the custom property to delete',
     example: 'max_users',
   })
+  @IsString()
   customProperty!: string;
 }

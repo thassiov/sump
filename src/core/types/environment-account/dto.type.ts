@@ -19,7 +19,7 @@ type ICreateEnvironmentAccountDto = z.infer<
   typeof createEnvironmentAccountDtoSchema
 >;
 
-const createTenantEnvironmentAccountNoInternalPropertiesDtoSchema = z
+const createEnvironmentAccountNoInternalPropertiesDtoSchema = z
   .strictObject(environmentAccountSchema.shape)
   .omit({
     id: true,
@@ -30,10 +30,13 @@ const createTenantEnvironmentAccountNoInternalPropertiesDtoSchema = z
     disabledAt: true,
     createdAt: true,
     updatedAt: true,
+  })
+  .partial({
+    customProperties: true,
   });
 
-type ICreateTenantEnvironmentAccountNoInternalPropertiesDto = z.infer<
-  typeof createTenantEnvironmentAccountNoInternalPropertiesDtoSchema
+type ICreateEnvironmentAccountNoInternalPropertiesDto = z.infer<
+  typeof createEnvironmentAccountNoInternalPropertiesDtoSchema
 >;
 
 const getEnvironmentAccountDtoSchema = z
@@ -67,37 +70,37 @@ type IUpdateEnvironmentAccountNonSensitivePropertiesDto = z.infer<
   typeof updateEnvironmentAccountNonSensitivePropertiesDtoSchema
 >;
 
-const tenantEnvironmentAccountCustomPropertiesOperationDtoSchema =
+const environmentAccountCustomPropertiesOperationDtoSchema =
   environmentAccountSchema.shape.customProperties.refine(
     (val) => Object.keys(val).length
   );
 
 type IEnvironmentAccountCustomPropertiesOperationDtoSchema = z.infer<
-  typeof tenantEnvironmentAccountCustomPropertiesOperationDtoSchema
+  typeof environmentAccountCustomPropertiesOperationDtoSchema
 >;
 
-const updateTenantEnvironmentAccountEmailDtoSchema = z
+const updateEnvironmentAccountEmailDtoSchema = z
   .strictObject(environmentAccountSchema.shape)
   .pick({ email: true })
   .required();
-type IUpdateTenantEnvironmentAccountEmailDto = z.infer<
-  typeof updateTenantEnvironmentAccountEmailDtoSchema
+type IUpdateEnvironmentAccountEmailDto = z.infer<
+  typeof updateEnvironmentAccountEmailDtoSchema
 >;
 
-const updateTenantEnvironmentAccountPhoneDtoSchema = z
+const updateEnvironmentAccountPhoneDtoSchema = z
   .strictObject(environmentAccountSchema.shape)
   .pick({ phone: true })
   .required();
-type IUpdateTenantEnvironmentAccountPhoneDto = z.infer<
-  typeof updateTenantEnvironmentAccountPhoneDtoSchema
+type IUpdateEnvironmentAccountPhoneDto = z.infer<
+  typeof updateEnvironmentAccountPhoneDtoSchema
 >;
 
-const updateTenantEnvironmentAccountUsernameDtoSchema = z
+const updateEnvironmentAccountUsernameDtoSchema = z
   .strictObject(environmentAccountSchema.shape)
   .pick({ username: true })
   .required();
-type IUpdateTenantEnvironmentAccountUsernameDto = z.infer<
-  typeof updateTenantEnvironmentAccountUsernameDtoSchema
+type IUpdateEnvironmentAccountUsernameDto = z.infer<
+  typeof updateEnvironmentAccountUsernameDtoSchema
 >;
 
 const updateEnvironmentAccountDisabledDtoSchema = z
@@ -112,9 +115,9 @@ type IUpdateEnvironmentAccountPasswordHashDto = { passwordHash: string };
 
 type IUpdateEnvironmentAccountAllowedDtos =
   | IUpdateEnvironmentAccountNonSensitivePropertiesDto
-  | IUpdateTenantEnvironmentAccountEmailDto
-  | IUpdateTenantEnvironmentAccountPhoneDto
-  | IUpdateTenantEnvironmentAccountUsernameDto
+  | IUpdateEnvironmentAccountEmailDto
+  | IUpdateEnvironmentAccountPhoneDto
+  | IUpdateEnvironmentAccountUsernameDto
   | IUpdateEnvironmentAccountDisabledDto
   | IUpdateEnvironmentAccountPasswordHashDto;
 
@@ -124,23 +127,23 @@ type CreateNewEnvironmentAccountUseCaseDtoResult =
 export type {
   CreateNewEnvironmentAccountUseCaseDtoResult,
   ICreateEnvironmentAccountDto,
-  ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
+  ICreateEnvironmentAccountNoInternalPropertiesDto,
   IGetEnvironmentAccountDto,
   IEnvironmentAccountCustomPropertiesOperationDtoSchema,
   IUpdateEnvironmentAccountAllowedDtos,
-  IUpdateTenantEnvironmentAccountEmailDto,
+  IUpdateEnvironmentAccountEmailDto,
   IUpdateEnvironmentAccountNonSensitivePropertiesDto,
-  IUpdateTenantEnvironmentAccountPhoneDto,
-  IUpdateTenantEnvironmentAccountUsernameDto,
+  IUpdateEnvironmentAccountPhoneDto,
+  IUpdateEnvironmentAccountUsernameDto,
 };
 
 export {
   createEnvironmentAccountDtoSchema,
-  createTenantEnvironmentAccountNoInternalPropertiesDtoSchema,
+  createEnvironmentAccountNoInternalPropertiesDtoSchema,
   getEnvironmentAccountDtoSchema,
-  tenantEnvironmentAccountCustomPropertiesOperationDtoSchema,
-  updateTenantEnvironmentAccountEmailDtoSchema,
+  environmentAccountCustomPropertiesOperationDtoSchema,
+  updateEnvironmentAccountEmailDtoSchema,
   updateEnvironmentAccountNonSensitivePropertiesDtoSchema,
-  updateTenantEnvironmentAccountPhoneDtoSchema,
-  updateTenantEnvironmentAccountUsernameDtoSchema,
+  updateEnvironmentAccountPhoneDtoSchema,
+  updateEnvironmentAccountUsernameDtoSchema,
 };

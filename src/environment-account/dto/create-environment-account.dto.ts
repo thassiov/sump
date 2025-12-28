@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsEmail, IsOptional, IsObject, MinLength, MaxLength } from 'class-validator';
 
 export class CreateEnvironmentAccountDto {
   @ApiProperty({
@@ -7,12 +8,16 @@ export class CreateEnvironmentAccountDto {
     minLength: 3,
     maxLength: 100,
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
   name!: string;
 
   @ApiProperty({
     description: 'Email address',
     example: 'alice.johnson@example.com',
   })
+  @IsEmail()
   email!: string;
 
   @ApiProperty({
@@ -21,18 +26,24 @@ export class CreateEnvironmentAccountDto {
     minLength: 3,
     maxLength: 20,
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(20)
   username!: string;
 
   @ApiProperty({
     description: 'Phone number in E.164 format',
     example: '+1234567890',
   })
+  @IsString()
   phone!: string;
 
   @ApiPropertyOptional({
     description: 'URL to avatar image',
     example: 'https://example.com/avatar.png',
   })
+  @IsOptional()
+  @IsString()
   avatarUrl?: string;
 
   @ApiPropertyOptional({
@@ -41,6 +52,8 @@ export class CreateEnvironmentAccountDto {
     type: 'object',
     additionalProperties: true,
   })
+  @IsOptional()
+  @IsObject()
   customProperties?: Record<string, unknown>;
 }
 

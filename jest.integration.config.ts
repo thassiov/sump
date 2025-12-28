@@ -8,6 +8,8 @@ const integrationConfig: Config = {
   testEnvironment: 'node',
   rootDir: './src',
   moduleFileExtensions: ['ts', 'js', 'json'],
+  // Run tests sequentially - integration tests share the same database
+  maxWorkers: 1,
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',

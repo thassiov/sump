@@ -62,6 +62,7 @@ services:
       postgres-init:
         condition: service_completed_successfully
 
+  # Run all integration tests once (CI mode)
   test-runner:
     image: sump-image:latest
     pull_policy: never
@@ -69,7 +70,43 @@ services:
       - test
     command: ['npx', 'jest', '--config', 'jest.integration.config.ts']
     volumes:
-      - ./sump-config.json:/app/sump-config.json
+      - ./src:/app/src:ro
+      - ./sump-config.json:/app/sump-config.json:ro
+      - ./jest.integration.config.ts:/app/jest.integration.config.ts:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres-local
+      - DB_PORT=5432
+      - DB_USER=sump
+      - DB_PASSWORD=sump
+      - DB_NAME=sump
+      - AUTH_SECRET=this-is-a-32-character-test-key-for-integration
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
+
+  # Watch mode for development - runs related tests on file changes
+  # Usage: docker compose --profile test-watch up test-watcher
+  # Commands in watch mode:
+  #   a - run all tests
+  #   f - run only failed tests
+  #   p - filter by filename pattern
+  #   t - filter by test name pattern
+  #   q - quit
+  test-watcher:
+    image: sump-image:latest
+    pull_policy: never
+    profiles:
+      - test-watch
+    command: ['npx', 'jest', '--config', 'jest.integration.config.ts', '--watch']
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./src:/app/src:ro
+      - ./sump-config.json:/app/sump-config.json:ro
+      - ./jest.integration.config.ts:/app/jest.integration.config.ts:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
     environment:
       - NODE_ENV=test
       - DB_HOST=postgres-local

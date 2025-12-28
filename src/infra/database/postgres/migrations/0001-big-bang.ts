@@ -55,13 +55,13 @@ async function up(knex: Knex) {
         .index('tenantAccountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
-      table.string('phone').notNullable().unique();
+      table.string('phone').nullable().unique();
       table.boolean('phoneVerified').notNullable().defaultTo(false);
       table.string('username').notNullable().unique();
       table.string('name').notNullable();
-      table.string('avatarUrl').notNullable();
+      table.string('avatarUrl').nullable();
       table.string('passwordHash', 255).nullable();
-      table.json('roles').notNullable();
+      table.jsonb('roles').notNullable().defaultTo('[]');
       table.uuid('tenantId');
       table
         .foreign('tenantId')
@@ -85,7 +85,7 @@ async function up(knex: Knex) {
         .unique()
         .index('environmentIdx');
       table.string('name').notNullable();
-      table.json('customProperties').notNullable();
+      table.jsonb('customProperties').notNullable();
       table.uuid('tenantId');
       table
         .foreign('tenantId')
@@ -110,13 +110,13 @@ async function up(knex: Knex) {
         .index('environmentAccountIdx');
       table.string('email').notNullable().unique();
       table.boolean('emailVerified').notNullable().defaultTo(false);
-      table.string('phone').notNullable().unique();
+      table.string('phone').nullable().unique();
       table.boolean('phoneVerified').notNullable().defaultTo(false);
       table.string('username').notNullable().unique();
       table.string('name').notNullable();
-      table.string('avatarUrl').notNullable();
+      table.string('avatarUrl').nullable();
       table.string('passwordHash', 255).nullable();
-      table.json('customProperties').notNullable();
+      table.jsonb('customProperties').notNullable();
       table.uuid('environmentId');
       table
         .foreign('environmentId')

@@ -40,7 +40,7 @@ export class EnvironmentService
 
     try {
       const tenantEnvironmentId = await this.tenantEnvironmentRepository.create(
-        { ...dto, tenantId },
+        { customProperties: {}, ...dto, tenantId },
         transaction
       );
 
@@ -197,9 +197,7 @@ export class EnvironmentService
     }
 
     const isPayloadValid =
-      environmentCustomPropertiesOperationDtoSchema.safeParse({
-        customProperties,
-      });
+      environmentCustomPropertiesOperationDtoSchema.safeParse(customProperties);
 
     if (!isPayloadValid.success) {
       const errorInstance = new ValidationError({

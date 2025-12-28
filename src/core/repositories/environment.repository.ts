@@ -360,10 +360,18 @@ class EnvironmentRepository
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
     const key = Object.keys(customProperty)[0] as string;
+    // Value must be JSON stringified for jsonb_set
+    const value = JSON.stringify(customProperty[key]);
 
     await this.dbClient(this.tableName)
       .where({ id, tenantId })
-      .jsonSet('customProperties', `$.${key}`, customProperty);
+      .update({
+        customProperties: this.dbClient.jsonSet(
+          'customProperties',
+          `$.${key}`,
+          value
+        ),
+      });
   }
 
   private async sendDeleteJsonDataOnPathByIdAndTenantIdQuery(
@@ -373,7 +381,12 @@ class EnvironmentRepository
   ): Promise<void> {
     await this.dbClient(this.tableName)
       .where({ id, tenantId })
-      .jsonRemove('customProperties', `$.${jsonPath}`);
+      .update({
+        customProperties: this.dbClient.jsonRemove(
+          'customProperties',
+          `$.${jsonPath}`
+        ),
+      });
   }
 }
 

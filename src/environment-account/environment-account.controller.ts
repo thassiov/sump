@@ -14,14 +14,6 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { EnvironmentAccountUseCase } from '../core/use-cases/environment-account.use-case';
 import {
-  ICreateEnvironmentAccountDto,
-  IUpdateEnvironmentAccountNonSensitivePropertiesDto,
-  IUpdateTenantEnvironmentAccountEmailDto,
-  IUpdateTenantEnvironmentAccountPhoneDto,
-  IUpdateTenantEnvironmentAccountUsernameDto,
-} from '../core/types/environment-account/dto.type';
-import { IEnvironmentAccount } from '../core/types/environment-account/environment-account.type';
-import {
   CreateEnvironmentAccountDto,
   CreateEnvironmentAccountResponseDto,
   UpdateEnvironmentAccountDto,
@@ -58,9 +50,10 @@ export class EnvironmentAccountController {
   @ApiResponse({ status: 409, description: 'Email/username/phone already in use' })
   async createAccount(
     @Param('environmentId') environmentId: string,
-    @Body() dto: ICreateEnvironmentAccountDto
+    @Body() dto: CreateEnvironmentAccountDto
   ) {
-    return this.environmentAccountUseCase.createNewAccount(environmentId, dto);
+    const id = await this.environmentAccountUseCase.createNewAccount(environmentId, dto);
+    return { id };
   }
 
   @Get(':accountId')
@@ -141,7 +134,7 @@ export class EnvironmentAccountController {
   async updateAccount(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() dto: IUpdateEnvironmentAccountNonSensitivePropertiesDto
+    @Body() dto: UpdateEnvironmentAccountDto
   ) {
     return this.environmentAccountUseCase.updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId(
       accountId,
@@ -168,7 +161,7 @@ export class EnvironmentAccountController {
   async updateAccountEmail(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() dto: IUpdateTenantEnvironmentAccountEmailDto
+    @Body() dto: UpdateEnvironmentAccountEmailDto
   ) {
     return this.environmentAccountUseCase.updateAccountEmailByIdAndTenantEnvironmentId(
       accountId,
@@ -195,7 +188,7 @@ export class EnvironmentAccountController {
   async updateAccountPhone(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() dto: IUpdateTenantEnvironmentAccountPhoneDto
+    @Body() dto: UpdateEnvironmentAccountPhoneDto
   ) {
     return this.environmentAccountUseCase.updateAccountPhoneByIdAndTenantEnvironmentId(
       accountId,
@@ -222,7 +215,7 @@ export class EnvironmentAccountController {
   async updateAccountUsername(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() dto: IUpdateTenantEnvironmentAccountUsernameDto
+    @Body() dto: UpdateEnvironmentAccountUsernameDto
   ) {
     return this.environmentAccountUseCase.updateAccountUsernameByIdAndTenantEnvironmentId(
       accountId,
@@ -248,7 +241,7 @@ export class EnvironmentAccountController {
   async setCustomProperty(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() customProperty: IEnvironmentAccount['customProperties']
+    @Body() customProperty: Record<string, unknown>
   ) {
     return this.environmentAccountUseCase.setAccountCustomPropertyByIdAndTenantEnvironmentId(
       accountId,

@@ -19,7 +19,6 @@ import {
   IUpdateTenantAccountEmailDto,
   IUpdateTenantAccountPhoneDto,
   IUpdateTenantAccountUsernameDto,
-  ITenantAccountUserDefinedIdentification,
 } from '../core/types/tenant-account/dto.type';
 import {
   CreateTenantAccountDto,
@@ -64,7 +63,44 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Body() dto: ICreateTenantAccountDto
   ) {
-    return this.tenantAccountUseCase.createNewAccount(tenantId, dto);
+    const id = await this.tenantAccountUseCase.createNewAccount(tenantId, dto);
+    return { id };
+  }
+
+  @Get('user-defined-identification')
+  @RequireRoles(
+    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
+    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
+    { role: 'user', target: 'tenant', targetId: ':tenantId' }
+  )
+  @ApiOperation({
+    summary: 'Get account by user defined identification',
+    description: 'Searches for an account by email, phone, or username within the tenant.',
+  })
+  @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
+  @ApiBody({ type: UserDefinedIdentificationDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Account found',
+    type: TenantAccountResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiResponse({ status: 404, description: 'Account not found' })
+  async getAccountByUserDefinedIdentification(
+    @Param('tenantId') tenantId: string,
+    @Body() dto: UserDefinedIdentificationDto
+  ) {
+    const accounts =
+      await this.tenantAccountUseCase.getAccountByUserDefinedIdentificationAndTenantId(
+        dto,
+        tenantId
+      );
+    if (!accounts || accounts.length === 0) {
+      throw new NotFoundException('Account not found');
+    }
+    // Return first match (identifiers are unique)
+    return accounts[0];
   }
 
   @Get(':accountId')
@@ -95,41 +131,6 @@ export class TenantAccountController {
       accountId,
       tenantId
     );
-    if (!account) {
-      throw new NotFoundException('Account not found');
-    }
-    return account;
-  }
-
-  @Get('user-defined-identification')
-  @RequireRoles(
-    { role: 'owner', target: 'tenant', targetId: ':tenantId' },
-    { role: 'admin', target: 'tenant', targetId: ':tenantId' },
-    { role: 'user', target: 'tenant', targetId: ':tenantId' }
-  )
-  @ApiOperation({
-    summary: 'Get account by user defined identification',
-    description: 'Searches for an account by email, phone, or username within the tenant.',
-  })
-  @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
-  @ApiBody({ type: UserDefinedIdentificationDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Account found',
-    type: TenantAccountResponseDto,
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
-  @ApiResponse({ status: 404, description: 'Account not found' })
-  async getAccountByUserDefinedIdentification(
-    @Param('tenantId') tenantId: string,
-    @Body() dto: ITenantAccountUserDefinedIdentification
-  ) {
-    const account =
-      await this.tenantAccountUseCase.getAccountByUserDefinedIdentificationAndTenantId(
-        dto,
-        tenantId
-      );
     if (!account) {
       throw new NotFoundException('Account not found');
     }

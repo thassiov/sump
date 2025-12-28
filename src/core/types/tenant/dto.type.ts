@@ -46,9 +46,15 @@ type IGetTenantDto = z.infer<typeof getTenantDtoSchema>;
 
 type IUpdateTenantAllowedDtos = IUpdateTenantNonSensitivePropertiesDto;
 
+// For tenant creation, roles are added by the use case after tenant is created
+// so we exclude roles from validation here
+const createNewTenantAccountDtoSchema = z.strictObject(
+  createTenantAccountNoInternalPropertiesDtoSchema.shape
+).omit({ roles: true });
+
 const createNewTenantUseCaseDtoSchema = z.object({
   tenant: z.strictObject(createTenantDtoSchema.shape),
-  account: z.strictObject(createTenantAccountNoInternalPropertiesDtoSchema.shape),
+  account: createNewTenantAccountDtoSchema,
   environment: z
     .strictObject(createEnvironmentNoInternalPropertiesDtoSchema.shape)
     .optional(),

@@ -236,13 +236,15 @@ class TenantRepository extends BaseRepository implements ITenantRepository {
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
     const key = Object.keys(customProperty)[0] as string;
+    // Value must be JSON stringified for jsonb_set
+    const value = JSON.stringify(customProperty[key]);
 
     await this.dbClient(this.tableName)
       .update({
         customProperties: this.dbClient.jsonSet(
           'customProperties',
           `$.${key}`,
-          customProperty[key]
+          value
         ),
       })
       .where('id', id);

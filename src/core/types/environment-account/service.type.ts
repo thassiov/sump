@@ -1,18 +1,18 @@
 import { Knex } from 'knex';
 import {
-  ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
+  ICreateEnvironmentAccountNoInternalPropertiesDto,
   IGetEnvironmentAccountDto,
-  IUpdateTenantEnvironmentAccountEmailDto,
+  IUpdateEnvironmentAccountEmailDto,
   IUpdateEnvironmentAccountNonSensitivePropertiesDto,
-  IUpdateTenantEnvironmentAccountPhoneDto,
-  IUpdateTenantEnvironmentAccountUsernameDto,
+  IUpdateEnvironmentAccountPhoneDto,
+  IUpdateEnvironmentAccountUsernameDto,
 } from './dto.type';
 import { IEnvironmentAccount } from './environment-account.type';
 
 export type IEnvironmentAccountService = {
   create: (
     environmentId: IEnvironmentAccount['environmentId'],
-    dto: ICreateTenantEnvironmentAccountNoInternalPropertiesDto,
+    dto: ICreateEnvironmentAccountNoInternalPropertiesDto,
     transaction?: Knex.Transaction
   ) => Promise<string>;
   getById: (
@@ -35,17 +35,17 @@ export type IEnvironmentAccountService = {
   updateEmailByIdAndTenantEnvironmentId: (
     id: IEnvironmentAccount['id'],
     environmentId: IEnvironmentAccount['environmentId'],
-    dto: IUpdateTenantEnvironmentAccountEmailDto
+    dto: IUpdateEnvironmentAccountEmailDto
   ) => Promise<boolean>;
   updateUsernameByIdAndTenantEnvironmentId: (
     id: IEnvironmentAccount['id'],
     environmentId: IEnvironmentAccount['environmentId'],
-    dto: IUpdateTenantEnvironmentAccountUsernameDto
+    dto: IUpdateEnvironmentAccountUsernameDto
   ) => Promise<boolean>;
   updatePhoneByIdAndTenantEnvironmentId: (
     id: IEnvironmentAccount['id'],
     environmentId: IEnvironmentAccount['environmentId'],
-    dto: IUpdateTenantEnvironmentAccountPhoneDto
+    dto: IUpdateEnvironmentAccountPhoneDto
   ) => Promise<boolean>;
   setCustomPropertyByIdAndTenantEnvironmentId: (
     id: IEnvironmentAccount['id'],

@@ -74,8 +74,7 @@ export class TenantController {
       account: {
         ...accountWithoutPassword,
         passwordHash,
-        // Owner role will be set by the use case based on tenantId
-        roles: [{ role: 'owner' as const, target: 'tenant' as const, targetId: '' }],
+        // Note: roles are added by the use case after tenant creation
       },
       environment: dto.environment
         ? {

@@ -19,6 +19,9 @@ const createEnvironmentNoInternalPropertiesDtoSchema = z
   .pick({
     name: true,
     customProperties: true,
+  })
+  .partial({
+    customProperties: true,
   });
 
 type ICreateEnvironmentNoInternalPropertiesDto = z.infer<

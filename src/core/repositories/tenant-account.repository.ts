@@ -469,7 +469,14 @@ class TenantAccountRepository extends BaseRepository implements ITenantAccountRe
   ): Promise<IGetTenantAccountDto[] | undefined> {
     let query = this.dbClient<IGetTenantAccountDto>(this.tableName);
 
-    const wheres = Object.entries(dto) as [string, string][];
+    // Filter out undefined values to avoid Knex binding errors
+    const wheres = Object.entries(dto).filter(
+      ([, value]) => value !== undefined
+    ) as [string, string][];
+
+    if (wheres.length === 0) {
+      return;
+    }
 
     wheres.forEach(([key, value], index: number) => {
       if (index === 0) {

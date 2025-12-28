@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, MinLength, IsOptional, IsObject } from 'class-validator';
 
 export class CreateEnvironmentDto {
   @ApiProperty({
@@ -6,6 +7,8 @@ export class CreateEnvironmentDto {
     example: 'staging',
     minLength: 2,
   })
+  @IsString()
+  @MinLength(2)
   name!: string;
 
   @ApiPropertyOptional({
@@ -14,6 +17,8 @@ export class CreateEnvironmentDto {
     type: 'object',
     additionalProperties: true,
   })
+  @IsOptional()
+  @IsObject()
   customProperties?: Record<string, unknown>;
 }
 

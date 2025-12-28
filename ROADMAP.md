@@ -13,11 +13,11 @@ This document tracks planned features, improvements, and technical debt for the 
 ## 1. Testing
 
 ### 1.1 Integration Tests
-- [ ] Tenant endpoints (create, get, update, delete, custom properties)
-- [ ] Tenant Account endpoints (create, get, update, delete, sensitive fields)
-- [ ] Environment endpoints (create, get, update, delete, custom properties)
-- [ ] Environment Account endpoints (create, get, update, delete, sensitive fields, custom properties)
-- [ ] Full scenario tests (tenant creation with account and environment)
+- [x] Tenant endpoints (create, get, update, delete, custom properties)
+- [x] Tenant Account endpoints (create, get, update, delete, sensitive fields)
+- [x] Environment endpoints (create, get, update, delete, custom properties)
+- [x] Environment Account endpoints (create, get, update, delete, sensitive fields, custom properties)
+- [x] Full scenario tests (tenant creation with account and environment)
 - [ ] Error handling and edge cases
 
 ### 1.2 Unit Tests
@@ -242,6 +242,7 @@ const account = await sump.accounts.create({ tenantId: tenant.id, ... });
 - [x] Remove legacy bootstrap code (old index.ts with manual DI)
 - [x] Remove legacy Express endpoint files (migrate fully to NestJS controllers)
 - [ ] Clean up unused code and dependencies
+- [ ] Rename `*ByIdAndTenantEnvironmentId` methods to `*ByIdAndEnvironmentId` in environment-account module (service, repository, use-case, controller)
 
 ### 8.2 Infrastructure
 - [x] Add health check endpoint

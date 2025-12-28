@@ -6,10 +6,10 @@ import { ValidationError } from '../../lib/errors';
 import { formatZodError } from '../../lib/utils/formatters';
 import {
   CreateNewEnvironmentUseCaseDtoResult,
-  createEnvironmentDtoSchema,
+  createEnvironmentNoInternalPropertiesDtoSchema,
   DeleteEnvironmentCustomPropertiesUseCaseDtoResult,
   DeleteEnvironmentUseCaseDtoResult,
-  ICreateEnvironmentDto,
+  ICreateEnvironmentNoInternalPropertiesDto,
   IGetEnvironmentDto,
   IEnvironmentCustomPropertiesOperationDtoSchema,
   IUpdateEnvironmentNonSensitivePropertiesDto,
@@ -39,12 +39,12 @@ class EnvironmentUseCase extends BaseUseCase {
 
   async createNewEnvironment(
     tenantId: IEnvironment['tenantId'],
-    dto: ICreateEnvironmentDto
+    dto: ICreateEnvironmentNoInternalPropertiesDto
   ): Promise<CreateNewEnvironmentUseCaseDtoResult> {
     this.validateTenantId(tenantId, contexts.ENVIRONMENT_CREATE);
     this.validateDto(
       dto,
-      createEnvironmentDtoSchema,
+      createEnvironmentNoInternalPropertiesDtoSchema,
       contexts.ENVIRONMENT_CREATE
     );
 

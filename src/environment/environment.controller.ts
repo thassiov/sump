@@ -14,11 +14,6 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { EnvironmentUseCase } from '../core/use-cases/environment.use-case';
 import {
-  ICreateEnvironmentDto,
-  IUpdateEnvironmentNonSensitivePropertiesDto,
-} from '../core/types/environment/dto.type';
-import { IEnvironment } from '../core/types/environment/environment.type';
-import {
   CreateEnvironmentDto,
   CreateEnvironmentResponseDto,
   UpdateEnvironmentDto,
@@ -56,9 +51,10 @@ export class EnvironmentController {
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   async createEnvironment(
     @Param('tenantId') tenantId: string,
-    @Body() dto: ICreateEnvironmentDto
+    @Body() dto: CreateEnvironmentDto
   ) {
-    return this.environmentUseCase.createNewEnvironment(tenantId, dto);
+    const id = await this.environmentUseCase.createNewEnvironment(tenantId, dto);
+    return { id };
   }
 
   @Get(':environmentId')
@@ -141,7 +137,7 @@ export class EnvironmentController {
   async updateEnvironment(
     @Param('tenantId') tenantId: string,
     @Param('environmentId') environmentId: string,
-    @Body() dto: IUpdateEnvironmentNonSensitivePropertiesDto
+    @Body() dto: UpdateEnvironmentDto
   ) {
     return this.environmentUseCase.updateEnvironmentNonSensitivePropertiesByIdAndTenantId(
       environmentId,

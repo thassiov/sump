@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Knex } from 'knex';
+import cookieParser from 'cookie-parser';
 import { AppModule } from '../app.module';
 import { DATABASE_CLIENT } from '../common/database/database.module';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 import { truncateAllTables } from './database.utils';
 
 let app: INestApplication | undefined;
@@ -10,9 +12,13 @@ let dbClient: Knex | undefined;
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 let moduleRef: TestingModule | undefined;
 
+// Test auth secret - must be at least 32 characters
+const TEST_AUTH_SECRET = process.env['AUTH_SECRET'] || 'this-is-a-32-character-test-key-for-integration';
+
 /**
  * Creates and initializes the NestJS application for testing.
  * Call this in beforeAll() of your test suite.
+ * Mirrors the configuration from main.ts.
  */
 export async function createTestApp(): Promise<INestApplication> {
   moduleRef = await Test.createTestingModule({
@@ -20,11 +26,31 @@ export async function createTestApp(): Promise<INestApplication> {
   }).compile();
 
   app = moduleRef.createNestApplication();
+
+  // Configure app to match main.ts
+  app.use(cookieParser(TEST_AUTH_SECRET));
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    })
+  );
+  app.setGlobalPrefix('api/v1');
+
   await app.init();
 
   dbClient = moduleRef.get<Knex>(DATABASE_CLIENT);
 
   return app;
+}
+
+/**
+ * Gets the test auth secret for cookie signing.
+ */
+export function getTestAuthSecret(): string {
+  return TEST_AUTH_SECRET;
 }
 
 /**

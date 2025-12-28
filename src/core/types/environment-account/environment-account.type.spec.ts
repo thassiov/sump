@@ -3,10 +3,10 @@ import { environmentAccountSchema } from './environment-account.type';
 import {
   createEnvironmentAccountDtoSchema,
   updateEnvironmentAccountNonSensitivePropertiesDtoSchema,
-  updateTenantEnvironmentAccountEmailDtoSchema,
-  updateTenantEnvironmentAccountPhoneDtoSchema,
-  updateTenantEnvironmentAccountUsernameDtoSchema,
-  tenantEnvironmentAccountCustomPropertiesOperationDtoSchema,
+  updateEnvironmentAccountEmailDtoSchema,
+  updateEnvironmentAccountPhoneDtoSchema,
+  updateEnvironmentAccountUsernameDtoSchema,
+  environmentAccountCustomPropertiesOperationDtoSchema,
 } from './dto.type';
 
 describe('EnvironmentAccount Schemas', () => {
@@ -312,28 +312,28 @@ describe('EnvironmentAccount Schemas', () => {
     });
   });
 
-  describe('updateTenantEnvironmentAccountEmailDtoSchema', () => {
+  describe('updateEnvironmentAccountEmailDtoSchema', () => {
     it('should validate valid email', () => {
-      const result = updateTenantEnvironmentAccountEmailDtoSchema.safeParse({
+      const result = updateEnvironmentAccountEmailDtoSchema.safeParse({
         email: 'new@example.com',
       });
       expect(result.success).toBe(true);
     });
 
     it('should reject invalid email', () => {
-      const result = updateTenantEnvironmentAccountEmailDtoSchema.safeParse({
+      const result = updateEnvironmentAccountEmailDtoSchema.safeParse({
         email: 'invalid-email',
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject missing email', () => {
-      const result = updateTenantEnvironmentAccountEmailDtoSchema.safeParse({});
+      const result = updateEnvironmentAccountEmailDtoSchema.safeParse({});
       expect(result.success).toBe(false);
     });
 
     it('should reject extra fields (strict object)', () => {
-      const result = updateTenantEnvironmentAccountEmailDtoSchema.safeParse({
+      const result = updateEnvironmentAccountEmailDtoSchema.safeParse({
         email: 'new@example.com',
         name: 'should not be here',
       });
@@ -341,28 +341,28 @@ describe('EnvironmentAccount Schemas', () => {
     });
   });
 
-  describe('updateTenantEnvironmentAccountPhoneDtoSchema', () => {
+  describe('updateEnvironmentAccountPhoneDtoSchema', () => {
     it('should validate valid e164 phone', () => {
-      const result = updateTenantEnvironmentAccountPhoneDtoSchema.safeParse({
+      const result = updateEnvironmentAccountPhoneDtoSchema.safeParse({
         phone: '+14155559999',
       });
       expect(result.success).toBe(true);
     });
 
     it('should reject invalid phone format', () => {
-      const result = updateTenantEnvironmentAccountPhoneDtoSchema.safeParse({
+      const result = updateEnvironmentAccountPhoneDtoSchema.safeParse({
         phone: '415-555-9999',
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject missing phone', () => {
-      const result = updateTenantEnvironmentAccountPhoneDtoSchema.safeParse({});
+      const result = updateEnvironmentAccountPhoneDtoSchema.safeParse({});
       expect(result.success).toBe(false);
     });
 
     it('should reject extra fields (strict object)', () => {
-      const result = updateTenantEnvironmentAccountPhoneDtoSchema.safeParse({
+      const result = updateEnvironmentAccountPhoneDtoSchema.safeParse({
         phone: '+14155559999',
         email: 'should not be here',
       });
@@ -370,35 +370,35 @@ describe('EnvironmentAccount Schemas', () => {
     });
   });
 
-  describe('updateTenantEnvironmentAccountUsernameDtoSchema', () => {
+  describe('updateEnvironmentAccountUsernameDtoSchema', () => {
     it('should validate valid username', () => {
-      const result = updateTenantEnvironmentAccountUsernameDtoSchema.safeParse({
+      const result = updateEnvironmentAccountUsernameDtoSchema.safeParse({
         username: 'newusername',
       });
       expect(result.success).toBe(true);
     });
 
     it('should reject username shorter than 3 characters', () => {
-      const result = updateTenantEnvironmentAccountUsernameDtoSchema.safeParse({
+      const result = updateEnvironmentAccountUsernameDtoSchema.safeParse({
         username: 'ab',
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject username longer than 20 characters', () => {
-      const result = updateTenantEnvironmentAccountUsernameDtoSchema.safeParse({
+      const result = updateEnvironmentAccountUsernameDtoSchema.safeParse({
         username: 'a'.repeat(21),
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject missing username', () => {
-      const result = updateTenantEnvironmentAccountUsernameDtoSchema.safeParse({});
+      const result = updateEnvironmentAccountUsernameDtoSchema.safeParse({});
       expect(result.success).toBe(false);
     });
 
     it('should reject extra fields (strict object)', () => {
-      const result = updateTenantEnvironmentAccountUsernameDtoSchema.safeParse({
+      const result = updateEnvironmentAccountUsernameDtoSchema.safeParse({
         username: 'newusername',
         email: 'should not be here',
       });
@@ -406,21 +406,21 @@ describe('EnvironmentAccount Schemas', () => {
     });
   });
 
-  describe('tenantEnvironmentAccountCustomPropertiesOperationDtoSchema', () => {
+  describe('environmentAccountCustomPropertiesOperationDtoSchema', () => {
     it('should validate non-empty custom properties', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         key: 'value',
       });
       expect(result.success).toBe(true);
     });
 
     it('should reject empty custom properties (refine check)', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({});
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({});
       expect(result.success).toBe(false);
     });
 
     it('should accept complex nested properties', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         preferences: {
           notifications: { email: true, push: false },
           theme: 'dark',
@@ -430,28 +430,28 @@ describe('EnvironmentAccount Schemas', () => {
     });
 
     it('should accept array values', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         permissions: ['read', 'write', 'delete'],
       });
       expect(result.success).toBe(true);
     });
 
     it('should accept boolean values', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         isActive: true,
       });
       expect(result.success).toBe(true);
     });
 
     it('should accept numeric values', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         score: 100,
       });
       expect(result.success).toBe(true);
     });
 
     it('should accept null values', () => {
-      const result = tenantEnvironmentAccountCustomPropertiesOperationDtoSchema.safeParse({
+      const result = environmentAccountCustomPropertiesOperationDtoSchema.safeParse({
         deletedField: null,
       });
       expect(result.success).toBe(true);

@@ -1,7 +1,7 @@
 import { IEnvironmentAccountService } from './service.type';
 
 type EnvironmentAccountUseCaseServices = {
-  tenantEnvironmentAccount: IEnvironmentAccountService;
+  environmentAccount: IEnvironmentAccountService;
 };
 
 export type { EnvironmentAccountUseCaseServices };

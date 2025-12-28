@@ -1,4 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  MaxLength,
+  ValidateNested,
+  IsObject,
+  IsEnum,
+  IsUUID,
+  IsDefined,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 class CreateTenantAccountRoleDto {
   @ApiProperty({
@@ -6,6 +19,7 @@ class CreateTenantAccountRoleDto {
     enum: ['owner', 'admin', 'user'],
     example: 'owner',
   })
+  @IsEnum(['owner', 'admin', 'user'])
   role!: 'owner' | 'admin' | 'user';
 
   @ApiProperty({
@@ -13,12 +27,14 @@ class CreateTenantAccountRoleDto {
     enum: ['tenant', 'environment'],
     example: 'tenant',
   })
+  @IsEnum(['tenant', 'environment'])
   target!: 'tenant' | 'environment';
 
   @ApiProperty({
     description: 'UUID of the target (tenant or environment)',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
+  @IsUUID()
   targetId!: string;
 }
 
@@ -29,12 +45,16 @@ class CreateTenantAccountDto {
     minLength: 3,
     maxLength: 100,
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
   name!: string;
 
   @ApiProperty({
     description: 'Email address',
     example: 'john.doe@example.com',
   })
+  @IsEmail()
   email!: string;
 
   @ApiProperty({
@@ -43,6 +63,9 @@ class CreateTenantAccountDto {
     minLength: 3,
     maxLength: 20,
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(20)
   username!: string;
 
   @ApiProperty({
@@ -50,24 +73,33 @@ class CreateTenantAccountDto {
     example: 'SecureP@ssw0rd!',
     minLength: 8,
   })
+  @IsString()
+  @MinLength(8)
   password!: string;
 
   @ApiPropertyOptional({
     description: 'Phone number in E.164 format',
     example: '+1234567890',
   })
+  @IsOptional()
+  @IsString()
   phone?: string;
 
   @ApiPropertyOptional({
     description: 'URL to avatar image',
     example: 'https://example.com/avatar.png',
   })
+  @IsOptional()
+  @IsString()
   avatarUrl?: string;
 
   @ApiPropertyOptional({
     description: 'Roles assigned to the account',
     type: [CreateTenantAccountRoleDto],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateTenantAccountRoleDto)
   roles?: CreateTenantAccountRoleDto[];
 }
 
@@ -77,6 +109,8 @@ class CreateTenantDetailsDto {
     example: 'My Company',
     minLength: 2,
   })
+  @IsString()
+  @MinLength(2)
   name!: string;
 
   @ApiPropertyOptional({
@@ -85,6 +119,8 @@ class CreateTenantDetailsDto {
     type: 'object',
     additionalProperties: true,
   })
+  @IsOptional()
+  @IsObject()
   customProperties?: Record<string, unknown>;
 }
 
@@ -94,6 +130,8 @@ class CreateEnvironmentDetailsDto {
     example: 'production',
     minLength: 2,
   })
+  @IsString()
+  @MinLength(2)
   name!: string;
 
   @ApiPropertyOptional({
@@ -102,6 +140,8 @@ class CreateEnvironmentDetailsDto {
     type: 'object',
     additionalProperties: true,
   })
+  @IsOptional()
+  @IsObject()
   customProperties?: Record<string, unknown>;
 }
 
@@ -110,18 +150,27 @@ export class CreateTenantDto {
     description: 'Tenant details',
     type: CreateTenantDetailsDto,
   })
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => CreateTenantDetailsDto)
   tenant!: CreateTenantDetailsDto;
 
   @ApiProperty({
     description: 'Initial owner account for the tenant',
     type: CreateTenantAccountDto,
   })
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => CreateTenantAccountDto)
   account!: CreateTenantAccountDto;
 
   @ApiPropertyOptional({
     description: 'Initial environment (defaults to "default" if not provided)',
     type: CreateEnvironmentDetailsDto,
   })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateEnvironmentDetailsDto)
   environment?: CreateEnvironmentDetailsDto;
 }
 
