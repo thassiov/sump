@@ -13,5 +13,5 @@ import { EnvironmentAccountRepository } from '../core/repositories/environment-a
   ],
   exports: [EnvironmentAccountService],
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+ 
 export class EnvironmentAccountModule {}

@@ -37,7 +37,7 @@ export interface ResourceContext {
  * @RequireRoles({ role: 'user', target: 'tenant', targetId: ':tenantId' })
  * getTenant(@Param('tenantId') tenantId: string) {}
  */
-export const TenantResource = (paramName: string = 'tenantId') =>
+export const TenantResource = (paramName = 'tenantId') =>
   SetMetadata(TENANT_RESOURCE_KEY, { paramName } as ResourceContext);
 
 /**
@@ -54,7 +54,7 @@ export const TenantResource = (paramName: string = 'tenantId') =>
  * @RequireRoles({ role: 'user', target: 'environment', targetId: ':environmentId' })
  * getEnvironment(@Param('environmentId') environmentId: string) {}
  */
-export const EnvironmentResource = (paramName: string = 'environmentId') =>
+export const EnvironmentResource = (paramName = 'environmentId') =>
   SetMetadata(ENVIRONMENT_RESOURCE_KEY, { paramName } as ResourceContext);
 
 /**
@@ -80,5 +80,5 @@ export const EnvironmentResource = (paramName: string = 'environmentId') =>
  * )
  * getAccount(@Param('accountId') accountId: string) {}
  */
-export const SelfOnly = (paramName: string = 'accountId') =>
+export const SelfOnly = (paramName = 'accountId') =>
   SetMetadata(SELF_ONLY_KEY, { paramName } as ResourceContext);

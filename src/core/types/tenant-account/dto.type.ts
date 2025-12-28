@@ -130,9 +130,10 @@ const updateTenantAccountUsernameDtoSchema = tenantAccountSchema
   .required();
 type IUpdateTenantAccountUsernameDto = z.infer<typeof updateTenantAccountUsernameDtoSchema>;
 
-const updateTenantAccountDisabledDtoSchema = tenantAccountSchema
-  .pick({ disabled: true, disabledAt: true });
-type IUpdateTenantAccountDisabledDto = z.infer<typeof updateTenantAccountDisabledDtoSchema>;
+type IUpdateTenantAccountDisabledDto = {
+  disabled: boolean;
+  disabledAt: Date | null;
+};
 
 // Password hash update (for password reset)
 type IUpdateTenantAccountPasswordHashDto = { passwordHash: string };

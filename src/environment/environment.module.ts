@@ -9,5 +9,5 @@ import { EnvironmentRepository } from '../core/repositories/environment.reposito
   providers: [EnvironmentUseCase, EnvironmentService, EnvironmentRepository],
   exports: [EnvironmentService],
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+ 
 export class EnvironmentModule {}

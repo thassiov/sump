@@ -349,7 +349,7 @@ class TenantAccountUseCase extends BaseUseCase {
    * Defaults to 'user' if no tenant-specific role is found.
    */
   private extractTenantRole(
-    roles: Array<{ role: string; target: string; targetId: string }>,
+    roles: { role: string; target: string; targetId: string }[],
     tenantId: string
   ): ITenantAccountRoleType {
     const tenantRole = roles.find(

@@ -64,14 +64,18 @@ export class TenantController {
     // Prepare use case DTO - replace password with passwordHash
     // Note: customProperties from Swagger DTO is Record<string, unknown>, but use case expects JSON-compatible types
     // We use type assertion since the Swagger validation ensures JSON-compatible values at runtime
-    const { password: _, ...accountWithoutPassword } = dto.account;
     const useCaseDto = {
       tenant: {
         name: dto.tenant.name,
         customProperties: dto.tenant.customProperties ?? {},
       },
       account: {
-        ...accountWithoutPassword,
+        name: dto.account.name,
+        email: dto.account.email,
+        username: dto.account.username,
+        phone: dto.account.phone,
+        avatarUrl: dto.account.avatarUrl,
+        roles: dto.account.roles,
         passwordHash,
         // Note: roles are added by the use case after tenant creation
       },

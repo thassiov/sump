@@ -41,5 +41,5 @@ export const DATABASE_CLIENT = 'DATABASE_CLIENT';
   ],
   exports: [DATABASE_CLIENT],
 })
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+ 
 export class DatabaseModule {}

@@ -18,8 +18,11 @@
     "test:integration:local": "jest --config jest.integration.config.ts",
     "docker:rebuild": "docker compose build --no-cache base-image",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "build": "rimraf ./build && tsc",
-    "db:migration:up": "ts-node --project ./tsconfig.json ./src/infra/database/postgres/tools/run-migration-up.ts"
+    "db:migration:up": "ts-node --project ./tsconfig.json ./src/infra/database/postgres/tools/run-migration-up.ts",
+    "ci:local": "npm run lint && npm run build && npm run test:unit",
+    "ci:local:full": "npm run lint && npm run build && npm run test:unit && npm run test:integration"
   },
   "author": "Thassio Victor <tvmcarvalho@gmail.com>",
   "license": "MIT",

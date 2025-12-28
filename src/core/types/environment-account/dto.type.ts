@@ -103,12 +103,10 @@ type IUpdateEnvironmentAccountUsernameDto = z.infer<
   typeof updateEnvironmentAccountUsernameDtoSchema
 >;
 
-const updateEnvironmentAccountDisabledDtoSchema = z
-  .strictObject(environmentAccountSchema.shape)
-  .pick({ disabled: true, disabledAt: true });
-type IUpdateEnvironmentAccountDisabledDto = z.infer<
-  typeof updateEnvironmentAccountDisabledDtoSchema
->;
+type IUpdateEnvironmentAccountDisabledDto = {
+  disabled: boolean;
+  disabledAt: Date | null;
+};
 
 // Password hash update (for password reset)
 type IUpdateEnvironmentAccountPasswordHashDto = { passwordHash: string };

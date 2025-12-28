@@ -123,7 +123,7 @@ export class RolesGuard implements CanActivate {
       session.accountId
     );
 
-    if (!account || !account.roles) {
+    if (!account?.roles) {
       throw new ForbiddenException('Account not found or has no roles');
     }
 
@@ -203,7 +203,7 @@ export class RolesGuard implements CanActivate {
   private async getAccountWithRoles(
     accountType: 'tenant_account' | 'environment_account',
     accountId: string
-  ): Promise<{ roles: Array<{ role: string; target: string; targetId: string }> } | undefined> {
+  ): Promise<{ roles: { role: string; target: string; targetId: string }[] } | undefined> {
     if (accountType === 'tenant_account') {
       return this.getTenantAccountService().getById(accountId);
     } else {
@@ -219,7 +219,7 @@ export class RolesGuard implements CanActivate {
    * Check if account roles satisfy the required roles
    */
   private checkRoles(
-    accountRoles: Array<{ role: string; target: string; targetId: string }>,
+    accountRoles: { role: string; target: string; targetId: string }[],
     requiredRoles: RoleRequirement[],
     params: Record<string, string>
   ): boolean {
@@ -258,7 +258,7 @@ export class RolesGuard implements CanActivate {
    * the right role type but for a different resource.
    */
   private validateResourceContext(
-    accountRoles: Array<{ role: string; target: string; targetId: string }>,
+    accountRoles: { role: string; target: string; targetId: string }[],
     requiredRoles: RoleRequirement[],
     params: Record<string, string>,
     tenantResource: ResourceContext | undefined,
