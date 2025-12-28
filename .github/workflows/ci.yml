@@ -57,7 +57,6 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
-        continue-on-error: true  # TODO: Remove when unit tests are fixed
 
   test-integration:
     runs-on: ubuntu-latest

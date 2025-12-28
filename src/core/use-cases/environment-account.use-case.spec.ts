@@ -40,15 +40,13 @@ describe('EnvironmentAccountUseCase', () => {
   });
 
   // Valid DTO for creating accounts (matches the strict schema)
-  const createValidDto = (environmentId: string) => ({
+  // Note: environmentId, emailVerified, phoneVerified are omitted from the schema
+  const createValidDto = () => ({
     email: 'john@example.com',
-    emailVerified: false,
     phone: '+14155551234',
-    phoneVerified: false,
     name: 'John Doe',
     username: 'johndoe',
     avatarUrl: 'https://example.com/avatar.png',
-    environmentId,
     customProperties: {},
   });
 
@@ -56,7 +54,7 @@ describe('EnvironmentAccountUseCase', () => {
     it('should create an account successfully', async () => {
       const environmentId = faker.string.uuid();
       const accountId = faker.string.uuid();
-      const dto = createValidDto(environmentId);
+      const dto = createValidDto();
 
       mockEnvironmentAccountService.create.mockResolvedValue(accountId);
 
@@ -73,7 +71,7 @@ describe('EnvironmentAccountUseCase', () => {
     });
 
     it('should throw ValidationError for invalid environment id', async () => {
-      const dto = createValidDto(faker.string.uuid());
+      const dto = createValidDto();
 
       await expect(
         environmentAccountUseCase.createNewAccount('invalid-id', dto)

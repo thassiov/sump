@@ -9,6 +9,8 @@ describe('EnvironmentRepository', () => {
   beforeEach(() => {
     mockDbClient = jest.fn();
     mockDbClient.insert = jest.fn();
+    mockDbClient.jsonSet = jest.fn().mockReturnValue('jsonSetResult');
+    mockDbClient.jsonRemove = jest.fn().mockReturnValue('jsonRemoveResult');
 
     environmentRepository = new EnvironmentRepository(mockDbClient);
   });
@@ -485,7 +487,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonSet: jest.fn().mockResolvedValue(undefined),
+          update: jest.fn().mockResolvedValue(1),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);
@@ -499,6 +501,11 @@ describe('EnvironmentRepository', () => {
       expect(result).toBe(true);
       expect(mockDbClient).toHaveBeenCalledWith('environment');
       expect(mockBuilder.where).toHaveBeenCalledWith({ id: environmentId, tenantId });
+      expect(mockDbClient.jsonSet).toHaveBeenCalledWith(
+        'customProperties',
+        '$.myKey',
+        '"myValue"'
+      );
     });
 
     it('should throw UnexpectedError on database error', async () => {
@@ -508,7 +515,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonSet: jest.fn().mockRejectedValue(new Error('Database error')),
+          update: jest.fn().mockRejectedValue(new Error('Database error')),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);
@@ -530,7 +537,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonSet: jest.fn().mockRejectedValue(customError),
+          update: jest.fn().mockRejectedValue(customError),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);
@@ -553,7 +560,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonRemove: jest.fn().mockResolvedValue(undefined),
+          update: jest.fn().mockResolvedValue(1),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);
@@ -567,6 +574,10 @@ describe('EnvironmentRepository', () => {
       expect(result).toBe(true);
       expect(mockDbClient).toHaveBeenCalledWith('environment');
       expect(mockBuilder.where).toHaveBeenCalledWith({ id: environmentId, tenantId });
+      expect(mockDbClient.jsonRemove).toHaveBeenCalledWith(
+        'customProperties',
+        '$.myKey'
+      );
     });
 
     it('should throw UnexpectedError on database error', async () => {
@@ -576,7 +587,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonRemove: jest.fn().mockRejectedValue(new Error('Database error')),
+          update: jest.fn().mockRejectedValue(new Error('Database error')),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);
@@ -598,7 +609,7 @@ describe('EnvironmentRepository', () => {
 
       const mockBuilder = {
         where: jest.fn().mockReturnValue({
-          jsonRemove: jest.fn().mockRejectedValue(customError),
+          update: jest.fn().mockRejectedValue(customError),
         }),
       };
       mockDbClient.mockReturnValue(mockBuilder);

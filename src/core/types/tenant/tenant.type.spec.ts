@@ -186,7 +186,7 @@ describe('Tenant Schemas', () => {
         name: 'John Doe',
         email: 'john@example.com',
         username: 'johndoe',
-        roles: [{ role: 'owner', target: 'tenant', targetId: faker.string.uuid() }],
+        passwordHash: 'hashed-password-here',
       },
     };
 

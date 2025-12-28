@@ -307,7 +307,7 @@ describe('TenantRepository', () => {
       expect(mockDbClient.jsonSet).toHaveBeenCalledWith(
         'customProperties',
         '$.myKey',
-        'myValue'
+        '"myValue"'
       );
     });
 

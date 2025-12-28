@@ -23,6 +23,7 @@ describe('TenantUseCase', () => {
 
     mockTenantAccountService = {
       create: jest.fn(),
+      createWithPassword: jest.fn(),
       getByUserDefinedIdentification: jest.fn(),
       getByTenantId: jest.fn(),
     } as unknown as jest.Mocked<TenantAccountService>;
@@ -49,7 +50,7 @@ describe('TenantUseCase', () => {
         name: 'Admin User',
         email: 'admin@example.com',
         username: 'adminuser',
-        roles: [{ role: 'owner' as const, target: 'tenant' as const, targetId: faker.string.uuid() }],
+        passwordHash: 'hashed-password-here',
       },
       environment: {
         name: 'production',
@@ -64,7 +65,7 @@ describe('TenantUseCase', () => {
 
       mockTenantAccountService.getByUserDefinedIdentification.mockResolvedValue(undefined);
       mockTenantService.create.mockResolvedValue(tenantId);
-      mockTenantAccountService.create.mockResolvedValue(accountId);
+      mockTenantAccountService.createWithPassword.mockResolvedValue(accountId);
       mockEnvironmentService.create.mockResolvedValue(environmentId);
 
       const result = await tenantUseCase.createNewTenant(validDto);
@@ -72,9 +73,13 @@ describe('TenantUseCase', () => {
       expect(result).toEqual({ tenantId, accountId, environmentId });
       expect(mockTenantService.create).toHaveBeenCalledWith(validDto.tenant);
       // The use case sets the owner role's targetId to the newly created tenantId
-      expect(mockTenantAccountService.create).toHaveBeenCalledWith(tenantId, {
-        ...validDto.account,
+      // and uses createWithPassword since passwordHash is provided
+      expect(mockTenantAccountService.createWithPassword).toHaveBeenCalledWith(tenantId, {
+        name: validDto.account.name,
+        email: validDto.account.email,
+        username: validDto.account.username,
         roles: [{ role: 'owner', target: 'tenant', targetId: tenantId }],
+        passwordHash: validDto.account.passwordHash,
       });
       expect(mockEnvironmentService.create).toHaveBeenCalledWith(tenantId, validDto.environment);
     });
@@ -90,7 +95,7 @@ describe('TenantUseCase', () => {
 
       mockTenantAccountService.getByUserDefinedIdentification.mockResolvedValue(undefined);
       mockTenantService.create.mockResolvedValue(tenantId);
-      mockTenantAccountService.create.mockResolvedValue(accountId);
+      mockTenantAccountService.createWithPassword.mockResolvedValue(accountId);
       mockEnvironmentService.create.mockResolvedValue(environmentId);
 
       await tenantUseCase.createNewTenant(dtoWithoutEnv);

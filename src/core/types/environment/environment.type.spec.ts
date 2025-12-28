@@ -194,11 +194,11 @@ describe('Environment Schemas', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject missing customProperties', () => {
+    it('should accept missing customProperties (optional)', () => {
       const result = createEnvironmentNoInternalPropertiesDtoSchema.safeParse({
         name: 'production',
       });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
     });
   });
 

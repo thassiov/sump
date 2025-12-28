@@ -34,7 +34,6 @@ describe('EnvironmentUseCase', () => {
       const environmentId = faker.string.uuid();
       const dto = {
         name: 'production',
-        tenantId,
         customProperties: {},
       };
 
@@ -49,7 +48,6 @@ describe('EnvironmentUseCase', () => {
     it('should throw ValidationError for invalid tenant id', async () => {
       const dto = {
         name: 'production',
-        tenantId: faker.string.uuid(),
         customProperties: {},
       };
 
@@ -62,7 +60,6 @@ describe('EnvironmentUseCase', () => {
       const tenantId = faker.string.uuid();
       const invalidDto = {
         name: 'a', // name must be min 2 chars
-        tenantId,
         customProperties: {},
       };
 
@@ -75,7 +72,6 @@ describe('EnvironmentUseCase', () => {
       const tenantId = faker.string.uuid();
       const invalidDto = {
         name: '',
-        tenantId,
         customProperties: {},
       };
 
