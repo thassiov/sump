@@ -16,7 +16,7 @@ async function runMigrationUp() {
 (async () => {
   await runMigrationUp();
   process.exit(0);
-})().catch((error) => {
+})().catch((error: unknown) => {
   logger.error(error);
   process.exit(1);
 });
