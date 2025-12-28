@@ -1,26 +1,18 @@
 openapi: 3.0.0
-info:
-  title: Sump API
-  description: Simple User Management Platform
-  version: 0.1.0
-  contact: {}
-
-tags: []
-servers: []
-
 paths:
   /api/v1/auth/tenants/{tenantId}/login:
     post:
       operationId: TenantAuthController_login
       summary: Log in to a tenant account
-      description: Authenticates with email, phone, or username and password, creates a session.
+      description: Authenticates with email, phone, or username and password, creates
+        a session.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -41,38 +33,34 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/logout:
     post:
       operationId: TenantAuthController_logout
       summary: Log out of current session
       description: Revokes the current session and clears the cookie.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema: {}
       responses:
         '204':
           description: Successfully logged out
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/session:
     get:
       operationId: TenantAuthController_getSession
       summary: Get current session
       description: Returns the current session if valid.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema: {}
       responses:
         '200':
           description: Current session
@@ -83,20 +71,18 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/sessions:
     get:
       operationId: TenantAuthController_listSessions
       summary: List all active sessions
       description: Returns all active sessions for the current account.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema: {}
       responses:
         '200':
           description: List of active sessions
@@ -109,20 +95,18 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/logout-all:
     post:
       operationId: TenantAuthController_logoutAll
       summary: Log out of all sessions
       description: Revokes all sessions for the current account.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema: {}
       responses:
         '200':
           description: Number of sessions revoked
@@ -136,20 +120,20 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/forgot-password:
     post:
       operationId: TenantAuthController_forgotPassword
       summary: Request a password reset
-      description: Initiates a password reset flow by creating a reset token. The token should be sent to the user via email/SMS.
+      description: Initiates a password reset flow by creating a reset token. The
+        token should be sent to the user via email/SMS.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -168,20 +152,20 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/tenants/{tenantId}/reset-password:
     post:
       operationId: TenantAuthController_resetPassword
       summary: Reset password with token
-      description: Resets the password using a valid reset token. All sessions will be revoked.
+      description: Resets the password using a valid reset token. All sessions will
+        be revoked.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -200,20 +184,19 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenant Authentication
-
+      - Tenant Authentication
   /api/v1/auth/environments/{environmentId}/signup:
     post:
       operationId: EnvironmentAuthController_signup
       summary: Sign up a new environment account
       description: Creates a new account with credentials for the specified environment.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -234,20 +217,20 @@ paths:
         '409':
           description: Email/username already exists
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/login:
     post:
       operationId: EnvironmentAuthController_login
       summary: Log in to an environment account
-      description: Authenticates with email, phone, or username and password, creates a session.
+      description: Authenticates with email, phone, or username and password, creates
+        a session.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -270,38 +253,34 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/logout:
     post:
       operationId: EnvironmentAuthController_logout
       summary: Log out of current session
       description: Revokes the current session and clears the cookie.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema: {}
       responses:
         '204':
           description: Successfully logged out
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/session:
     get:
       operationId: EnvironmentAuthController_getSession
       summary: Get current session
       description: Returns the current session if valid.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema: {}
       responses:
         '200':
           description: Current session
@@ -312,20 +291,18 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/sessions:
     get:
       operationId: EnvironmentAuthController_listSessions
       summary: List all active sessions
       description: Returns all active sessions for the current account.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema: {}
       responses:
         '200':
           description: List of active sessions
@@ -338,20 +315,18 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/logout-all:
     post:
       operationId: EnvironmentAuthController_logoutAll
       summary: Log out of all sessions
       description: Revokes all sessions for the current account.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema: {}
       responses:
         '200':
           description: Number of sessions revoked
@@ -365,20 +340,20 @@ paths:
         '401':
           description: No valid session
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/forgot-password:
     post:
       operationId: EnvironmentAuthController_forgotPassword
       summary: Request a password reset
-      description: Initiates a password reset flow by creating a reset token. The token should be sent to the user via email/SMS.
+      description: Initiates a password reset flow by creating a reset token. The
+        token should be sent to the user via email/SMS.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -397,20 +372,20 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/auth/environments/{environmentId}/reset-password:
     post:
       operationId: EnvironmentAuthController_resetPassword
       summary: Reset password with token
-      description: Resets the password using a valid reset token. All sessions will be revoked.
+      description: Resets the password using a valid reset token. All sessions will
+        be revoked.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -429,13 +404,14 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environment Authentication
-
+      - Environment Authentication
   /api/v1/tenants:
     post:
       operationId: TenantController_createTenant
       summary: Create a new tenant with initial account and environment
-      description: Creates a new tenant along with an owner account and optionally an initial environment. If no environment is specified, a "default" environment will be created. Returns a session for the newly created owner account.
+      description: Creates a new tenant along with an owner account and optionally
+        an initial environment. If no environment is specified, a "default" environment
+        will be created. Returns a session for the newly created owner account.
       parameters: []
       requestBody:
         required: true
@@ -455,20 +431,19 @@ paths:
         '409':
           description: Email/username already exists
       tags:
-        - Tenants
-
+      - Tenants
   /api/v1/tenants/{tenantId}:
     get:
       operationId: TenantController_getTenantById
       summary: Get tenant by ID
       description: Retrieves a tenant by its UUID, including all its environments.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       responses:
         '200':
           description: Tenant found
@@ -483,18 +458,19 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenants
+      - Tenants
     delete:
       operationId: TenantController_deleteTenantById
       summary: Delete tenant by ID
-      description: Deletes a tenant and all associated data (accounts, environments, etc.).
+      description: Deletes a tenant and all associated data (accounts, environments,
+        etc.).
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       responses:
         '204':
           description: Tenant deleted successfully
@@ -505,18 +481,18 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenants
+      - Tenants
     patch:
       operationId: TenantController_updateTenant
       summary: Update tenant non-sensitive properties
       description: Updates allowed tenant properties like name.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -533,20 +509,19 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenants
-
+      - Tenants
   /api/v1/tenants/{tenantId}/accounts:
     get:
       operationId: TenantController_getAccountsByTenantId
       summary: Get all accounts for a tenant
       description: Retrieves all accounts associated with the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       responses:
         '200':
           description: List of accounts
@@ -561,18 +536,18 @@ paths:
         '403':
           description: Forbidden - insufficient permissions
       tags:
-        - Tenants
+      - Tenants
     post:
       operationId: TenantAccountController_createAccount
       summary: Create a new account for a tenant
       description: Creates a new account associated with the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -591,20 +566,20 @@ paths:
         '403':
           description: Forbidden - admin or owner role required
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/custom-property:
     patch:
       operationId: TenantController_setCustomProperty
       summary: Set custom property on tenant
-      description: Sets or updates a custom property on the tenant. Pass the property as a key-value pair in the body.
+      description: Sets or updates a custom property on the tenant. Pass the property
+        as a key-value pair in the body.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         description: A key-value pair to set as a custom property
@@ -625,18 +600,18 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenants
+      - Tenants
     delete:
       operationId: TenantController_deleteCustomProperty
       summary: Delete custom property from tenant
       description: Removes a custom property from the tenant by its key.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -653,20 +628,20 @@ paths:
         '404':
           description: Tenant not found
       tags:
-        - Tenants
-
+      - Tenants
   /api/v1/tenants/{tenantId}/accounts/user-defined-identification:
     get:
       operationId: TenantAccountController_getAccountByUserDefinedIdentification
       summary: Get account by user defined identification
-      description: Searches for an account by email, phone, or username within the tenant.
+      description: Searches for an account by email, phone, or username within the
+        tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -687,26 +662,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}:
     get:
       operationId: TenantAccountController_getAccountById
       summary: Get account by ID and tenant ID
       description: Retrieves an account by its UUID within the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       responses:
         '200':
           description: Account found
@@ -721,24 +695,24 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
+      - Tenant Accounts
     delete:
       operationId: TenantAccountController_deleteAccount
       summary: Delete account by ID and tenant ID
       description: Deletes an account from the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       responses:
         '204':
           description: Account deleted successfully
@@ -749,24 +723,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
+      - Tenant Accounts
     patch:
       operationId: TenantAccountController_updateAccount
       summary: Update account non-sensitive properties
-      description: Updates allowed account properties like name and avatar URL. Users can update their own account.
+      description: Updates allowed account properties like name and avatar URL. Users
+        can update their own account.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -783,26 +758,26 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}/email:
     patch:
       operationId: TenantAccountController_updateAccountEmail
       summary: Update account email
-      description: Updates the email address for the specified account. Users can update their own email.
+      description: Updates the email address for the specified account. Users can
+        update their own email.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -821,26 +796,26 @@ paths:
         '409':
           description: Email already in use
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}/phone:
     patch:
       operationId: TenantAccountController_updateAccountPhone
       summary: Update account phone
-      description: Updates the phone number for the specified account. Users can update their own phone.
+      description: Updates the phone number for the specified account. Users can update
+        their own phone.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -859,26 +834,26 @@ paths:
         '409':
           description: Phone already in use
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}/username:
     patch:
       operationId: TenantAccountController_updateAccountUsername
       summary: Update account username
-      description: Updates the username for the specified account. Users can update their own username.
+      description: Updates the username for the specified account. Users can update
+        their own username.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -897,26 +872,26 @@ paths:
         '409':
           description: Username already in use
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}/disable:
     patch:
       operationId: TenantAccountController_disableAccount
       summary: Disable an account
-      description: Disables an account. Owners can disable admins and users. Admins can only disable users. Disabled accounts cannot log in.
+      description: Disables an account. Owners can disable admins and users. Admins
+        can only disable users. Disabled accounts cannot log in.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account to disable
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account to disable
+        schema:
+          type: string
       responses:
         '204':
           description: Account disabled successfully
@@ -927,26 +902,26 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/accounts/{accountId}/enable:
     patch:
       operationId: TenantAccountController_enableAccount
       summary: Enable a disabled account
-      description: Re-enables a previously disabled account. Owners can enable admins and users. Admins can only enable users.
+      description: Re-enables a previously disabled account. Owners can enable admins
+        and users. Admins can only enable users.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account to enable
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account to enable
+        schema:
+          type: string
       responses:
         '204':
           description: Account enabled successfully
@@ -957,20 +932,19 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Tenant Accounts
-
+      - Tenant Accounts
   /api/v1/tenants/{tenantId}/environments:
     post:
       operationId: EnvironmentController_createEnvironment
       summary: Create a new environment for a tenant
       description: Creates a new environment associated with the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -989,26 +963,25 @@ paths:
         '403':
           description: Forbidden - admin or owner role required
       tags:
-        - Environments
-
+      - Environments
   /api/v1/tenants/{tenantId}/environments/{environmentId}:
     get:
       operationId: EnvironmentController_getEnvironmentById
       summary: Get environment by ID and tenant ID
       description: Retrieves an environment by its UUID within the specified tenant.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       responses:
         '200':
           description: Environment found
@@ -1023,24 +996,24 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environments
+      - Environments
     delete:
       operationId: EnvironmentController_deleteEnvironment
       summary: Delete environment by ID and tenant ID
       description: Deletes an environment and all its associated accounts.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       responses:
         '204':
           description: Environment deleted successfully
@@ -1051,24 +1024,24 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environments
+      - Environments
     patch:
       operationId: EnvironmentController_updateEnvironment
       summary: Update environment non-sensitive properties
       description: Updates allowed environment properties like name.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1085,26 +1058,25 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environments
-
+      - Environments
   /api/v1/tenants/{tenantId}/environments/{environmentId}/custom-property:
     patch:
       operationId: EnvironmentController_setCustomProperty
       summary: Set custom property on environment
       description: Sets or updates a custom property on the environment.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         description: A key-value pair to set as a custom property
@@ -1125,24 +1097,24 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environments
+      - Environments
     delete:
       operationId: EnvironmentController_deleteCustomProperty
       summary: Delete custom property from environment
       description: Removes a custom property from the environment by its key.
       parameters:
-        - name: tenantId
-          required: true
-          in: path
-          description: UUID of the tenant
-          schema:
-            type: string
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: tenantId
+        required: true
+        in: path
+        description: UUID of the tenant
+        schema:
+          type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1159,20 +1131,20 @@ paths:
         '404':
           description: Environment not found
       tags:
-        - Environments
-
+      - Environments
   /api/v1/environments/{environmentId}/accounts:
     post:
       operationId: EnvironmentAccountController_createAccount
       summary: Sign up for an environment
-      description: Creates a new user account within the specified environment. This is a public endpoint for user registration.
+      description: Creates a new user account within the specified environment. This
+        is a public endpoint for user registration.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1189,26 +1161,25 @@ paths:
         '409':
           description: Email/username/phone already in use
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}:
     get:
       operationId: EnvironmentAccountController_getAccountById
       summary: Get account by ID and environment ID
       description: Retrieves an account by its UUID within the specified environment.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       responses:
         '200':
           description: Account found
@@ -1223,24 +1194,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
+      - Environment Accounts
     delete:
       operationId: EnvironmentAccountController_deleteAccount
       summary: Delete own account
-      description: Allows a user to delete their own account. Admins cannot delete user accounts (use disable instead).
+      description: Allows a user to delete their own account. Admins cannot delete
+        user accounts (use disable instead).
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       responses:
         '204':
           description: Account deleted successfully
@@ -1251,24 +1223,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
+      - Environment Accounts
     patch:
       operationId: EnvironmentAccountController_updateAccount
       summary: Update own account properties
-      description: Updates account properties like name and avatar URL. Users can only update their own account.
+      description: Updates account properties like name and avatar URL. Users can
+        only update their own account.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1285,26 +1258,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/email:
     patch:
       operationId: EnvironmentAccountController_updateAccountEmail
       summary: Update own email
       description: Updates the email address. Users can only update their own email.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1323,26 +1295,25 @@ paths:
         '409':
           description: Email already in use
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/phone:
     patch:
       operationId: EnvironmentAccountController_updateAccountPhone
       summary: Update own phone
       description: Updates the phone number. Users can only update their own phone.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1361,26 +1332,25 @@ paths:
         '409':
           description: Phone already in use
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/username:
     patch:
       operationId: EnvironmentAccountController_updateAccountUsername
       summary: Update own username
       description: Updates the username. Users can only update their own username.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1399,26 +1369,26 @@ paths:
         '409':
           description: Username already in use
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/custom-property:
     patch:
       operationId: EnvironmentAccountController_setCustomProperty
       summary: Set custom property on own account
-      description: Sets or updates a custom property. Users can only set properties on their own account.
+      description: Sets or updates a custom property. Users can only set properties
+        on their own account.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         description: A key-value pair to set as a custom property
@@ -1439,24 +1409,25 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
+      - Environment Accounts
     delete:
       operationId: EnvironmentAccountController_deleteCustomProperty
       summary: Delete custom property from own account
-      description: Removes a custom property. Users can only delete properties from their own account.
+      description: Removes a custom property. Users can only delete properties from
+        their own account.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -1473,26 +1444,26 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/disable:
     patch:
       operationId: EnvironmentAccountController_disableAccount
       summary: Disable an account
-      description: Disables an account. Only environment admins/owners can disable accounts. Disabled accounts cannot log in.
+      description: Disables an account. Only environment admins/owners can disable
+        accounts. Disabled accounts cannot log in.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account to disable
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account to disable
+        schema:
+          type: string
       responses:
         '204':
           description: Account disabled successfully
@@ -1503,26 +1474,26 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/environments/{environmentId}/accounts/{accountId}/enable:
     patch:
       operationId: EnvironmentAccountController_enableAccount
       summary: Enable a disabled account
-      description: Re-enables a previously disabled account. Only environment admins/owners can enable accounts.
+      description: Re-enables a previously disabled account. Only environment admins/owners
+        can enable accounts.
       parameters:
-        - name: environmentId
-          required: true
-          in: path
-          description: UUID of the environment
-          schema:
-            type: string
-        - name: accountId
-          required: true
-          in: path
-          description: UUID of the account to enable
-          schema:
-            type: string
+      - name: environmentId
+        required: true
+        in: path
+        description: UUID of the environment
+        schema:
+          type: string
+      - name: accountId
+        required: true
+        in: path
+        description: UUID of the account to enable
+        schema:
+          type: string
       responses:
         '204':
           description: Account enabled successfully
@@ -1533,8 +1504,7 @@ paths:
         '404':
           description: Account not found
       tags:
-        - Environment Accounts
-
+      - Environment Accounts
   /api/v1/health:
     get:
       operationId: HealthController_check
@@ -1545,8 +1515,14 @@ paths:
         '200':
           description: API is healthy
       tags:
-        - Health
-
+      - Health
+info:
+  title: Sump API
+  description: Simple User Management Platform
+  version: 0.1.0
+  contact: {}
+tags: []
+servers: []
 components:
   schemas:
     LoginDto:
@@ -1569,8 +1545,7 @@ components:
           description: Password
           example: SecureP@ssw0rd!
       required:
-        - password
-
+      - password
     SessionResponseDto:
       type: object
       properties:
@@ -1582,8 +1557,8 @@ components:
           type: string
           description: Account type
           enum:
-            - tenant_account
-            - environment_account
+          - tenant_account
+          - environment_account
           example: tenant_account
         accountId:
           type: string
@@ -1593,16 +1568,16 @@ components:
           type: string
           description: Context type (tenant or environment)
           enum:
-            - tenant
-            - environment
+          - tenant
+          - environment
           example: tenant
         contextId:
           type: string
           description: Context ID (tenant or environment UUID)
           example: 550e8400-e29b-41d4-a716-446655440000
         expiresAt:
-          type: string
           format: date-time
+          type: string
           description: Session expiration date
           example: '2025-01-27T12:00:00.000Z'
         ipAddress:
@@ -1614,25 +1589,24 @@ components:
           description: User agent that created the session
           example: Mozilla/5.0...
         lastActiveAt:
-          type: string
           format: date-time
+          type: string
           description: Last activity timestamp
           example: '2025-01-01T12:00:00.000Z'
         createdAt:
-          type: string
           format: date-time
+          type: string
           description: Session creation timestamp
           example: '2025-01-01T12:00:00.000Z'
       required:
-        - id
-        - accountType
-        - accountId
-        - contextType
-        - contextId
-        - expiresAt
-        - lastActiveAt
-        - createdAt
-
+      - id
+      - accountType
+      - accountId
+      - contextType
+      - contextId
+      - expiresAt
+      - lastActiveAt
+      - createdAt
     AuthResponseDto:
       type: object
       properties:
@@ -1643,37 +1617,39 @@ components:
         session:
           description: Session information
           allOf:
-            - $ref: '#/components/schemas/SessionResponseDto'
+          - $ref: '#/components/schemas/SessionResponseDto'
       required:
-        - accountId
-        - session
-
+      - accountId
+      - session
     ForgotPasswordDto:
       type: object
       properties:
         email:
           type: string
-          description: Email address. At least one of email, phone, or username must be provided.
+          description: Email address. At least one of email, phone, or username must
+            be provided.
           example: jane.smith@example.com
         phone:
           type: string
-          description: Phone number in E.164 format. At least one of email, phone, or username must be provided.
+          description: Phone number in E.164 format. At least one of email, phone,
+            or username must be provided.
           example: '+1234567890'
         username:
           type: string
-          description: Username. At least one of email, phone, or username must be provided.
+          description: Username. At least one of email, phone, or username must be
+            provided.
           example: janesmith
-
     ForgotPasswordResponseDto:
       type: object
       properties:
         message:
           type: string
-          description: Message indicating the request was processed. For security, this message is the same whether or not the account exists.
-          example: If an account exists with this identifier, a reset link has been sent.
+          description: Message indicating the request was processed. For security,
+            this message is the same whether or not the account exists.
+          example: If an account exists with this identifier, a reset link has been
+            sent.
       required:
-        - message
-
+      - message
     ResetPasswordDto:
       type: object
       properties:
@@ -1686,9 +1662,8 @@ components:
           description: The new password (min 8 characters)
           example: NewSecureP@ssw0rd!
       required:
-        - token
-        - newPassword
-
+      - token
+      - newPassword
     ResetPasswordResponseDto:
       type: object
       properties:
@@ -1699,11 +1674,11 @@ components:
         message:
           type: string
           description: Message describing the result
-          example: Password has been reset successfully. Please log in with your new password.
+          example: Password has been reset successfully. Please log in with your new
+            password.
       required:
-        - success
-        - message
-
+      - success
+      - message
     EnvironmentSignupDto:
       type: object
       properties:
@@ -1737,11 +1712,10 @@ components:
           description: URL to avatar image
           example: https://example.com/avatar.png
       required:
-        - name
-        - email
-        - username
-        - password
-
+      - name
+      - email
+      - username
+      - password
     CreateTenantDetailsDto:
       type: object
       properties:
@@ -1758,8 +1732,7 @@ components:
             region: us-east
           additionalProperties: true
       required:
-        - name
-
+      - name
     CreateTenantAccountRoleDto:
       type: object
       properties:
@@ -1767,26 +1740,25 @@ components:
           type: string
           description: Role type
           enum:
-            - owner
-            - admin
-            - user
+          - owner
+          - admin
+          - user
           example: owner
         target:
           type: string
           description: Target type for the role
           enum:
-            - tenant
-            - environment
+          - tenant
+          - environment
           example: tenant
         targetId:
           type: string
           description: UUID of the target (tenant or environment)
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - role
-        - target
-        - targetId
-
+      - role
+      - target
+      - targetId
     CreateTenantOwnerAccountDto:
       type: object
       properties:
@@ -1825,11 +1797,10 @@ components:
           items:
             $ref: '#/components/schemas/CreateTenantAccountRoleDto'
       required:
-        - name
-        - email
-        - username
-        - password
-
+      - name
+      - email
+      - username
+      - password
     CreateEnvironmentDetailsDto:
       type: object
       properties:
@@ -1846,27 +1817,25 @@ components:
               dark_mode: true
           additionalProperties: true
       required:
-        - name
-
+      - name
     CreateTenantDto:
       type: object
       properties:
         tenant:
           description: Tenant details
           allOf:
-            - $ref: '#/components/schemas/CreateTenantDetailsDto'
+          - $ref: '#/components/schemas/CreateTenantDetailsDto'
         account:
           description: Initial owner account for the tenant
           allOf:
-            - $ref: '#/components/schemas/CreateTenantOwnerAccountDto'
+          - $ref: '#/components/schemas/CreateTenantOwnerAccountDto'
         environment:
           description: Initial environment (defaults to "default" if not provided)
           allOf:
-            - $ref: '#/components/schemas/CreateEnvironmentDetailsDto'
+          - $ref: '#/components/schemas/CreateEnvironmentDetailsDto'
       required:
-        - tenant
-        - account
-
+      - tenant
+      - account
     SessionInfoDto:
       type: object
       properties:
@@ -1891,17 +1860,16 @@ components:
           description: UUID of the context (tenant or environment)
           example: 550e8400-e29b-41d4-a716-446655440000
         expiresAt:
-          type: string
           format: date-time
+          type: string
           description: Session expiration timestamp
       required:
-        - id
-        - accountType
-        - accountId
-        - contextType
-        - contextId
-        - expiresAt
-
+      - id
+      - accountType
+      - accountId
+      - contextType
+      - contextId
+      - expiresAt
     CreateTenantResponseDto:
       type: object
       properties:
@@ -1920,13 +1888,12 @@ components:
         session:
           description: Session created for the new account
           allOf:
-            - $ref: '#/components/schemas/SessionInfoDto'
+          - $ref: '#/components/schemas/SessionInfoDto'
       required:
-        - tenantId
-        - accountId
-        - environmentId
-        - session
-
+      - tenantId
+      - accountId
+      - environmentId
+      - session
     EnvironmentSummaryDto:
       type: object
       properties:
@@ -1949,10 +1916,9 @@ components:
             feature_flags:
               dark_mode: true
       required:
-        - id
-        - name
-        - tenantId
-
+      - id
+      - name
+      - tenantId
     TenantResponseDto:
       type: object
       properties:
@@ -1975,10 +1941,9 @@ components:
           items:
             $ref: '#/components/schemas/EnvironmentSummaryDto'
       required:
-        - id
-        - name
-        - environments
-
+      - id
+      - name
+      - environments
     UpdateTenantDto:
       type: object
       properties:
@@ -1987,7 +1952,6 @@ components:
           description: New name for the tenant
           example: My Updated Company
           minLength: 2
-
     TenantAccountRoleResponseDto:
       type: object
       properties:
@@ -1995,26 +1959,25 @@ components:
           type: string
           description: Role type
           enum:
-            - owner
-            - admin
-            - user
+          - owner
+          - admin
+          - user
           example: admin
         target:
           type: string
           description: Target type for the role
           enum:
-            - tenant
-            - environment
+          - tenant
+          - environment
           example: tenant
         targetId:
           type: string
           description: UUID of the target
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - role
-        - target
-        - targetId
-
+      - role
+      - target
+      - targetId
     TenantAccountResponseDto:
       type: object
       properties:
@@ -2052,13 +2015,12 @@ components:
           items:
             $ref: '#/components/schemas/TenantAccountRoleResponseDto'
       required:
-        - id
-        - name
-        - email
-        - username
-        - tenantId
-        - roles
-
+      - id
+      - name
+      - email
+      - username
+      - tenantId
+      - roles
     DeleteCustomPropertyDto:
       type: object
       properties:
@@ -2067,8 +2029,7 @@ components:
           description: Key of the custom property to delete
           example: tier
       required:
-        - customProperty
-
+      - customProperty
     TenantAccountRoleDto:
       type: object
       properties:
@@ -2076,26 +2037,25 @@ components:
           type: string
           description: Role type
           enum:
-            - owner
-            - admin
-            - user
+          - owner
+          - admin
+          - user
           example: user
         target:
           type: string
           description: Target type for the role
           enum:
-            - tenant
-            - environment
+          - tenant
+          - environment
           example: tenant
         targetId:
           type: string
           description: UUID of the target (tenant or environment)
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - role
-        - target
-        - targetId
-
+      - role
+      - target
+      - targetId
     CreateTenantAccountDto:
       type: object
       properties:
@@ -2129,10 +2089,9 @@ components:
           items:
             $ref: '#/components/schemas/TenantAccountRoleDto'
       required:
-        - name
-        - email
-        - username
-
+      - name
+      - email
+      - username
     CreateTenantAccountResponseDto:
       type: object
       properties:
@@ -2141,8 +2100,7 @@ components:
           description: UUID of the created account
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - id
-
+      - id
     UserDefinedIdentificationDto:
       type: object
       properties:
@@ -2158,7 +2116,6 @@ components:
           type: string
           description: Username to search by
           example: johndoe
-
     UpdateTenantAccountDto:
       type: object
       properties:
@@ -2172,7 +2129,6 @@ components:
           type: string
           description: New avatar URL
           example: https://example.com/new-avatar.png
-
     UpdateTenantAccountEmailDto:
       type: object
       properties:
@@ -2181,8 +2137,7 @@ components:
           description: New email address
           example: new.email@example.com
       required:
-        - email
-
+      - email
     UpdateTenantAccountPhoneDto:
       type: object
       properties:
@@ -2191,8 +2146,7 @@ components:
           description: New phone number in E.164 format
           example: '+1987654321'
       required:
-        - phone
-
+      - phone
     UpdateTenantAccountUsernameDto:
       type: object
       properties:
@@ -2203,8 +2157,7 @@ components:
           minLength: 3
           maxLength: 20
       required:
-        - username
-
+      - username
     CreateEnvironmentDto:
       type: object
       properties:
@@ -2221,8 +2174,7 @@ components:
               beta_features: true
           additionalProperties: true
       required:
-        - name
-
+      - name
     CreateEnvironmentResponseDto:
       type: object
       properties:
@@ -2231,8 +2183,7 @@ components:
           description: UUID of the created environment
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - id
-
+      - id
     EnvironmentResponseDto:
       type: object
       properties:
@@ -2255,10 +2206,9 @@ components:
             feature_flags:
               dark_mode: true
       required:
-        - id
-        - name
-        - tenantId
-
+      - id
+      - name
+      - tenantId
     UpdateEnvironmentDto:
       type: object
       properties:
@@ -2267,7 +2217,6 @@ components:
           description: New name for the environment
           example: production-v2
           minLength: 2
-
     DeleteEnvironmentCustomPropertyDto:
       type: object
       properties:
@@ -2276,8 +2225,7 @@ components:
           description: Key of the custom property to delete
           example: max_users
       required:
-        - customProperty
-
+      - customProperty
     CreateEnvironmentAccountDto:
       type: object
       properties:
@@ -2313,11 +2261,10 @@ components:
               theme: dark
           additionalProperties: true
       required:
-        - name
-        - email
-        - username
-        - phone
-
+      - name
+      - email
+      - username
+      - phone
     CreateEnvironmentAccountResponseDto:
       type: object
       properties:
@@ -2326,8 +2273,7 @@ components:
           description: UUID of the created account
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
-        - id
-
+      - id
     EnvironmentAccountResponseDto:
       type: object
       properties:
@@ -2366,13 +2312,12 @@ components:
             preferences:
               theme: dark
       required:
-        - id
-        - name
-        - email
-        - username
-        - phone
-        - environmentId
-
+      - id
+      - name
+      - email
+      - username
+      - phone
+      - environmentId
     UpdateEnvironmentAccountDto:
       type: object
       properties:
@@ -2386,7 +2331,6 @@ components:
           type: string
           description: New avatar URL
           example: https://example.com/new-avatar.png
-
     UpdateEnvironmentAccountEmailDto:
       type: object
       properties:
@@ -2395,8 +2339,7 @@ components:
           description: New email address
           example: new.alice@example.com
       required:
-        - email
-
+      - email
     UpdateEnvironmentAccountPhoneDto:
       type: object
       properties:
@@ -2405,8 +2348,7 @@ components:
           description: New phone number in E.164 format
           example: '+1987654321'
       required:
-        - phone
-
+      - phone
     UpdateEnvironmentAccountUsernameDto:
       type: object
       properties:
@@ -2417,8 +2359,7 @@ components:
           minLength: 3
           maxLength: 20
       required:
-        - username
-
+      - username
     DeleteEnvironmentAccountCustomPropertyDto:
       type: object
       properties:
@@ -2427,4 +2368,4 @@ components:
           description: Key of the custom property to delete
           example: subscription
       required:
-        - customProperty
+      - customProperty
