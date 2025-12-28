@@ -249,7 +249,7 @@ describe('Tenant Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}`)
         .set('Cookie', sessionCookie!)
         .send({ name: 'Updated Tenant Name' })
-        .expect(200);
+        .expect(204);
 
       // Verify the update
       const getResponse = await request(app.getHttpServer())
@@ -334,7 +334,7 @@ describe('Tenant Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/custom-property`)
         .set('Cookie', sessionCookie!)
         .send({ plan: 'premium' })
-        .expect(200);
+        .expect(204);
 
       // Verify the property was set
       const getResponse = await request(app.getHttpServer())
@@ -357,7 +357,7 @@ describe('Tenant Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/custom-property`)
         .set('Cookie', sessionCookie!)
         .send({ plan: 'enterprise' })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}`)

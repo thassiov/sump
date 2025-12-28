@@ -181,7 +181,7 @@ describe('Environment Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/environments/${newEnv.id}`)
         .set('Cookie', sessionCookie!)
         .send({ name: 'staging-v2' })
-        .expect(200);
+        .expect(204);
 
       // Verify the update
       const getResponse = await request(app.getHttpServer())
@@ -238,7 +238,7 @@ describe('Environment Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/environments/${newEnv.id}/custom-property`)
         .set('Cookie', sessionCookie!)
         .send({ max_users: 100 })
-        .expect(200);
+        .expect(204);
 
       // Verify the property was set
       const getResponse = await request(app.getHttpServer())
@@ -259,7 +259,7 @@ describe('Environment Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/environments/${newEnv.id}/custom-property`)
         .set('Cookie', sessionCookie!)
         .send({ max_users: 200 })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}/environments/${newEnv.id}`)

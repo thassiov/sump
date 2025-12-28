@@ -286,7 +286,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
         .set('Cookie', sessionCookie!)
         .send({ name: 'Updated Name' })
-        .expect(200);
+        .expect(204);
 
       // Verify the update
       const getResponse = await request(app.getHttpServer())
@@ -305,7 +305,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
         .set('Cookie', sessionCookie!)
         .send({ avatarUrl: 'https://example.com/new-avatar.png' })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
@@ -335,7 +335,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/email`)
         .set('Cookie', sessionCookie!)
         .send({ email: 'updated@test.com' })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
@@ -379,7 +379,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/username`)
         .set('Cookie', sessionCookie!)
         .send({ username: 'updateduser' })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
@@ -422,7 +422,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/phone`)
         .set('Cookie', sessionCookie!)
         .send({ phone: '+1111111111' })
-        .expect(200);
+        .expect(204);
 
       const getResponse = await request(app.getHttpServer())
         .get(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}`)
@@ -471,7 +471,7 @@ describe('Tenant Account Endpoints (Integration)', () => {
       await request(app.getHttpServer())
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/disable`)
         .set('Cookie', sessionCookie!)
-        .expect(200);
+        .expect(204);
 
       // Verify the account is disabled
       const getResponse = await request(app.getHttpServer())
@@ -501,13 +501,13 @@ describe('Tenant Account Endpoints (Integration)', () => {
       await request(app.getHttpServer())
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/disable`)
         .set('Cookie', sessionCookie!)
-        .expect(200);
+        .expect(204);
 
       // Then enable it
       await request(app.getHttpServer())
         .patch(`${API_PREFIX}/tenants/${body.tenantId}/accounts/${newAccount.id}/enable`)
         .set('Cookie', sessionCookie!)
-        .expect(200);
+        .expect(204);
 
       // Verify the account is enabled
       const getResponse = await request(app.getHttpServer())

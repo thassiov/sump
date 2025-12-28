@@ -83,7 +83,7 @@ jobs:
           timeout 30 bash -c 'until docker compose exec -T postgres-local pg_isready -U sump -d sump; do sleep 1; done'
 
       - name: Run migrations
-        run: docker compose up postgres-init
+        run: docker compose up --exit-code-from postgres-init postgres-init
 
       - name: Run integration tests
         run: docker compose --profile test run --rm test-runner

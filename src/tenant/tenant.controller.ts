@@ -75,7 +75,6 @@ export class TenantController {
         username: dto.account.username,
         phone: dto.account.phone,
         avatarUrl: dto.account.avatarUrl,
-        roles: dto.account.roles,
         passwordHash,
         // Note: roles are added by the use case after tenant creation
       },
