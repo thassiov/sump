@@ -168,9 +168,41 @@ async function up(knex: Knex) {
     CREATE INDEX idx_session_expires
     ON ${internalConfigs.repository.session.tableName}(expires_at)
   `);
+
+  // Password reset token table
+  await knex.schema.createTable(
+    internalConfigs.repository.passwordResetToken.tableName,
+    function (table) {
+      table
+        .uuid('id')
+        .defaultTo(knex.fn.uuid())
+        .primary()
+        .unique()
+        .index('passwordResetTokenIdx');
+      table
+        .string('token', 64)
+        .notNullable()
+        .unique()
+        .index('passwordResetTokenTokenIdx');
+      table
+        .enum('accountType', ['tenant_account', 'environment_account'])
+        .notNullable();
+      table.uuid('accountId').notNullable();
+      table.timestamp('expiresAt').notNullable();
+      table.timestamp('usedAt').nullable();
+      table.timestamps(true, true);
+    }
+  );
+
+  // Additional indexes for password reset queries
+  await knex.raw(`
+    CREATE INDEX idx_password_reset_account
+    ON ${internalConfigs.repository.passwordResetToken.tableName}(account_type, account_id)
+  `);
 }
 
 async function down(knex: Knex) {
+  await knex.schema.dropTableIfExists(internalConfigs.repository.passwordResetToken.tableName);
   await knex.schema.dropTableIfExists(internalConfigs.repository.session.tableName);
   await knex.schema.dropTable(internalConfigs.repository.environmentAccount.tableName);
   await knex.schema.dropTable(internalConfigs.repository.environment.tableName);
