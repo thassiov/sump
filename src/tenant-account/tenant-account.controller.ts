@@ -169,6 +169,7 @@ export class TenantAccountController {
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update account non-sensitive properties',
     description: 'Updates allowed account properties like name and avatar URL. Users can update their own account.',
@@ -176,7 +177,7 @@ export class TenantAccountController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountDto })
-  @ApiResponse({ status: 200, description: 'Account updated successfully' })
+  @ApiResponse({ status: 204, description: 'Account updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -184,8 +185,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @Body() dto: IUpdateTenantAccountNonSensitivePropertiesDto
-  ) {
-    return this.tenantAccountUseCase.updateNonSensitivePropertiesByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.updateNonSensitivePropertiesByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -198,6 +199,7 @@ export class TenantAccountController {
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update account email',
     description: 'Updates the email address for the specified account. Users can update their own email.',
@@ -205,7 +207,7 @@ export class TenantAccountController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountEmailDto })
-  @ApiResponse({ status: 200, description: 'Email updated successfully' })
+  @ApiResponse({ status: 204, description: 'Email updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -214,8 +216,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @Body() dto: IUpdateTenantAccountEmailDto
-  ) {
-    return this.tenantAccountUseCase.updateAccountEmailByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.updateAccountEmailByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -228,6 +230,7 @@ export class TenantAccountController {
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update account phone',
     description: 'Updates the phone number for the specified account. Users can update their own phone.',
@@ -235,7 +238,7 @@ export class TenantAccountController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountPhoneDto })
-  @ApiResponse({ status: 200, description: 'Phone updated successfully' })
+  @ApiResponse({ status: 204, description: 'Phone updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -244,8 +247,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @Body() dto: IUpdateTenantAccountPhoneDto
-  ) {
-    return this.tenantAccountUseCase.updateAccountPhoneByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.updateAccountPhoneByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -258,6 +261,7 @@ export class TenantAccountController {
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update account username',
     description: 'Updates the username for the specified account. Users can update their own username.',
@@ -265,7 +269,7 @@ export class TenantAccountController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateTenantAccountUsernameDto })
-  @ApiResponse({ status: 200, description: 'Username updated successfully' })
+  @ApiResponse({ status: 204, description: 'Username updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - must be admin/owner or account owner' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -274,8 +278,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @Body() dto: IUpdateTenantAccountUsernameDto
-  ) {
-    return this.tenantAccountUseCase.updateAccountUsernameByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.updateAccountUsernameByIdAndTenantId(
       accountId,
       tenantId,
       dto
@@ -287,13 +291,14 @@ export class TenantAccountController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Disable an account',
     description: 'Disables an account. Owners can disable admins and users. Admins can only disable users. Disabled accounts cannot log in.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account to disable' })
-  @ApiResponse({ status: 200, description: 'Account disabled successfully' })
+  @ApiResponse({ status: 204, description: 'Account disabled successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient role to disable this account' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -301,8 +306,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @CurrentSession() session: ISession
-  ) {
-    return this.tenantAccountUseCase.disableAccountByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.disableAccountByIdAndTenantId(
       session.accountId,
       accountId,
       tenantId
@@ -314,13 +319,14 @@ export class TenantAccountController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Enable a disabled account',
     description: 'Re-enables a previously disabled account. Owners can enable admins and users. Admins can only enable users.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account to enable' })
-  @ApiResponse({ status: 200, description: 'Account enabled successfully' })
+  @ApiResponse({ status: 204, description: 'Account enabled successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient role to enable this account' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -328,8 +334,8 @@ export class TenantAccountController {
     @Param('tenantId') tenantId: string,
     @Param('accountId') accountId: string,
     @CurrentSession() session: ISession
-  ) {
-    return this.tenantAccountUseCase.enableAccountByIdAndTenantId(
+  ): Promise<void> {
+    await this.tenantAccountUseCase.enableAccountByIdAndTenantId(
       session.accountId,
       accountId,
       tenantId

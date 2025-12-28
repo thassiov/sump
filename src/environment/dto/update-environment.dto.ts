@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, ApiExtraModels } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength, IsOptional } from 'class-validator';
 
 export class UpdateEnvironmentDto {
@@ -13,10 +13,13 @@ export class UpdateEnvironmentDto {
   name?: string;
 }
 
-@ApiExtraModels()
+/**
+ * Request body for setting a custom property on an environment.
+ * Pass any key-value pair where the key is a string and the value is JSON-compatible.
+ * @example { "max_users": 100 }
+ */
 export class SetEnvironmentCustomPropertyDto {
-  // This class represents a free-form object for custom properties
-  // The actual structure is dynamic key-value pairs
+  [key: string]: unknown;
 }
 
 export class DeleteEnvironmentCustomPropertyDto {

@@ -20,12 +20,12 @@ import {
   UpdateEnvironmentAccountEmailDto,
   UpdateEnvironmentAccountPhoneDto,
   UpdateEnvironmentAccountUsernameDto,
-  SetEnvironmentAccountCustomPropertyDto,
   DeleteEnvironmentAccountCustomPropertyDto,
   EnvironmentAccountResponseDto,
 } from './dto';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { RequireRoles, AllowOwner, EnvironmentResource } from '../auth/decorators';
+import { JSONType } from '../lib/types';
 
 @ApiTags('Environment Accounts')
 @Controller('environments/:environmentId/accounts')
@@ -120,6 +120,7 @@ export class EnvironmentAccountController {
   @Patch(':accountId')
   @UseGuards(AuthGuard, RolesGuard)
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update own account properties',
     description: 'Updates account properties like name and avatar URL. Users can only update their own account.',
@@ -127,7 +128,7 @@ export class EnvironmentAccountController {
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateEnvironmentAccountDto })
-  @ApiResponse({ status: 200, description: 'Account updated successfully' })
+  @ApiResponse({ status: 204, description: 'Account updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - you can only update your own account' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -135,8 +136,8 @@ export class EnvironmentAccountController {
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
     @Body() dto: UpdateEnvironmentAccountDto
-  ) {
-    return this.environmentAccountUseCase.updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.updateAccountNonSensitivePropertiesByIdAndTenantEnvironmentId(
       accountId,
       environmentId,
       dto
@@ -146,6 +147,7 @@ export class EnvironmentAccountController {
   @Patch(':accountId/email')
   @UseGuards(AuthGuard, RolesGuard)
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update own email',
     description: 'Updates the email address. Users can only update their own email.',
@@ -153,7 +155,7 @@ export class EnvironmentAccountController {
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateEnvironmentAccountEmailDto })
-  @ApiResponse({ status: 200, description: 'Email updated successfully' })
+  @ApiResponse({ status: 204, description: 'Email updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - you can only update your own email' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -162,8 +164,8 @@ export class EnvironmentAccountController {
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
     @Body() dto: UpdateEnvironmentAccountEmailDto
-  ) {
-    return this.environmentAccountUseCase.updateAccountEmailByIdAndTenantEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.updateAccountEmailByIdAndTenantEnvironmentId(
       accountId,
       environmentId,
       dto
@@ -173,6 +175,7 @@ export class EnvironmentAccountController {
   @Patch(':accountId/phone')
   @UseGuards(AuthGuard, RolesGuard)
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update own phone',
     description: 'Updates the phone number. Users can only update their own phone.',
@@ -180,7 +183,7 @@ export class EnvironmentAccountController {
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateEnvironmentAccountPhoneDto })
-  @ApiResponse({ status: 200, description: 'Phone updated successfully' })
+  @ApiResponse({ status: 204, description: 'Phone updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - you can only update your own phone' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -189,8 +192,8 @@ export class EnvironmentAccountController {
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
     @Body() dto: UpdateEnvironmentAccountPhoneDto
-  ) {
-    return this.environmentAccountUseCase.updateAccountPhoneByIdAndTenantEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.updateAccountPhoneByIdAndTenantEnvironmentId(
       accountId,
       environmentId,
       dto
@@ -200,6 +203,7 @@ export class EnvironmentAccountController {
   @Patch(':accountId/username')
   @UseGuards(AuthGuard, RolesGuard)
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update own username',
     description: 'Updates the username. Users can only update their own username.',
@@ -207,7 +211,7 @@ export class EnvironmentAccountController {
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
   @ApiBody({ type: UpdateEnvironmentAccountUsernameDto })
-  @ApiResponse({ status: 200, description: 'Username updated successfully' })
+  @ApiResponse({ status: 204, description: 'Username updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - you can only update your own username' })
   @ApiResponse({ status: 404, description: 'Account not found' })
@@ -216,8 +220,8 @@ export class EnvironmentAccountController {
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
     @Body() dto: UpdateEnvironmentAccountUsernameDto
-  ) {
-    return this.environmentAccountUseCase.updateAccountUsernameByIdAndTenantEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.updateAccountUsernameByIdAndTenantEnvironmentId(
       accountId,
       environmentId,
       dto
@@ -227,23 +231,31 @@ export class EnvironmentAccountController {
   @Patch(':accountId/custom-property')
   @UseGuards(AuthGuard, RolesGuard)
   @AllowOwner()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Set custom property on own account',
     description: 'Sets or updates a custom property. Users can only set properties on their own account.',
   })
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account' })
-  @ApiBody({ type: SetEnvironmentAccountCustomPropertyDto })
-  @ApiResponse({ status: 200, description: 'Custom property set successfully' })
+  @ApiBody({
+    description: 'A key-value pair to set as a custom property',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+      example: { subscription: 'premium' },
+    },
+  })
+  @ApiResponse({ status: 204, description: 'Custom property set successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - you can only set properties on your own account' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async setCustomProperty(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string,
-    @Body() customProperty: Record<string, unknown>
-  ) {
-    return this.environmentAccountUseCase.setAccountCustomPropertyByIdAndTenantEnvironmentId(
+    @Body() customProperty: Record<string, JSONType>
+  ): Promise<void> {
+    await this.environmentAccountUseCase.setAccountCustomPropertyByIdAndTenantEnvironmentId(
       accountId,
       environmentId,
       customProperty
@@ -283,21 +295,22 @@ export class EnvironmentAccountController {
     { role: 'owner', target: 'environment', targetId: ':environmentId' },
     { role: 'admin', target: 'environment', targetId: ':environmentId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Disable an account',
     description: 'Disables an account. Only environment admins/owners can disable accounts. Disabled accounts cannot log in.',
   })
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account to disable' })
-  @ApiResponse({ status: 200, description: 'Account disabled successfully' })
+  @ApiResponse({ status: 204, description: 'Account disabled successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async disableAccount(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string
-  ) {
-    return this.environmentAccountUseCase.disableAccountByIdAndEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.disableAccountByIdAndEnvironmentId(
       accountId,
       environmentId
     );
@@ -309,21 +322,22 @@ export class EnvironmentAccountController {
     { role: 'owner', target: 'environment', targetId: ':environmentId' },
     { role: 'admin', target: 'environment', targetId: ':environmentId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Enable a disabled account',
     description: 'Re-enables a previously disabled account. Only environment admins/owners can enable accounts.',
   })
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiParam({ name: 'accountId', description: 'UUID of the account to enable' })
-  @ApiResponse({ status: 200, description: 'Account enabled successfully' })
+  @ApiResponse({ status: 204, description: 'Account enabled successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async enableAccount(
     @Param('environmentId') environmentId: string,
     @Param('accountId') accountId: string
-  ) {
-    return this.environmentAccountUseCase.enableAccountByIdAndEnvironmentId(
+  ): Promise<void> {
+    await this.environmentAccountUseCase.enableAccountByIdAndEnvironmentId(
       accountId,
       environmentId
     );

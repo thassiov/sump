@@ -38,7 +38,7 @@ class CreateTenantAccountRoleDto {
   targetId!: string;
 }
 
-class CreateTenantAccountDto {
+class CreateTenantOwnerAccountDto {
   @ApiProperty({
     description: 'Full name of the account holder',
     example: 'John Doe',
@@ -157,12 +157,12 @@ export class CreateTenantDto {
 
   @ApiProperty({
     description: 'Initial owner account for the tenant',
-    type: CreateTenantAccountDto,
+    type: CreateTenantOwnerAccountDto,
   })
   @IsDefined()
   @ValidateNested()
-  @Type(() => CreateTenantAccountDto)
-  account!: CreateTenantAccountDto;
+  @Type(() => CreateTenantOwnerAccountDto)
+  account!: CreateTenantOwnerAccountDto;
 
   @ApiPropertyOptional({
     description: 'Initial environment (defaults to "default" if not provided)',

@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength, IsOptional, IsObject } from 'class-validator';
+import { JSONType } from '../../lib/types';
 
 export class CreateEnvironmentDto {
   @ApiProperty({
@@ -19,7 +20,7 @@ export class CreateEnvironmentDto {
   })
   @IsOptional()
   @IsObject()
-  customProperties?: Record<string, unknown>;
+  customProperties?: Record<string, JSONType>;
 }
 
 export class CreateEnvironmentResponseDto {

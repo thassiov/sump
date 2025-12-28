@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, ApiProperty, ApiExtraModels } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTenantDto {
   @ApiPropertyOptional({
@@ -9,10 +9,13 @@ export class UpdateTenantDto {
   name?: string;
 }
 
-@ApiExtraModels()
+/**
+ * Request body for setting a custom property.
+ * Pass any key-value pair where the key is a string and the value is JSON-compatible.
+ * @example { "tier": "enterprise" }
+ */
 export class SetCustomPropertyDto {
-  // This class represents a free-form object for custom properties
-  // The actual structure is dynamic key-value pairs
+  [key: string]: unknown;
 }
 
 export class DeleteCustomPropertyDto {

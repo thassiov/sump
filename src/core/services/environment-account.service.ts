@@ -45,8 +45,8 @@ export class EnvironmentAccountService
       const environmentAccountId =
         await this.environmentAccountRepository.create(
           {
-            customProperties: {},
             ...dto,
+            customProperties: dto.customProperties ?? {},
             phoneVerified: false,
             emailVerified: false,
             environmentId,
@@ -91,8 +91,8 @@ export class EnvironmentAccountService
 
     const accountId = await this.environmentAccountRepository.create(
       {
-        customProperties: {},
         ...dto,
+        customProperties: dto.customProperties ?? {},
         phoneVerified: false,
         emailVerified: false,
         environmentId,

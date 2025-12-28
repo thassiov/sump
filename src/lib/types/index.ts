@@ -1,5 +1,14 @@
 import z from 'zod';
 
+// JSON-compatible type for customProperties and similar fields
+export type JSONType =
+  | string
+  | number
+  | boolean
+  | null
+  | JSONType[]
+  | { [key: string]: JSONType };
+
 const restApiConfigSchema = z.object({
   port: z.number(),
 });

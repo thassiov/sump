@@ -17,12 +17,12 @@ import {
   CreateEnvironmentDto,
   CreateEnvironmentResponseDto,
   UpdateEnvironmentDto,
-  SetEnvironmentCustomPropertyDto,
   DeleteEnvironmentCustomPropertyDto,
   EnvironmentResponseDto,
 } from './dto';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { RequireRoles, TenantResource } from '../auth/decorators';
+import { JSONType } from '../lib/types';
 
 @ApiTags('Environments')
 @Controller('tenants/:tenantId/environments')
@@ -123,6 +123,7 @@ export class EnvironmentController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update environment non-sensitive properties',
     description: 'Updates allowed environment properties like name.',
@@ -130,7 +131,7 @@ export class EnvironmentController {
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
   @ApiBody({ type: UpdateEnvironmentDto })
-  @ApiResponse({ status: 200, description: 'Environment updated successfully' })
+  @ApiResponse({ status: 204, description: 'Environment updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Environment not found' })
@@ -138,8 +139,8 @@ export class EnvironmentController {
     @Param('tenantId') tenantId: string,
     @Param('environmentId') environmentId: string,
     @Body() dto: UpdateEnvironmentDto
-  ) {
-    return this.environmentUseCase.updateEnvironmentNonSensitivePropertiesByIdAndTenantId(
+  ): Promise<void> {
+    await this.environmentUseCase.updateEnvironmentNonSensitivePropertiesByIdAndTenantId(
       environmentId,
       tenantId,
       dto
@@ -151,23 +152,31 @@ export class EnvironmentController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Set custom property on environment',
     description: 'Sets or updates a custom property on the environment.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiParam({ name: 'environmentId', description: 'UUID of the environment' })
-  @ApiBody({ type: SetEnvironmentCustomPropertyDto })
-  @ApiResponse({ status: 200, description: 'Custom property set successfully' })
+  @ApiBody({
+    description: 'A key-value pair to set as a custom property',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+      example: { max_users: 100 },
+    },
+  })
+  @ApiResponse({ status: 204, description: 'Custom property set successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Environment not found' })
   async setCustomProperty(
     @Param('tenantId') tenantId: string,
     @Param('environmentId') environmentId: string,
-    @Body() customProperty: IEnvironment['customProperties']
-  ) {
-    return this.environmentUseCase.setEnvironmentCustomPropertyByIdAndTenantId(
+    @Body() customProperty: Record<string, JSONType>
+  ): Promise<void> {
+    await this.environmentUseCase.setEnvironmentCustomPropertyByIdAndTenantId(
       environmentId,
       tenantId,
       customProperty

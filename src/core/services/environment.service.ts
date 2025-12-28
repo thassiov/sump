@@ -40,7 +40,7 @@ export class EnvironmentService
 
     try {
       const tenantEnvironmentId = await this.tenantEnvironmentRepository.create(
-        { customProperties: {}, ...dto, tenantId },
+        { ...dto, customProperties: dto.customProperties ?? {}, tenantId },
         transaction
       );
 

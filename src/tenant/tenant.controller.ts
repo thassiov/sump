@@ -21,7 +21,6 @@ import {
   CreateTenantDto,
   CreateTenantResponseDto,
   UpdateTenantDto,
-  SetCustomPropertyDto,
   DeleteCustomPropertyDto,
   TenantResponseDto,
 } from './dto';
@@ -165,21 +164,22 @@ export class TenantController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Update tenant non-sensitive properties',
     description: 'Updates allowed tenant properties like name.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
   @ApiBody({ type: UpdateTenantDto })
-  @ApiResponse({ status: 200, description: 'Tenant updated successfully' })
+  @ApiResponse({ status: 204, description: 'Tenant updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async updateTenant(
     @Param('tenantId') tenantId: string,
     @Body() dto: IUpdateTenantNonSensitivePropertiesDto
-  ) {
-    return this.tenantUseCase.updateNonSensitivePropertiesByIdUseCase(
+  ): Promise<void> {
+    await this.tenantUseCase.updateNonSensitivePropertiesByIdUseCase(
       tenantId,
       dto
     );
@@ -216,21 +216,29 @@ export class TenantController {
     { role: 'owner', target: 'tenant', targetId: ':tenantId' },
     { role: 'admin', target: 'tenant', targetId: ':tenantId' }
   )
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Set custom property on tenant',
     description: 'Sets or updates a custom property on the tenant. Pass the property as a key-value pair in the body.',
   })
   @ApiParam({ name: 'tenantId', description: 'UUID of the tenant' })
-  @ApiBody({ type: SetCustomPropertyDto })
-  @ApiResponse({ status: 200, description: 'Custom property set successfully' })
+  @ApiBody({
+    description: 'A key-value pair to set as a custom property',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+      example: { tier: 'enterprise' },
+    },
+  })
+  @ApiResponse({ status: 204, description: 'Custom property set successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin or owner role required' })
   @ApiResponse({ status: 404, description: 'Tenant not found' })
   async setCustomProperty(
     @Param('tenantId') tenantId: string,
     @Body() customProperty: ITenant['customProperties']
-  ) {
-    return this.tenantUseCase.setCustomPropertyByTenantIdUseCase(
+  ): Promise<void> {
+    await this.tenantUseCase.setCustomPropertyByTenantIdUseCase(
       tenantId,
       customProperty
     );

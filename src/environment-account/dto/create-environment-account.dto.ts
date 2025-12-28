@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsEmail, IsOptional, IsObject, MinLength, MaxLength } from 'class-validator';
+import { JSONType } from '../../lib/types';
 
 export class CreateEnvironmentAccountDto {
   @ApiProperty({
@@ -54,7 +55,7 @@ export class CreateEnvironmentAccountDto {
   })
   @IsOptional()
   @IsObject()
-  customProperties?: Record<string, unknown>;
+  customProperties?: Record<string, JSONType>;
 }
 
 export class CreateEnvironmentAccountResponseDto {
