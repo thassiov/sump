@@ -9,6 +9,7 @@ const environmentAccountSchema = z.object({
   name: z.string().min(3).max(100),
   username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()).nullable().optional(),
+  passwordHash: z.string().optional(),
   environmentId: z.uuid(),
   customProperties: z.record(z.string(), z.json()),
   disabled: z.boolean(),

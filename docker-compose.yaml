@@ -53,6 +53,9 @@ services:
     ports:
       - '8080:8080'
     command: ['npm', 'run', 'dev:start', '--', '--config=./sump-config.json']
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET:-this-is-a-32-character-dev-key-for-local-testing}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     volumes:
       - ./sump-config.json:/app/sump-config.json
     depends_on:
@@ -74,6 +77,7 @@ services:
       - DB_USER=sump
       - DB_PASSWORD=sump
       - DB_NAME=sump
+      - AUTH_SECRET=this-is-a-32-character-test-key-for-integration
     depends_on:
       postgres-init:
         condition: service_completed_successfully

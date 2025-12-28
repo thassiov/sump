@@ -17,6 +17,7 @@ const tenantAccountSchema = z.object({
   name: z.string().min(3).max(100),
   username: z.string().min(3).max(20),
   avatarUrl: z.string().check(z.url()).optional(),
+  passwordHash: z.string().optional(),
   tenantId: z.uuid(),
   roles: z.array(tenantAccountRoleSchema).min(1).max(1),
   disabled: z.boolean(),
